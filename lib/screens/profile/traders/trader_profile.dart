@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:codecarrots_unotraders/model/add_post.dart';
 import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/provider/profile_provider.dart';
@@ -7,6 +8,7 @@ import 'package:codecarrots_unotraders/screens/profile/traders/post_an_offer_dia
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
 import 'package:codecarrots_unotraders/services/helper/api_services_url.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -98,7 +100,7 @@ class _TraderProfileState extends State<TraderProfile> {
       ),
       body: SingleChildScrollView(
         child: FutureBuilder<TraderProfileModel>(
-            future: ProfileServices.getTrderProfile(id: ApiServicesUrl.id),
+            future: ProfileServices.getTraderProfile(id: ApiServicesUrl.id),
             // ApiServicesUrl.id
             builder: (context, AsyncSnapshot<TraderProfileModel> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -108,12 +110,16 @@ class _TraderProfileState extends State<TraderProfile> {
                       size: size,
                       profileModel: snapshot.data!);
                 } else {
-                  return Constant.circularProgressIndicator();
+                  return SizedBox(
+                      width: size.width,
+                      height: size.height,
+                      child:
+                          Center(child: Constant.circularProgressIndicator()));
                 }
               } else if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasError) {
-                  return const Center(
-                    child: Text("Something went wrong"),
+                  return Center(
+                    child: Text(snapshot.error.toString()),
                   );
                 } else if (snapshot.hasData) {
                   print("started");
@@ -126,9 +132,15 @@ class _TraderProfileState extends State<TraderProfile> {
                   const Center(child: Text("Document does not exist"));
                 }
               } else {
-                return Constant.circularProgressIndicator();
+                return SizedBox(
+                    width: size.width,
+                    height: size.height,
+                    child: Center(child: Constant.circularProgressIndicator()));
               }
-              return Constant.circularProgressIndicator();
+              return SizedBox(
+                  width: size.width,
+                  height: size.height,
+                  child: Center(child: Constant.circularProgressIndicator()));
             }),
       ),
     );
@@ -138,6 +150,11 @@ class _TraderProfileState extends State<TraderProfile> {
       {required BuildContext context,
       required Size size,
       required TraderProfileModel profileModel}) {
+    final DateTime from = DateTime.fromMillisecondsSinceEpoch(
+        int.parse(profileModel.availableTimeFrom!) * 1000);
+    final DateTime to = DateTime.fromMillisecondsSinceEpoch(
+        int.parse(profileModel.availableTimeTo!) * 1000);
+
     return Padding(
       padding: EdgeInsets.all(size.width * .02),
       child: Column(
@@ -261,7 +278,7 @@ class _TraderProfileState extends State<TraderProfile> {
                                 radius:
                                     MediaQuery.of(context).size.width * 0.05,
                                 backgroundImage: NetworkImage(
-                                  'https://i.pinimg.com/736x/82/17/5c/82175caf7d103a2a0aead645966c3577.jpg',
+                                  profileModel.profilePic!,
                                 ),
                               ),
                             )
@@ -448,7 +465,10 @@ class _TraderProfileState extends State<TraderProfile> {
             padding: EdgeInsets.all(size.width * .02),
             child: Row(
               children: [
-                const Icon(Icons.chat_bubble_outline),
+                const FaIcon(
+                  FontAwesomeIcons.whatsapp,
+                  color: AppColor.blackColor,
+                ),
                 Constant.kWidth(width: size.width * .02),
                 Text('+${profileModel.countryCode} ${profileModel.mobile}'),
               ],
@@ -483,25 +503,13 @@ class _TraderProfileState extends State<TraderProfile> {
           const Divider(
             color: Colors.grey,
           ),
-          Padding(
-            padding: EdgeInsets.all(size.width * .02),
-            child: Row(
-              children: [
-                const Icon(Icons.signal_cellular_connected_no_internet_0_bar),
-                Constant.kWidth(width: size.width * .02),
-                Text(profileModel.webUrl.toString()),
-              ],
-            ),
-          ),
-          const Divider(
-            color: Colors.grey,
-          ),
           // Padding(
           //   padding: EdgeInsets.all(size.width * .02),
           //   child: Row(
-          //     children: const [
-          //       Icon(Icons.timer_outlined),
-          //       Text('12:00 AM - 12:00 PM'),
+          //     children: [
+          //       const Icon(Icons.signal_cellular_connected_no_internet_0_bar),
+          //       Constant.kWidth(width: size.width * .02),
+          //       Text(profileModel.webUrl.toString()),
           //     ],
           //   ),
           // ),
@@ -512,16 +520,30 @@ class _TraderProfileState extends State<TraderProfile> {
             padding: EdgeInsets.all(size.width * .02),
             child: Row(
               children: [
-                const Icon(Icons.location_on),
+                Icon(Icons.timer_outlined),
                 Constant.kWidth(width: size.width * .02),
-                Text(profileModel.address.toString()),
+                Text(
+                    '${DateFormat('kk:mm:a').format(from)} - ${DateFormat('kk:mm:a').format(to)}'),
               ],
             ),
           ),
           const Divider(
             color: Colors.grey,
           ),
-           Constant.kheight(height: size.width * .02),
+          Padding(
+            padding: EdgeInsets.all(size.width * .02),
+            child: Row(
+              children: [
+                const Icon(Icons.location_on),
+                Constant.kWidth(width: size.width * .02),
+                Expanded(child: Text(profileModel.location.toString())),
+              ],
+            ),
+          ),
+          const Divider(
+            color: Colors.grey,
+          ),
+          Constant.kheight(height: size.width * .02),
           // Padding(
           //  padding: EdgeInsets.all(size.width * .02),
           //   child: Row(
@@ -547,41 +569,39 @@ class _TraderProfileState extends State<TraderProfile> {
           // ),
 
           Container(
-            margin: EdgeInsets.only(
-                bottom: size.width * .02, top: size.width * .02),
-            width: size.width,
-            height: size.height * .05,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(
-                  title.length,
-                  (index) => InkWell(
-                        onTap: () {
-                          setState(() {
-                            currentIndex = index;
-                          });
-                        },
-                        child: Container(
-                          width: size.width * .3,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              color: currentIndex == index
-                                  ? AppColor.green
-                                  : AppColor.whiteColor,
-                              border: Border.all(color: AppColor.green),
-                              borderRadius:
-                                  BorderRadius.circular(size.width * .05)),
-                          child: Text(
-                            title[index],
-                            style: TextStyle(
-                                color: currentIndex == index
-                                    ? AppColor.whiteColor
-                                    : AppColor.blackColor),
-                          ),
-                        ),
-                      )).toList(),
-            ),
-          ),
+              margin: EdgeInsets.only(
+                  bottom: size.width * .02, top: size.width * .02),
+              width: size.width,
+              height: size.height * .05,
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(
+                      title.length,
+                      (index) => InkWell(
+                            onTap: () {
+                              setState(() {
+                                currentIndex = index;
+                              });
+                            },
+                            child: Container(
+                              width: size.width * .3,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: currentIndex == index
+                                      ? AppColor.green
+                                      : AppColor.whiteColor,
+                                  border: Border.all(color: AppColor.green),
+                                  borderRadius:
+                                      BorderRadius.circular(size.width * .05)),
+                              child: Text(
+                                title[index],
+                                style: TextStyle(
+                                    color: currentIndex == index
+                                        ? AppColor.whiteColor
+                                        : AppColor.blackColor),
+                              ),
+                            ),
+                          )).toList())),
           currentIndex == 0
               ? Padding(
                   padding: EdgeInsets.symmetric(horizontal: size.width * .005),
@@ -685,125 +705,314 @@ class _TraderProfileState extends State<TraderProfile> {
                     ),
                     Constant.kheight(height: size.width * .017),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        ReadMoreText(
-                          traderOffer.offerDescription.toString(),
-                          numLines: 3,
-                          readMoreAlign: Alignment.centerLeft,
-                          style: TextStyle(fontSize: size.width * .033),
-                          readMoreTextStyle: TextStyle(
-                              fontSize: size.width * .033, color: Colors.blue),
-                          readMoreText: 'Read More',
-                          readLessText: 'Read Less',
-                        ),
-                      ],
-                    ),
-                    Constant.kheight(height: size.width * .012),
-                    SizedBox(
-                      height: size.height * .25,
-                      width: size.width,
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: size.width * .6,
-                            height: size.height * .25,
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              itemCount: traderOffer.offerImages!.length,
-                              itemBuilder: (context, index) {
-                                final image = traderOffer.offerImages![index];
-                                return Container(
-                                  padding: EdgeInsets.all(size.width * .005),
-                                  child: ImgFade.fadeImage(url: image),
-                                );
-                              },
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
+                        Expanded(
+                            child: DottedBorder(
+                          color: Colors.black,
+                          strokeWidth: 1,
+                          child: Container(
+                            height: 40,
+                            child: Row(
                               children: [
-                                Text(
-                                  "Price",
-                                  style: TextStyle(fontSize: size.width * .03),
-                                ),
-                                Text(
-                                  "\$ ${traderOffer.fullPrice.toString()}",
-                                  style: const TextStyle(
-                                      decoration: TextDecoration.lineThrough),
-                                ),
-                                Constant.kheight(height: size.width * .012),
-                                Text("Discount Price",
-                                    style:
-                                        TextStyle(fontSize: size.width * .03)),
-                                Text(
-                                  "\$ ${traderOffer.discountPrice.toString()}",
-                                  style: TextStyle(
-                                      color: AppColor.green,
-                                      fontSize: size.width * .035),
-                                ),
+                                Expanded(
+                                    child: Container(
+                                  alignment: Alignment.center,
+                                  // decoration: BoxDecoration(
+                                  //     border: Border.all(color: AppColor.blackColor)),
+                                  child: Text(
+                                      "Valid From; ${traderOffer.validFrom}"),
+                                  height: 40,
+                                )),
+                                const VerticalDivider(),
+                                Expanded(
+                                    child: Container(
+                                  height: 40,
+                                  child: Text(
+                                    "Expire; ${traderOffer.validTo}",
+                                    style: const TextStyle(color: AppColor.red),
+                                  ),
+                                  alignment: Alignment.center,
+                                  // decoration: BoxDecoration(
+                                  //     border: Border.all(color: AppColor.blackColor)),
+                                ))
                               ],
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Constant.kheight(height: size.width * .03),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          alignment: Alignment.center,
-                          height: size.width * .075,
-                          width: size.width * .43,
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(size.width * .04),
-                              border: Border.all(color: AppColor.green)),
-                          child: Column(
-                            children: [
-                              const Text("Valid From "),
-                              Text("${traderOffer.validFrom}"),
-                            ],
                           ),
-                        ),
-                        Container(
-                          alignment: Alignment.center,
-                          height: size.width * .075,
-                          width: size.width * .43,
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(size.width * .04),
-                              border: Border.all(color: AppColor.green)),
-                          child: Column(
-                            children: [
-                              const Text("Valid Expire"),
-                              Text("${traderOffer.validTo}"),
-                            ],
-                          ),
-                        ),
+                        ))
                       ],
                     ),
-                    Constant.kheight(height: size.width * .03),
-                    CircleAvatar(
-                        radius: size.width * .03,
-                        backgroundColor: AppColor.green,
-                        child: Icon(
-                          Icons.thumb_up,
-                          size: size.width * .034,
-                          color: AppColor.whiteColor,
+                    Constant.kheight(height: size.width * .017),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                alignment: Alignment.center,
+                                height: size.width * .05,
+                                width: size.width * .3,
+                                decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(size.width * .01),
+                                    color: const Color(0XFFFCE9C8)),
+                                child: Text(
+                                    "Offer Price \$ ${traderOffer.discountPrice.toString()}"),
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                height: size.width * .05,
+                                width: size.width * .3,
+                                decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(size.width * .01),
+                                    color: const Color(0XFFDAFAD3)),
+                                child: Text(
+                                    "Full Price \$ ${traderOffer.fullPrice.toString()}"),
+                              ),
+                            ],
+                          ),
+                        ))
+                      ],
+                    ),
+                    Constant.kheight(height: size.width * .017),
+
+                    SizedBox(
+                        width: size.width,
+                        height: size.height * .25,
+                        child: Container(
+                          child: CarouselSlider.builder(
+                              itemCount: traderOffer.offerImages!.length,
+                              itemBuilder: (context, cIndex, realIndex) {
+                                final image = traderOffer.offerImages![cIndex];
+                                return Container(
+                                  padding: const EdgeInsets.only(right: 5),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: Image.network(image,
+                                        fit: BoxFit.fill,
+                                        width: size.width * .9),
+                                  ),
+                                );
+                              },
+                              options: CarouselOptions(
+                                padEnds: false,
+                                scrollPhysics: const BouncingScrollPhysics(),
+                                clipBehavior: Clip.antiAlias,
+                                enableInfiniteScroll: false,
+                                autoPlayAnimationDuration:
+                                    const Duration(milliseconds: 200),
+                                viewportFraction: .56,
+                                height: size.width * .5,
+                                autoPlay: false,
+                                reverse: false,
+                                autoPlayInterval: const Duration(seconds: 5),
+                              )),
                         )),
-                    Constant.kheight(height: size.width * .02),
+                    Constant.kheight(height: size.width * .012),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Flexible(
+                          child: ReadMoreText(
+                            traderOffer.offerDescription.toString(),
+                            numLines: 3,
+                            readMoreIconColor: AppColor.green,
+                            readMoreAlign: Alignment.centerLeft,
+                            style: TextStyle(fontSize: size.width * .033),
+                            readMoreTextStyle: TextStyle(
+                                fontSize: size.width * .033,
+                                color: AppColor.green),
+                            readMoreText: 'Read More',
+                            readLessText: 'Read Less',
+                          ),
+                        ),
+                      ],
+                    ),
+                    // SizedBox(
+                    //   height: size.height * .25,
+                    //   width: size.width,
+                    //   child: Row(
+                    //     children: [
+                    //       SizedBox(
+                    //           width: size.width * .6,
+                    //           height: size.height * .25,
+                    //           child: CarouselSlider.builder(
+                    //             itemCount: traderOffer.offerImages!.length,
+                    //             itemBuilder: (context, cIndex, realIndex) {
+                    // final image =
+                    //     traderOffer.offerImages![cIndex];
+                    //               return Padding(
+                    //                 padding: const EdgeInsets.only(right: 5.0),
+                    //                 child: ClipRRect(
+                    //                     borderRadius: BorderRadius.circular(
+                    //                         size.width * .03),
+                    //                     child: Image.network(
+                    //                       image,
+                    //                       fit: BoxFit.fill,
+                    //                     )),
+                    //               );
+                    //             },
+                    //             options: CarouselOptions(
+                    //                 clipBehavior: Clip.antiAlias,
+                    //                 scrollPhysics:
+                    //                     const BouncingScrollPhysics(),
+                    //                 enableInfiniteScroll: false,
+                    //                 reverse: false,
+                    //                 padEnds: false,
+                    //                 autoPlay: true,
+                    //                 viewportFraction: .56),
+                    //           )
+                    //           // ListView.builder(
+                    //           //   shrinkWrap: true,
+                    //           //   scrollDirection: Axis.horizontal,
+                    //           //   itemCount: traderOffer.offerImages!.length,
+                    //           //   itemBuilder: (context, index) {
+                    //           //     final image = traderOffer.offerImages![index];
+                    //           //     return Container(
+                    //           //       padding: EdgeInsets.all(size.width * .005),
+                    //           //       child: ImgFade.fadeImage(url: image),
+                    //           //     );
+                    //           //   },
+                    //           // ),
+                    //           ),
+                    //       // Expanded(
+                    //       //   child: Column(
+                    //       //     crossAxisAlignment: CrossAxisAlignment.center,
+                    //       //     mainAxisAlignment: MainAxisAlignment.center,
+                    //       //     children: [
+                    //       //       Text(
+                    //       //         "Price",
+                    //       //         style: TextStyle(fontSize: size.width * .03),
+                    //       //       ),
+                    //       //       Text(
+                    //       //         "\$ ${traderOffer.fullPrice.toString()}",
+                    //       //         style: const TextStyle(
+                    //       //             decoration: TextDecoration.lineThrough),
+                    //       //       ),
+                    //       //       Constant.kheight(height: size.width * .012),
+                    //       //       Text("Discount Price",
+                    //       //           style:
+                    //       //               TextStyle(fontSize: size.width * .03)),
+                    //       //       Text(
+                    //       //         "\$ ${traderOffer.discountPrice.toString()}",
+                    //       //         style: TextStyle(
+                    //       //             color: AppColor.green,
+                    //       //             fontSize: size.width * .035),
+                    //       //       ),
+                    //       //     ],
+                    //       //   ),
+                    //       // )
+                    //     ],
+                    //   ),
+                    // ),
+                    Constant.kheight(height: size.width * .01),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     Container(
+                    //       alignment: Alignment.center,
+                    //       height: size.width * .075,
+                    //       width: size.width * .43,
+                    //       decoration: BoxDecoration(
+                    //           borderRadius:
+                    //               BorderRadius.circular(size.width * .04),
+                    //           border: Border.all(color: AppColor.green)),
+                    //       child: Column(
+                    //         children: [
+                    //           const Text("Valid From "),
+                    //           Text("${traderOffer.validFrom}"),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //     Container(
+                    //       alignment: Alignment.center,
+                    //       height: size.width * .075,
+                    //       width: size.width * .43,
+                    //       decoration: BoxDecoration(
+                    //           borderRadius:
+                    //               BorderRadius.circular(size.width * .04),
+                    //           border: Border.all(color: AppColor.green)),
+                    //       child: Column(
+                    //         children: [
+                    //           const Text("Valid Expire"),
+                    //           Text("${traderOffer.validTo}"),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    // Constant.kheight(height: size.width * .03),
+                    const Divider(),
                     Row(
                       children: [
-                        Text("Likes ()"),
-                        Constant.kWidth(width: size.width * .01),
-                        const Text("Comments")
+                        Expanded(
+                            child: Container(
+                          child: Row(
+                            children: [
+                              InkWell(
+                                onTap: () {},
+                                child: Container(
+                                    alignment: Alignment.center,
+                                    height: size.width * .07,
+                                    width: size.width * .1,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.grey),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                              color: Colors.white,
+                                              spreadRadius: 1)
+                                        ],
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                    child: const FaIcon(
+                                      FontAwesomeIcons.thumbsUp,
+                                      color: AppColor.primaryColor,
+                                    )),
+                              ),
+                              Constant.kWidth(width: size.width * .03),
+                              InkWell(
+                                onTap: () {},
+                                child: Container(
+                                    alignment: Alignment.center,
+                                    height: size.width * .07,
+                                    width: size.width * .1,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.grey),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                              color: Colors.white,
+                                              spreadRadius: 1)
+                                        ],
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                    child: FaIcon(
+                                      FontAwesomeIcons.commentDots,
+                                      color: AppColor.primaryColor,
+                                    )),
+                              ),
+                            ],
+                          ),
+                        ))
                       ],
-                    )
+                    ),
+                    // CircleAvatar(
+                    //     radius: size.width * .03,
+                    //     backgroundColor: AppColor.green,
+                    //     child: Icon(
+                    //       Icons.thumb_up,
+                    //       size: size.width * .034,
+                    //       color: AppColor.whiteColor,
+                    //     )),
+                    // Constant.kheight(height: size.width * .02),
+                    // Row(
+                    //   children: [
+                    //     Text("Likes ()"),
+                    //     Constant.kWidth(width: size.width * .01),
+                    //     const Text("Comments")
+                    //   ],
+                    // )
                   ],
                 ),
               ),
@@ -828,7 +1037,7 @@ class _TraderProfileState extends State<TraderProfile> {
               width: size.width * .4,
               decoration:
                   BoxDecoration(border: Border.all(color: AppColor.green)),
-              child: Text("Review Notification (0)"),
+              child: const Text("Review Notification (0)"),
             ),
             Container(
               alignment: Alignment.center,
@@ -836,7 +1045,7 @@ class _TraderProfileState extends State<TraderProfile> {
               width: size.width * .4,
               decoration:
                   BoxDecoration(border: Border.all(color: AppColor.green)),
-              child: Text("Bad Review"),
+              child: const Text("Bad Review"),
             ),
           ],
         )
@@ -1142,58 +1351,159 @@ class _TraderProfileState extends State<TraderProfile> {
                         ),
                       ),
                       Constant.kheight(height: size.width * .017),
+
+                      SizedBox(
+                          width: size.width,
+                          height: size.height * .25,
+                          child: Container(
+                            child: CarouselSlider.builder(
+                                itemCount: traderPost.postImages!.length,
+                                itemBuilder: (context, carIndex, realIndex) {
+                                  return Container(
+                                    padding: const EdgeInsets.only(right: 5),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                          size.width * .02),
+                                      child: Image.network(
+                                        traderPost.postImages![carIndex],
+                                        fit: BoxFit.cover,
+                                        // width:
+                                        //     traderPost.postImages!.length == 1
+                                        //         ? size.width * .9
+                                        //         : null,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                options: CarouselOptions(
+                                  padEnds: false,
+                                  scrollPhysics: const BouncingScrollPhysics(),
+                                  clipBehavior: Clip.antiAlias,
+                                  enableInfiniteScroll: false,
+                                  autoPlayAnimationDuration:
+                                      const Duration(milliseconds: 200),
+                                  viewportFraction: .56,
+                                  height: size.width * .5,
+                                  autoPlay: false,
+                                  reverse: false,
+                                  autoPlayInterval: const Duration(seconds: 5),
+                                )),
+                          )
+
+                          // ListView.separated(
+                          //   separatorBuilder: (context, index) => SizedBox(
+                          //     width: size.width * .01,
+                          //   ),
+                          //   shrinkWrap: true,
+                          //   scrollDirection: Axis.horizontal,
+                          //   itemCount: traderPost.postImages == null
+                          //       ? 0
+                          //       : traderPost.postImages!.length,
+                          //   itemBuilder: (context, index) {
+                          //     return
+
+                          //      Container(
+                          //         child: Image.network(
+                          //             traderPost.postImages![index],
+                          //             width: size.width * .9)
+                          //         //  ImgFade.fadeImage(
+                          //         //     width: size.width * .9,
+                          //         //     url: traderPost.postImages![index]),
+                          //         );
+                          //   },
+                          // ),
+                          ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          ReadMoreText(
-                            traderPost.postContent.toString(),
-                            numLines: 3,
-                            readMoreAlign: Alignment.centerLeft,
-                            style: TextStyle(fontSize: size.width * .033),
-                            readMoreTextStyle: TextStyle(
-                                fontSize: size.width * .033,
-                                color: Colors.blue),
-                            readMoreText: 'Read More',
-                            readLessText: 'Read Less',
+                          Flexible(
+                            child: ReadMoreText(
+                              traderPost.postContent.toString(),
+                              readMoreIconColor: AppColor.green,
+                              numLines: 3,
+                              readMoreAlign: Alignment.centerLeft,
+                              style: TextStyle(fontSize: size.width * .033),
+                              readMoreTextStyle: TextStyle(
+                                  fontSize: size.width * .033,
+                                  color: Colors.green),
+                              readMoreText: 'Read More',
+                              readLessText: 'Read Less',
+                            ),
                           ),
                         ],
                       ),
-                      Constant.kheight(height: size.width * .012),
-                      SizedBox(
-                        width: size.width,
-                        height: size.height * .25,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: traderPost.postImages == null
-                              ? 0
-                              : traderPost.postImages!.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              child: ImgFade.fadeImage(
-                                  width: size.width * .9,
-                                  url: traderPost.postImages![index]),
-                            );
-                          },
-                        ),
-                      ),
-                      Constant.kheight(height: size.width * .03),
-                      CircleAvatar(
-                          radius: size.width * .03,
-                          backgroundColor: AppColor.green,
-                          child: Icon(
-                            Icons.thumb_up,
-                            size: size.width * .034,
-                            color: AppColor.whiteColor,
-                          )),
-                      Constant.kheight(height: size.width * .02),
+
+                      const Divider(),
                       Row(
                         children: [
-                          const Text("Likes (0)"),
-                          Constant.kWidth(width: size.width * .01),
-                          const Text("Comments")
+                          Expanded(
+                              child: Container(
+                            child: Row(
+                              children: [
+                                InkWell(
+                                  onTap: () {},
+                                  child: Container(
+                                      alignment: Alignment.center,
+                                      height: size.width * .07,
+                                      width: size.width * .1,
+                                      decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.grey),
+                                          boxShadow: const [
+                                            BoxShadow(
+                                                color: Colors.white,
+                                                spreadRadius: 1)
+                                          ],
+                                          borderRadius:
+                                              BorderRadius.circular(15)),
+                                      child: const FaIcon(
+                                        FontAwesomeIcons.thumbsUp,
+                                        color: AppColor.primaryColor,
+                                      )),
+                                ),
+                                Constant.kWidth(width: size.width * .03),
+                                InkWell(
+                                  onTap: () {},
+                                  child: Container(
+                                      alignment: Alignment.center,
+                                      height: size.width * .07,
+                                      width: size.width * .1,
+                                      decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.grey),
+                                          boxShadow: const [
+                                            BoxShadow(
+                                                color: Colors.white,
+                                                spreadRadius: 1)
+                                          ],
+                                          borderRadius:
+                                              BorderRadius.circular(15)),
+                                      child: FaIcon(
+                                        FontAwesomeIcons.commentDots,
+                                        color: AppColor.primaryColor,
+                                      )),
+                                ),
+                              ],
+                            ),
+                          ))
                         ],
-                      )
+                      ),
+                      // CircleAvatar(
+                      //     radius: size.width * .03,
+                      //     backgroundColor: AppColor.green,
+                      //     child: Icon(
+                      //       Icons.thumb_up,
+                      //       size: size.width * .034,
+                      //       color: AppColor.whiteColor,
+                      //     )),
+                      // Constant.kheight(height: size.width * .02),
+                      // Row(
+                      //   children: [
+                      //     const Text("Likes (0)"),
+                      //     Constant.kWidth(width: size.width * .01),
+                      //     const Text("Comments")
+                      //   ],
+                      // )
                     ],
                   ),
                 ),

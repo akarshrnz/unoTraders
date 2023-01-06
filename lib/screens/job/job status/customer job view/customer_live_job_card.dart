@@ -1,5 +1,6 @@
 import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
+import 'package:codecarrots_unotraders/screens/job/customer%20job%20screen/post_job.dart';
 import 'package:codecarrots_unotraders/screens/job/customer%20job%20screen/quote_result.dart';
 import 'package:codecarrots_unotraders/screens/job/job%20status/customer%20job%20view/customer_job_more_details.dart';
 import 'package:codecarrots_unotraders/screens/job/job_detail.dart';
@@ -258,7 +259,41 @@ class CustomerLiveJobCard extends StatelessWidget {
                                     isongoing == true
                                         ? const SizedBox()
                                         : isunPublished == true
-                                            ? const SizedBox()
+                                            ? SizedBox(
+                                                height: size.height * .029,
+                                                width: size.width * .26,
+                                                child: DefaultButton(
+                                                  text: "Edit",
+                                                  onPress: () async {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    PostJob(
+                                                                      isUpdatejob:
+                                                                          true,
+                                                                      jobId: jobModel
+                                                                          .id
+                                                                          .toString(),
+                                                                    )));
+                                                    // await jobProvider
+                                                    //     .updateJobStatus(
+                                                    //         jobId: jobModel.id
+                                                    //             .toString(),
+                                                    //         endPoints:
+                                                    //             ApiServicesUrl
+                                                    //                 .completedEndpoints,
+                                                    //         jobEndPoint:
+                                                    //             endPoint,
+                                                    //         jobStatus:
+                                                    //             jobStatus,
+                                                    //         status:
+                                                    //             'published');
+                                                  },
+                                                  radius: 20,
+                                                ),
+                                              )
                                             : isSeekingQuote == true
                                                 ? SizedBox(
                                                     height: size.height * .029,

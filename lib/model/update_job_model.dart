@@ -11,12 +11,18 @@ class UpdateJobModel {
   String? budget;
   String? jobCompletion;
   String? jobLocation;
+  String? materialPurchased;
+  String? longitude;
+  String? latitude;
   List<File>? jobImages;
 
   UpdateJobModel(
       {this.id,
       this.name,
       this.phone,
+      this.latitude,
+      this.longitude,
+      this.materialPurchased,
       this.categoryId,
       this.subCategoryId,
       this.title,
@@ -37,6 +43,9 @@ class UpdateJobModel {
     budget = json['budget'];
     jobCompletion = json['job_completion'];
     jobLocation = json['job_location'];
+    materialPurchased = json['material_purchased'];
+    longitude = json['loc_longitude'];
+    latitude = json['loc_latitude'];
     jobImages = json['job_images'].cast<String>();
   }
 

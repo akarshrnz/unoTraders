@@ -10,6 +10,8 @@ import 'package:codecarrots_unotraders/model/bazaar_categories.dart';
 import 'package:codecarrots_unotraders/model/bazaar_model.dart';
 import 'package:codecarrots_unotraders/model/traders_category_model.dart';
 import 'package:codecarrots_unotraders/services/api_sevices.dart';
+import 'package:codecarrots_unotraders/utils/color.dart';
+import 'package:codecarrots_unotraders/utils/constant.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -269,6 +271,44 @@ class BazaarProvider with ChangeNotifier {
   Future<void> addWishlist({required AddWishListModel wishlist}) async {
     try {
       await ApiServices.addWishlist(wishlist: wishlist);
+      // ignore: avoid_print
+      print("wishList");
+      // ignore: avoid_print
+      print(wishList.length.toString());
+    } catch (e) {
+      print(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+  removeFetchWishList({required AddWishListModel wishlist}) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      await ApiServices.removeWishlist(wishlist: wishlist);
+      final data = await ApiServices.getWishlist();
+      wishList = [];
+      wishList = data;
+      Constant.toastMsg(
+          msg: "Product Removed from Wishlist",
+          backgroundColor: AppColor.green);
+      // ignore: avoid_print
+      print("wishList");
+      // ignore: avoid_print
+      print(wishList.length.toString());
+    } catch (e) {
+      print(e.toString());
+      Constant.toastMsg(
+          msg: "Something Went Wrong", backgroundColor: AppColor.red);
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
+  //remove wishlist
+  Future<void> removeWishlist({required AddWishListModel wishlist}) async {
+    try {
+      await ApiServices.removeWishlist(wishlist: wishlist);
       // ignore: avoid_print
       print("wishList");
       // ignore: avoid_print

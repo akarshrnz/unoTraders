@@ -46,17 +46,23 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
 
   @override
   void initState() {
+    super.initState();
     locationProvider = Provider.of<LocationProvider>(context, listen: false);
     imageProvider = Provider.of<ImagePickProvider>(context, listen: false);
     profileProvider = Provider.of<ProfileProvider>(context, listen: false);
-    imageProvider.initialValues();
-    locationProvider.initalizeLocation();
-    locationProvider.clearData();
-    initalization();
-    super.initState();
+
+    initialization();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      imageProvider.initialValues();
+      locationProvider.initializeLocation();
+      locationProvider.clearData();
+      locationProvider.assignLocation(
+          lat: widget.customerProfile.locLongitude!,
+          long: widget.customerProfile.locLongitude!);
+    });
   }
 
-  initalization() {
+  initialization() {
     nameFocus = FocusNode();
     mobileFocus = FocusNode();
     emailFocus = FocusNode();
@@ -108,12 +114,12 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
       appBar: AppBarWidget(
         appBarTitle: "Edit Profile",
       ),
-      body: Column(
-        children: [
-          Flexible(
-              child: Form(
-            key: _formKey,
-            child: ListView(
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            Flexible(
+                child: ListView(
               padding: EdgeInsets.all(size.width * .03),
               shrinkWrap: true,
               children: [
@@ -194,14 +200,14 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                   context: context,
                   widgetOne: const Text("Name"),
                   widgetTwo: TextFieldWidget(
-                      focusNode: userNameFocus,
-                      controller: userNameController,
+                      focusNode: nameFocus,
+                      controller: nameController,
                       textInputAction: TextInputAction.next,
                       enabled: true,
                       hintText: "Name",
                       onFieldSubmitted: (p0) {
-                        userNameFocus.unfocus();
-                        FocusScope.of(context).requestFocus(emailFocus);
+                        nameFocus.unfocus();
+                        FocusScope.of(context).requestFocus(mobileFocus);
                       },
                       validate: (value) {
                         if (value == null || value.isEmpty) {
@@ -218,7 +224,7 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                       focusNode: emailFocus,
                       controller: emailController,
                       textInputAction: TextInputAction.next,
-                      enabled: true,
+                      enabled: false,
                       hintText: "Email",
                       onFieldSubmitted: (p0) {
                         emailFocus.unfocus();
@@ -238,8 +244,12 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                   widgetTwo: TextFieldWidget(
                       focusNode: mobileFocus,
                       controller: mobileController,
-                      enabled: false,
+                      enabled: true,
                       hintText: "Mobile",
+                      onFieldSubmitted: (p0) {
+                        mobileFocus.unfocus();
+                        FocusScope.of(context).requestFocus(addressFocus);
+                      },
                       validate: (value) {
                         if (value == null || value.isEmpty) {
                           return "This field is required";
@@ -345,34 +355,47 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                 Consumer<ImagePickProvider>(builder: (context, imgProvider, _) {
                   return Consumer<LocationProvider>(
                       builder: (context, locProvider, _) {
-                    return DefaultButton(
-                        text: "Update",
-                        onPress: () async {
-                          if (_formKey.currentState!.validate()) {
-                            UpdateProfileModel updateModel = UpdateProfileModel(
-                                name: nameController.text.toString().trim(),
-                                address:
-                                    addressController.text.toString().trim(),
-                                location: locationController.text,
-                                locationLatitute: locProvider.latitude,
-                                locationLongitude: locProvider.longitude,
-                                profileImage: imgProvider.imageFile.isEmpty
-                                    ? File(widget.customerProfile.profilePic!)
-                                    : imgProvider.imageFile[0]);
-                            await profileProvider
-                                .updateProfile(updateProfile: updateModel)
-                                .then((value) => Constant.toastMsg(
-                                    msg: "Profile Updated Successfully",
-                                    backgroundColor: AppColor.green)).onError((error, stackTrace) =>  Constant.toastMsg(msg: "Something Went Wrong", backgroundColor: AppColor.red));
-                          } else {}
-                        },
-                        radius: size.width * .04);
+                    return Consumer<ProfileProvider>(
+                        builder: (context, profile, _) {
+                      return profile.isLoading
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : DefaultButton(
+                              text: "Update",
+                              onPress: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  UpdateProfileModel updateModel =
+                                      UpdateProfileModel(
+                                          name: nameController.text
+                                              .toString()
+                                              .trim(),
+                                          address: addressController.text
+                                              .toString()
+                                              .trim(),
+                                          location: locationController.text,
+                                          locationLatitude:
+                                              locProvider.latitude,
+                                          locationLongitude:
+                                              locProvider.longitude,
+                                          profileImage:
+                                              imgProvider.imageFile.isEmpty
+                                                  ? null
+                                                  : imgProvider.imageFile[0]);
+                                  await profileProvider.updateProfile(
+                                      updateProfile: updateModel);
+                                  if (!mounted) return;
+                                  Navigator.pop(context);
+                                } else {}
+                              },
+                              radius: size.width * .04);
+                    });
                   });
                 }),
               ],
-            ),
-          ))
-        ],
+            ))
+          ],
+        ),
       ),
     );
   }

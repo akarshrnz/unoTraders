@@ -1,4 +1,3 @@
-
 class TraderProfileModel {
   int? id;
   String? type;
@@ -130,49 +129,49 @@ class TraderProfileModel {
     if (json['traderposts'] != null) {
       traderposts = <Traderposts>[];
       json['traderposts'].forEach((v) {
-        traderposts!.add( Traderposts.fromJson(v));
+        traderposts!.add(Traderposts.fromJson(v));
       });
     }
     if (json['traderoffers'] != null) {
       traderoffers = <Traderoffers>[];
       json['traderoffers'].forEach((v) {
-        traderoffers!.add( Traderoffers.fromJson(v));
+        traderoffers!.add(Traderoffers.fromJson(v));
       });
     }
     if (json['traderreviews'] != null) {
       traderreviews = <Traderreviews>[];
       json['traderreviews'].forEach((v) {
-        traderreviews!.add( Traderreviews.fromJson(v));
+        traderreviews!.add(Traderreviews.fromJson(v));
       });
     }
     if (json['providerreviews'] != null) {
       providerreviews = <Providerreviews>[];
       json['providerreviews'].forEach((v) {
-        providerreviews!.add( Providerreviews.fromJson(v));
+        providerreviews!.add(Providerreviews.fromJson(v));
       });
     }
     if (json['providerfollows'] != null) {
       providerfollows = <Providerfollows>[];
       json['providerfollows'].forEach((v) {
-        providerfollows!.add( Providerfollows.fromJson(v));
+        providerfollows!.add(Providerfollows.fromJson(v));
       });
     }
     if (json['providerfavourites'] != null) {
       providerfavourites = <Providerfavourites>[];
       json['providerfavourites'].forEach((v) {
-        providerfavourites!.add( Providerfavourites.fromJson(v));
+        providerfavourites!.add(Providerfavourites.fromJson(v));
       });
     }
     if (json['providerworks'] != null) {
       providerworks = <Providerworks>[];
       json['providerworks'].forEach((v) {
-        providerworks!.add( Providerworks.fromJson(v));
+        providerworks!.add(Providerworks.fromJson(v));
       });
     }
     if (json['providerposts'] != null) {
       providerposts = <Providerposts>[];
       json['providerposts'].forEach((v) {
-        providerposts!.add( Providerposts.fromJson(v));
+        providerposts!.add(Providerposts.fromJson(v));
       });
     }
     if (json['provideroffers'] != null) {
@@ -227,8 +226,7 @@ class TraderProfileModel {
       data['traderoffers'] = traderoffers!.map((v) => v.toJson()).toList();
     }
     if (traderreviews != null) {
-      data['traderreviews'] =
-          traderreviews!.map((v) => v.toJson()).toList();
+      data['traderreviews'] = traderreviews!.map((v) => v.toJson()).toList();
     }
     if (providerreviews != null) {
       data['providerreviews'] =
@@ -243,16 +241,13 @@ class TraderProfileModel {
           providerfavourites!.map((v) => v.toJson()).toList();
     }
     if (providerworks != null) {
-      data['providerworks'] =
-          providerworks!.map((v) => v.toJson()).toList();
+      data['providerworks'] = providerworks!.map((v) => v.toJson()).toList();
     }
     if (providerposts != null) {
-      data['providerposts'] =
-          providerposts!.map((v) => v.toJson()).toList();
+      data['providerposts'] = providerposts!.map((v) => v.toJson()).toList();
     }
     if (provideroffers != null) {
-      data['provideroffers'] =
-          provideroffers!.map((v) => v.toJson()).toList();
+      data['provideroffers'] = provideroffers!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -573,9 +568,9 @@ class Getuser {
 class Providerfollows {
   int? id;
   String? userType;
-  String? userId;
-  String? traderId;
-  String? follow;
+  int? userId;
+  int? traderId;
+  int? follow;
   String? createdAt;
   String? updatedAt;
 
@@ -614,9 +609,9 @@ class Providerfollows {
 class Providerfavourites {
   int? id;
   String? userType;
-  String? userId;
-  String? traderId;
-  String? favourite;
+  int? userId;
+  int? traderId;
+  int? favourite;
   String? createdAt;
   String? updatedAt;
 
@@ -642,12 +637,12 @@ class Providerfavourites {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
-    data['user_type'] =userType;
+    data['user_type'] = userType;
     data['user_id'] = userId;
-    data['trader_id'] =traderId;
-    data['favourite'] =favourite;
-    data['created_at'] =createdAt;
-    data['updated_at'] =updatedAt;
+    data['trader_id'] = traderId;
+    data['favourite'] = favourite;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }
@@ -695,10 +690,10 @@ class Providerworks {
 
 class Providerposts {
   int? id;
-  String? traderId;
+  int? traderId;
   String? title;
   String? postContent;
-  String? status;
+  int? status;
   String? emoji;
   String? likes;
   String? reactions;
@@ -733,7 +728,7 @@ class Providerposts {
     if (json['traderpostimages'] != null) {
       traderpostimages = <Traderpostimages>[];
       json['traderpostimages'].forEach((v) {
-        traderpostimages!.add( Traderpostimages.fromJson(v));
+        traderpostimages!.add(Traderpostimages.fromJson(v));
       });
     }
   }
@@ -760,7 +755,7 @@ class Providerposts {
 
 class Traderpostimages {
   int? id;
-  String? traderPostId;
+  int? traderPostId;
   String? postImage;
   String? createdAt;
   String? updatedAt;
@@ -793,14 +788,14 @@ class Traderpostimages {
 
 class Provideroffers {
   int? id;
-  String? traderId;
+  int? traderId;
   String? title;
   String? description;
   String? fullPrice;
   String? discountPrice;
   String? validFrom;
   String? validTo;
-  String? status;
+  int? status;
   String? likes;
   String? reactions;
   String? createdAt;
@@ -870,7 +865,7 @@ class Provideroffers {
 
 class Traderofferimages {
   int? id;
-  String? traderOfferId;
+  int? traderOfferId;
   String? offerImage;
   String? createdAt;
   String? updatedAt;

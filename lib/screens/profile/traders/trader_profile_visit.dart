@@ -49,7 +49,7 @@ class _TraderProfileState extends State<TraderProfileVisit> {
       ),
       body: SingleChildScrollView(
         child: FutureBuilder<TraderProfileModel>(
-            future: ProfileServices.getTrderProfile(id: widget.id),
+            future: ProfileServices.getTraderProfile(id: widget.id),
             builder: (context, AsyncSnapshot<TraderProfileModel> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 if (snapshot.hasData) {
@@ -473,10 +473,10 @@ class _TraderProfileState extends State<TraderProfileVisit> {
                 // )
               ],
             ),
-          ), Constant.kheight(height: size.width * .02),
+          ),
+          Constant.kheight(height: size.width * .02),
           Container(
             padding: EdgeInsets.symmetric(horizontal: size.width * .027),
-            
             width: size.width,
             height: size.height * .05,
             child: Row(
@@ -510,7 +510,8 @@ class _TraderProfileState extends State<TraderProfileVisit> {
                         ),
                       )).toList(),
             ),
-          ),Constant.kheight(height: size.width * .01),
+          ),
+          Constant.kheight(height: size.width * .01),
           currentIndex == 0
               ? Padding(
                   padding: EdgeInsets.symmetric(horizontal: size.width * .02),

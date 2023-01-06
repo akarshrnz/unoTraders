@@ -60,7 +60,7 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       locationProvider = Provider.of<LocationProvider>(context, listen: false);
-      locationProvider.initalizeLocation();
+      locationProvider.initializeLocation();
       locationProvider.clearAll();
     });
     super.initState();

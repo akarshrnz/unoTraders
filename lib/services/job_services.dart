@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:codecarrots_unotraders/model/current_job_model.dart';
 import 'package:codecarrots_unotraders/model/customer_quote_action_model.dart';
 import 'package:codecarrots_unotraders/model/customer_seek_quote_model.dart';
 import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
@@ -252,6 +253,7 @@ class JobServices {
         MapEntry("jobImages[]", await MultipartFile.fromFile(file.path)),
       ]);
     }
+    print(formData.fields);
 
     try {
       // print(formData.fields);
@@ -279,15 +281,38 @@ class JobServices {
     }
   }
 
-//update jov
+//fetch current job details
+  static Future<CurrentJobModel?> getCurrentJobDetails(
+      {required String jobId}) async {
+    print('${ApiServicesUrl.customerSeekQuote}$jobId');
+    try {
+      var response = await http.get(
+        Uri.parse('${ApiServicesUrl.currentJobDetails}$jobId'),
+        headers: Header.header,
+      );
+      Map<String, dynamic> body = jsonDecode(response.body);
+      // jsonDecode(response.body) as Map<String, dynamic>;
+      if (response.statusCode == 200) {
+        print("sucess");
+        print(body);
+        return CurrentJobModel.fromJson(body['data']);
+      } else {
+        throw "Something went wrong";
+      }
+    } catch (e) {
+      print(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+//update job
   static Future<void> updatePostedJob(
       {required UpdateJobModel upadatejob,
       required BuildContext context}) async {
-    print("job services");
+    print("update services");
+    print(upadatejob.jobImages);
     var formData = FormData.fromMap({
       "id": upadatejob.id,
-      "name": upadatejob.name,
-      "phone": upadatejob.phone,
       "category_id": upadatejob.categoryId,
       "sub_category_id": upadatejob.subCategoryId,
       "title": upadatejob.title,
@@ -295,13 +320,30 @@ class JobServices {
       "budget": upadatejob.budget,
       "job_completion": upadatejob.jobCompletion,
       "job_location": upadatejob.jobLocation,
-      "job_images": [],
+      "material_purchased": upadatejob.materialPurchased,
+      "loc_latitude": upadatejob.latitude,
+      "loc_longitude": upadatejob.longitude
     });
-    for (var file in upadatejob.jobImages!) {
+    for (int i = 0; i < upadatejob.jobImages!.length; i++) {
+      print(upadatejob.jobImages![i].path);
       formData.files.addAll([
-        MapEntry("job_images", await MultipartFile.fromFile(file.path)),
+        MapEntry("job_images[]",
+            await MultipartFile.fromFile(upadatejob.jobImages![i].path))
       ]);
     }
+    // for (var file in upadatejob.jobImages!) {
+    //   formData.files.addAll([
+    //     MapEntry("job_images", await MultipartFile.fromFile(file.path)),
+    //   ]);
+    // }
+    // for (var file in upadatejob.jobImages!) {
+    //   formData.files.addAll([
+    //     MapEntry("job_images", await MultipartFile.fromFile(file.path)),
+    //   ]);
+    // }
+    // formData.fields.forEach((element) {
+    //   print(element.key);
+    // });
 
     try {
       // print(formData.fields);
@@ -312,11 +354,13 @@ class JobServices {
           options: Options(headers: Header.header));
       // print(response.data['status'].toString());
       // print(response.data['data']['id'].toString());
-
+      print(response.data);
+      print(response.statusCode);
       if (response.data['status'].toString() == "200") {
         print("success");
         print(response.data);
       } else {
+        print(response.data);
         throw response.data['message'];
       }
     } on SocketException {
@@ -326,6 +370,7 @@ class JobServices {
     } on FormatException {
       throw Failure("Bad response format");
     } catch (e) {
+      print(e.toString());
       throw Failure("Something Went Wrong");
     }
   }

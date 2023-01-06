@@ -327,6 +327,7 @@ class ApiServices {
     print(ApiServicesUrl.id);
     // ignore: avoid_print
     print("inside Bazaar");
+    print('${ApiServicesUrl.wishList}${ApiServicesUrl.id}');
     var response = await http.get(
       Uri.parse('${ApiServicesUrl.wishList}${ApiServicesUrl.id}'),
       headers: Header.header,
@@ -361,6 +362,27 @@ class ApiServices {
               'https://demo.unotraders.com/api/v1/bazaar/shortlist-product'),
           headers: Header.header,
           body: body);
+    } catch (e) {
+      print(e.toString());
+      throw e.toString();
+    }
+  }
+
+  static Future<void> removeWishlist(
+      {required AddWishListModel wishlist}) async {
+    // ignore: avoid_print
+    print("remove wishlist");
+    final body = jsonEncode(wishlist.toJson());
+    print(body);
+
+    try {
+      var res = await http.post(
+          Uri.parse(
+              'https://demo.unotraders.com/api/v1/bazaar/shortlist-remove'),
+          headers: Header.header,
+          body: body);
+
+      print("Product removed sucess");
     } catch (e) {
       print(e.toString());
       throw e.toString();

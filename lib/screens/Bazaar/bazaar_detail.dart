@@ -51,10 +51,9 @@ class BazaarDetail extends StatelessWidget {
                                 url: bazaarModel.bazaarimages![index]);
                           },
                           options: CarouselOptions(
-                            scrollPhysics:
-                                bazaarModel.bazaarimages!.length == 1
-                                    ? const NeverScrollableScrollPhysics()
-                                    : null,
+                            scrollPhysics: bazaarModel.bazaarimages!.length == 1
+                                ? const NeverScrollableScrollPhysics()
+                                : null,
                             autoPlayAnimationDuration:
                                 const Duration(milliseconds: 800),
                             viewportFraction: 1,
@@ -152,22 +151,20 @@ class BazaarDetail extends StatelessWidget {
                           width: size.width,
                           height: size.height * .44,
                           child: ListView.builder(
-                            physics:const BouncingScrollPhysics(),
+                            physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             itemCount: snapshot.data!.length,
                             itemBuilder: (context, index) {
                               BazaarModel data = snapshot.data![index];
-                              DateTime date = DateTime.parse(
-                                data.createdAt!);
+                              DateTime date = DateTime.parse(data.createdAt!);
 
                               return InkWell(
                                 onTap: () {
-                                   Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => BazaarDetail(
-                                                  bazaarModel:data
-                                                )));
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              BazaarDetail(bazaarModel: data)));
                                 },
                                 child: Card(
                                   clipBehavior: Clip.antiAlias,
@@ -176,7 +173,8 @@ class BazaarDetail extends StatelessWidget {
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Padding(
                                         padding: EdgeInsets.only(
@@ -189,11 +187,13 @@ class BazaarDetail extends StatelessWidget {
                                       ),
                                       Padding(
                                         padding: EdgeInsets.only(
-                                          left: size.width * .03,bottom: size.width * .03,top: size.width * .01
-                                        ),
+                                            left: size.width * .03,
+                                            bottom: size.width * .03,
+                                            top: size.width * .01),
                                         child: textWidget(
-                                            text: "Posted: ${date.day} ${DateFormat.MMM().format(date)} ${date.year}, ${DateFormat('hh:mm a').format(date)}",color: AppColor.green
-                              ,
+                                            text:
+                                                "Posted: ${date.day} ${DateFormat.MMM().format(date)} ${date.year}, ${DateFormat('hh:mm a').format(date)}",
+                                            color: AppColor.green,
                                             fontSize: 14,
                                             fontWeight: FontWeight.w500),
                                       ),
@@ -219,7 +219,8 @@ class BazaarDetail extends StatelessWidget {
                                                 child: ImgFade.fadeImage(
                                                     height: size.height * .3,
                                                     width: size.width * .5,
-                                                    url: data.bazaarimages![0])),
+                                                    url:
+                                                        data.bazaarimages![0])),
                                       ),
                                       Padding(
                                         padding: EdgeInsets.only(
@@ -231,14 +232,21 @@ class BazaarDetail extends StatelessWidget {
                                             Icons.check_box,
                                             size: 15,
                                           ),
-                                          label:data.wishlist==1?const Text("Shortlisted"): const Text("Shortlist"),
+                                          label: data.wishlist == 1
+                                              ? const Text("Shortlisted")
+                                              : const Text("Shortlist"),
                                           style: ElevatedButton.styleFrom(
-                                              backgroundColor:data.wishlist==1?AppColor.blackColor: AppColor.green,
-                                              minimumSize: Size(size.width * .44,
+                                              backgroundColor:
+                                                  data.wishlist == 1
+                                                      ? AppColor.blackColor
+                                                      : AppColor.green,
+                                              minimumSize: Size(
+                                                  size.width * .44,
                                                   size.width * .06),
                                               shape: RoundedRectangleBorder(
                                                   borderRadius:
-                                                      BorderRadius.circular(20))),
+                                                      BorderRadius.circular(
+                                                          20))),
                                         ),
                                       ),
                                     ],
@@ -266,13 +274,14 @@ class BazaarDetail extends StatelessWidget {
   Text textWidget(
       {required String text,
       required double fontSize,
-      required FontWeight fontWeight,Color? color}) {
+      required FontWeight fontWeight,
+      Color? color}) {
     return Text(
       text,
       maxLines: 5,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-          color:color?? AppColor.blackColor,
+          color: color ?? AppColor.blackColor,
           fontSize: fontSize,
           fontWeight: fontWeight),
     );

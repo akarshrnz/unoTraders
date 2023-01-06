@@ -1,38 +1,36 @@
-import 'dart:io';
-
-class UpdateProfileModel {
+class UpdateCusProfileModel {
   String? name;
-  String? address;
   String? location;
   String? locationLatitude;
   String? locationLongitude;
-  File? profileImage;
+  String? profileImage;
+  String? address;
 
-  UpdateProfileModel(
+  UpdateCusProfileModel(
       {this.name,
-      this.address,
       this.location,
       this.locationLatitude,
       this.locationLongitude,
-      this.profileImage});
+      this.profileImage,
+      this.address});
 
-  UpdateProfileModel.fromJson(Map<String, dynamic> json) {
-    name = json['name '];
-    address = json['address'];
+  UpdateCusProfileModel.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
     location = json['location'];
-    locationLatitude = json['locationLatitute'];
+    locationLatitude = json['locationLatitude'];
     locationLongitude = json['locationLongitude'];
     profileImage = json['profileImage'];
+    address = json['address'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['name '] = name;
-    data['address'] = address;
+    data['name'] = name;
     data['location'] = location;
-    data['locationLatitute'] = locationLatitude;
+    data['locationLatitude'] = locationLatitude;
     data['locationLongitude'] = locationLongitude;
     data['profileImage'] = profileImage;
+    data['address'] = address;
     return data;
   }
 }

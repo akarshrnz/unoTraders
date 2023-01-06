@@ -31,6 +31,9 @@ class ApiServicesUrl {
   static const String shortListProduct = baseUrl + 'bazaar/shortlist-product';
 
   //job
+
+  static const String currentJobDetails =
+      'https://demo.unotraders.com/api/v1/job/editcustomerjob/';
   static const String postJob = baseUrl + 'jobs/post-job';
   static String jobStatus = baseUrl + 'job/status/${id}/';
   static const String customerSeekQuote = baseUrl + 'customer/seek-quote/';

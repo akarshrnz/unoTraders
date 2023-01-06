@@ -8,11 +8,15 @@ import 'package:codecarrots_unotraders/utils/constant.dart';
 import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mj_image_slider/mj_image_slider.dart';
+import 'package:mj_image_slider/mj_options.dart';
 import 'package:provider/provider.dart';
 
 class BazaarItems extends StatelessWidget {
+  final bool? isShortListOnly;
   const BazaarItems({
     Key? key,
+    this.isShortListOnly,
   }) : super(key: key);
 
   @override
@@ -38,29 +42,49 @@ class BazaarItems extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.only(right: 10, top: 10, bottom: 10),
-              margin: const EdgeInsets.only(
-                left: 10,
-              ),
-              height: 130,
-              width: 130,
-              child: bazaarModelProvider.bazaarimages!.isEmpty
-                  ? Center(
-                      child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: const [
-                        Icon(
-                          Icons.broken_image,
-                          color: Colors.grey,
-                        ),
-                        Text("No image")
-                      ],
-                    ))
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(13),
-                      child: ImgFade.fadeImage(
-                          url: bazaarModelProvider.bazaarimages![0])),
-            ),
+                padding: const EdgeInsets.only(right: 10, top: 10, bottom: 10),
+                margin: const EdgeInsets.only(
+                  left: 10,
+                ),
+                height: 130,
+                width: 130,
+                child: bazaarModelProvider.bazaarimages!.isEmpty
+                    ? Center(
+                        child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: const [
+                          Icon(
+                            Icons.broken_image,
+                            color: Colors.grey,
+                          ),
+                          Text("No image")
+                        ],
+                      ))
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(13),
+                        child: ImgFade.fadeImage(
+                            url: bazaarModelProvider.bazaarimages![0]),
+                      )
+                // MJImageSlider(
+                //     options: MjOptions(height: 130, width: null),
+                //     widgets: [
+                //       ...bazaarModelProvider.bazaarimages!
+                //           .map((e) => Container(
+                //                 margin: EdgeInsets.only(right: 5),
+                //                 child: ClipRRect(
+                //                     borderRadius: BorderRadius.circular(13),
+                //                     child: Image(
+                //                       image: NetworkImage(
+                //                         e,
+                //                       ),
+                //                       fit: BoxFit.cover,
+                //                     )),
+                //               ))
+                //           .toList(),
+
+                //  ],
+                //   ),
+                ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -97,6 +121,28 @@ class BazaarItems extends StatelessWidget {
                       bazaarModelProvider.wishlist == 1
                           ? ElevatedButton.icon(
                               onPressed: () async {
+                                print("shortlisted pressed");
+                                AddWishListModel wishlist = AddWishListModel(
+                                    productId: bazaarModelProvider.id,
+                                    userId: int.parse(ApiServicesUrl.id),
+                                    userType: ApiServicesUrl.userType);
+
+                                await bazaarProvider
+                                    .removeWishlist(wishlist: wishlist)
+                                    .then((value) {
+                                  Constant.toastMsg(
+                                      msg: "Product Removed from Wishlist",
+                                      backgroundColor: AppColor.green);
+                                  bazaarProvider.fetchBazaarProducts();
+
+                                  return;
+                                }).onError((error, stackTrace) {
+                                  Constant.toastMsg(
+                                      msg: "Something Went Wrong",
+                                      backgroundColor: AppColor.red);
+                                  return;
+                                });
+
                                 // AddWishListModel wishlist = AddWishListModel(
                                 //     productId: bazaarModelProvider
                                 //         .bazaarProductsList[
@@ -181,27 +227,31 @@ class BazaarItems extends StatelessWidget {
                       const SizedBox(
                         width: 5,
                       ),
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColor.blackColor,
-                            minimumSize: const Size(70, 26),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20))),
-                        child: const Text("Message"),
-                      ),
+                      isShortListOnly != null
+                          ? const SizedBox()
+                          : ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColor.blackColor,
+                                  minimumSize: const Size(70, 26),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20))),
+                              child: const Text("Message"),
+                            ),
                       const SizedBox(
                         width: 5,
                       ),
-                      OutlinedButton(
-                          onPressed: () {},
-                          style: OutlinedButton.styleFrom(
-                              minimumSize: const Size(75, 26),
-                              side: const BorderSide(
-                                  color: AppColor.primaryColor),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20))),
-                          child: const Text("Report"))
+                      isShortListOnly != null
+                          ? const SizedBox()
+                          : OutlinedButton(
+                              onPressed: () {},
+                              style: OutlinedButton.styleFrom(
+                                  minimumSize: const Size(75, 26),
+                                  side: const BorderSide(
+                                      color: AppColor.primaryColor),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20))),
+                              child: const Text("Report"))
                     ],
                   ),
                 )

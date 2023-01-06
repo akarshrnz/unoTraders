@@ -13,7 +13,13 @@ class LocationProvider with ChangeNotifier {
   String latitude = '';
   String longitude = '';
 
-  initalizeLocation() {
+  assignLocation({required String long, required String lat}) {
+    latitude = lat;
+    longitude = long;
+    notifyListeners();
+  }
+
+  initializeLocation() {
     googlePlace = GooglePlace(ApiServicesUrl.locationApiKey);
   }
 
@@ -70,11 +76,12 @@ class LocationProvider with ChangeNotifier {
     predictions = [];
     selected = null;
     results = null;
-    
+
     notifyListeners();
   }
-  clearData(){
-latitude = '';
+
+  clearData() {
+    latitude = '';
     longitude = '';
     locationError = '';
     predictions = [];

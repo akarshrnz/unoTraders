@@ -4,9 +4,10 @@ import 'package:image_fade/image_fade.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 class ImgFade {
-  static Widget errorImage({required double height,required double width}) {
+  static Widget errorImage({required double height, required double width}) {
     return SizedBox(
-      height: height,width: width,
+      height: height,
+      width: width,
       child: Center(
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -22,7 +23,7 @@ class ImgFade {
   }
 
   static Widget fadeImage(
-      {required String url, double? width, double? height}) {
+      {required String url, double? width, double? height, BoxFit? fit}) {
     return ImageFade(
       // whenever the image changes, it will be loaded, and then faded in:
       image: NetworkImage(url),
@@ -35,7 +36,7 @@ class ImgFade {
 
       // supports most properties of Image:
       alignment: Alignment.center,
-      fit: BoxFit.cover,
+      fit: fit ?? BoxFit.cover,
       height: height,
       width: width,
       // shown behind everything:

@@ -1,5 +1,3 @@
-
-
 class WishListModel {
   int? id;
   String? categoryId;

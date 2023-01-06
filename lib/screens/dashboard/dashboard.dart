@@ -34,8 +34,8 @@ class _DashboardState extends State<Dashboard> {
     CategoryScreen(),
     // TraderProfileVisit(),
     // TraderProfile(),
-    // MiddleScreen(),
-    CustomerReviewScreen(),
+    MiddleScreen(),
+    // CustomerReviewScreen(),
     const WishList(),
     ApiServicesUrl.userType == "customer"
         ? const CustomerProfile()

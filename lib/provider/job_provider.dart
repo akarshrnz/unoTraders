@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:codecarrots_unotraders/model/current_job_model.dart';
 import 'package:codecarrots_unotraders/model/customer_seek_quote_model.dart';
 import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
 import 'package:codecarrots_unotraders/model/job_search_model.dart';
@@ -39,7 +40,8 @@ class JobProvider with ChangeNotifier {
   String searchErrorMessage = "";
   String errorMessage = "";
   bool searchError = false;
-
+  String JobErrorMessage = '';
+  CurrentJobModel? currentjob;
   clearCategories() {
     selectedcategory = null;
     selectedSubCategory = null;
@@ -50,7 +52,7 @@ class JobProvider with ChangeNotifier {
   }
 
   void clear() {
-    getjobslist = [];
+    // getjobslist = [];
     categoryList = [];
     subCategoryList = [];
     getQuoteList = [];
@@ -151,6 +153,33 @@ class JobProvider with ChangeNotifier {
     }
   }
 
+  Future<CurrentJobModel?> fetchCurrentJob({required String jobId}) async {
+    JobErrorMessage = '';
+    isLoading = true;
+    notifyListeners();
+    print("started");
+
+    try {
+      currentjob = await JobServices.getCurrentJobDetails(jobId: jobId);
+      // print(currentjob!.description);
+      // CurrentJobModel currentJobModel = CurrentJobModel.fromJson(currentjob);
+      print("job fetched");
+      await fetchCategory();
+      if (currentjob != null) {
+        categoryFromDatabase(
+            catId: currentjob!.categoryId!,
+            subCatId: currentjob!.subCategoryId!);
+      }
+    } catch (e) {
+      print(e.toString());
+      JobErrorMessage = e.toString();
+    }
+
+    isLoading = false;
+    notifyListeners();
+    return currentjob;
+  }
+
   Future<void> postJob(
       {required int customerId,
       required String jobTitle,
@@ -226,8 +255,7 @@ class JobProvider with ChangeNotifier {
   }
 
   Future<void> updatejob(
-      {required int jobId,
-      required String jobTitle,
+      {required String jobTitle,
       required String jobDescription,
       required String budget,
       required String timeForCompletion,
@@ -238,65 +266,81 @@ class JobProvider with ChangeNotifier {
       required List<File> jobimages,
       required String jobStatus,
       required BuildContext context}) async {
-    UpdateJobModel post = UpdateJobModel(
-      id: jobId,
+    UpdateJobModel updateJobModel = UpdateJobModel(
+      id: currentjob!.id,
+      budget: budget,
+      categoryId: selectedcategoryId,
+      subCategoryId: selectedSubCategoryId,
+      description: jobDescription,
+      jobCompletion: timeForCompletion,
+      jobImages: jobimages,
+      jobLocation: location,
+      title: jobTitle,
+      latitude: locationLatitude,
+      longitude: locationLongitude,
+      materialPurchased: materialPurchased,
     );
-    PostJobModel postJob = PostJobModel(
-        customerId: jobId,
-        category: selectedSubCategoryId,
-        subCategory: selectedcategoryId,
-        jobTitle: jobTitle,
-        jobDescription: jobDescription,
-        budget: budget,
-        timeForCompletion: timeForCompletion,
-        location: location,
-        locationLatitude: locationLatitude,
-        locationLongitude: locationLongitude,
-        materialPurchased: materialPurchased,
-        jobimages: jobimages,
-        jobStatus: jobStatus);
+    print(updateJobModel.materialPurchased);
+    print(updateJobModel.jobImages![0]);
+    // PostJobModel postJob = PostJobModel(
 
-    // ignore: avoid_print
-    print(postJob.customerId);
-    // ignore: avoid_print
-    print(postJob.category);
-    // ignore: avoid_print
-    print(postJob.subCategory);
+    //     category: selectedSubCategoryId,
+    //     subCategory: selectedcategoryId,
+    //     jobTitle: jobTitle,
+    //     jobDescription: jobDescription,
+    //     budget: budget,
+    //     timeForCompletion: timeForCompletion,
+    //     location: location,
+    //     locationLatitude: locationLatitude,
+    //     locationLongitude: locationLongitude,
+    //     materialPurchased: materialPurchased,
+    //     jobimages: jobimages,
+    //     jobStatus: jobStatus,
+    //     );
 
-    // ignore: avoid_print
-    print(postJob.jobTitle);
+    // // ignore: avoid_print
+    // print(postJob.customerId);
+    // // ignore: avoid_print
+    // print(postJob.category);
+    // // ignore: avoid_print
+    // print(postJob.subCategory);
 
-    // ignore: avoid_print
-    print(postJob.jobDescription);
+    // // ignore: avoid_print
+    // print(postJob.jobTitle);
 
-    // ignore: avoid_print
-    print(postJob.budget);
+    // // ignore: avoid_print
+    // print(postJob.jobDescription);
 
-    // ignore: avoid_print
-    print(postJob.timeForCompletion);
+    // // ignore: avoid_print
+    // print(postJob.budget);
 
-    // ignore: avoid_print
-    print(postJob.location);
+    // // ignore: avoid_print
+    // print(postJob.timeForCompletion);
 
-    // ignore: avoid_print
-    print(postJob.locationLatitude.toString());
-    // ignore: avoid_print
-    print(postJob.locationLongitude.toString());
+    // // ignore: avoid_print
+    // print(postJob.location);
 
-    // ignore: avoid_print
-    print(postJob.materialPurchased);
+    // // ignore: avoid_print
+    // print(postJob.locationLatitude.toString());
+    // // ignore: avoid_print
+    // print(postJob.locationLongitude.toString());
 
-    // ignore: avoid_print
-    print(postJob.jobimages);
+    // // ignore: avoid_print
+    // print(postJob.materialPurchased);
 
-    // ignore: avoid_print
-    print(postJob.jobStatus);
+    // // ignore: avoid_print
+    // print(postJob.jobimages);
+
+    // // ignore: avoid_print
+    // print(postJob.jobStatus);
 
     try {
+      await JobServices.updatePostedJob(
+          context: context, upadatejob: updateJobModel);
       // jobId = await JobServices.postJob(postJob: postJob, context: context);
       print("job id");
-      print(jobId);
     } catch (e) {
+      print(e.toString());
       rethrow;
     }
     notifyListeners();

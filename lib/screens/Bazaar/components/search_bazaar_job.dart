@@ -46,7 +46,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
       jobProvider = Provider.of<JobProvider>(context, listen: false);
       bazaarProvider = Provider.of<BazaarProvider>(context, listen: false);
       bazaarProvider.clearCategories();
-      locationProvider.initalizeLocation();
+      locationProvider.initializeLocation();
       locationProvider.clearAll();
     });
     super.initState();

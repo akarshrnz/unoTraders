@@ -11,24 +11,25 @@ class TraderFeedModel {
   String? reactions;
   String? createdAt;
   String? updatedAt;
+  bool? isReactionOpened;
   List<String>? postImages;
-  List<Traderpostimages>? traderpostimages;
 
-  TraderFeedModel(
-      {this.name,
-      this.profilePic,
-      this.id,
-      this.traderId,
-      this.title,
-      this.postContent,
-      this.status,
-      this.emoji,
-      this.likes,
-      this.reactions,
-      this.createdAt,
-      this.updatedAt,
-      this.postImages,
-      this.traderpostimages});
+  TraderFeedModel({
+    this.name,
+    this.profilePic,
+    this.id,
+    this.traderId,
+    this.isReactionOpened,
+    this.title,
+    this.postContent,
+    this.status,
+    this.emoji,
+    this.likes,
+    this.reactions,
+    this.createdAt,
+    this.updatedAt,
+    this.postImages,
+  });
   static List<TraderFeedModel> snapshot(List snapshot) {
     return snapshot.map((snap) => TraderFeedModel.fromJson(snap)).toList();
   }
@@ -37,6 +38,7 @@ class TraderFeedModel {
     name = json['name'];
     profilePic = json['profile_pic'];
     id = json['id'];
+    isReactionOpened = false;
     traderId = json['trader_id'];
     title = json['title'];
     postContent = json['post_content'];
@@ -46,70 +48,11 @@ class TraderFeedModel {
     reactions = json['reactions'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    postImages = json['post_images'].cast<String>();
-    if (json['traderpostimages'] != null) {
-      traderpostimages = <Traderpostimages>[];
-      json['traderpostimages'].forEach((v) {
-        traderpostimages!.add(new Traderpostimages.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['name'] = name;
-    data['profile_pic'] = profilePic;
-    data['id'] = id;
-    data['trader_id'] = traderId;
-    data['title'] = title;
-    data['post_content'] = postContent;
-    data['status'] = status;
-    data['emoji'] = emoji;
-    data['likes'] = likes;
-    data['reactions'] = reactions;
-    data['created_at'] = createdAt;
-    data['updated_at'] = updatedAt;
-    data['post_images'] = postImages;
-    if (traderpostimages != null) {
-      data['traderpostimages'] =
-          traderpostimages!.map((v) => v.toJson()).toList();
-    }
-    return data;
+    postImages = json['traderpostimages'].cast<String>();
   }
 }
 
-class Traderpostimages {
-  int? id;
-  int? traderPostId;
-  String? postImage;
-  String? createdAt;
-  String? updatedAt;
 
-  Traderpostimages(
-      {this.id,
-      this.traderPostId,
-      this.postImage,
-      this.createdAt,
-      this.updatedAt});
-
-  Traderpostimages.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    traderPostId = json['trader_post_id'];
-    postImage = json['post_image'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['trader_post_id'] = traderPostId;
-    data['post_image'] = postImage;
-    data['created_at'] = createdAt;
-    data['updated_at'] = updatedAt;
-    return data;
-  }
-}
 // class TraderFeedModel {
 //   int? id;
 //   int? traderId;

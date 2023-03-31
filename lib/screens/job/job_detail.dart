@@ -1,6 +1,7 @@
 import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
+import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
 
@@ -33,8 +34,8 @@ class JobDetail extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.06,
             )),
         centerTitle: true,
-        title: const Text(
-          'Job',
+        title: TextWidget(
+          data: 'Job',
           style: TextStyle(color: AppColor.blackColor),
         ),
       ),
@@ -50,7 +51,7 @@ class JobDetail extends StatelessWidget {
                   height: size.height * .2,
                   child: ListView.separated(
                     separatorBuilder: (context, index) =>
-                        Constant.kWidth(width: 10),
+                        AppConstant.kWidth(width: 10),
                     shrinkWrap: true,
                     itemCount: jobDetails.jobimages!.length,
                     scrollDirection: Axis.horizontal,
@@ -66,7 +67,7 @@ class JobDetail extends StatelessWidget {
                     ),
                   ),
                 ),
-                Constant.kheight(height: size.width * .02),
+                AppConstant.kheight(height: size.width * .02),
                 Row(
                   children: [
                     Padding(
@@ -76,8 +77,8 @@ class JobDetail extends StatelessWidget {
                         children: [
                           SizedBox(
                             width: size.width * .57,
-                            child: Text(
-                              jobDetails.title.toString(),
+                            child: TextWidget(
+                              data: jobDetails.title.toString(),
                               maxLines: 4,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -86,7 +87,7 @@ class JobDetail extends StatelessWidget {
                                   fontWeight: FontWeight.bold),
                             ),
                           ),
-                          Constant.kheight(height: size.width * .02),
+                          AppConstant.kheight(height: size.width * .02),
                           Row(
                             children: [
                               Container(
@@ -110,8 +111,8 @@ class JobDetail extends StatelessWidget {
                                           padding: EdgeInsets.only(
                                               left: size.width * .01,
                                               right: size.width * .02),
-                                          child: Text(
-                                            jobDetails.budget.toString(),
+                                          child: TextWidget(
+                                            data: jobDetails.budget.toString(),
                                             style: const TextStyle(
                                               color: AppColor.whiteColor,
                                               fontWeight: FontWeight.w500,
@@ -123,13 +124,14 @@ class JobDetail extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              Constant.kWidth(width: size.width * .01),
+                              AppConstant.kWidth(width: size.width * .01),
                               const Icon(
                                 Icons.alarm,
                                 color: AppColor.primaryColor,
                               ),
-                              Text(
-                                "Posted:  ${date.day} ${DateFormat.MMM().format(date)} ${date.year}",
+                              TextWidget(
+                                data:
+                                    "Posted:  ${date.day} ${DateFormat.MMM().format(date)} ${date.year}",
                                 style: TextStyle(
                                   color: AppColor.secondaryColor,
                                   fontWeight: FontWeight.w500,
@@ -143,13 +145,13 @@ class JobDetail extends StatelessWidget {
                     ),
                   ],
                 ),
-                Constant.kheight(height: size.width * .02),
-                const Text(
-                  "Job Quote Requests",
+                AppConstant.kheight(height: size.width * .02),
+                TextWidget(
+                  data: "Job Quote Requests",
                   style: TextStyle(
                       color: AppColor.blackColor, fontWeight: FontWeight.bold),
                 ),
-                Constant.kheight(height: size.width * .02),
+                AppConstant.kheight(height: size.width * .02),
               ],
             ))
           ],

@@ -1,19 +1,23 @@
 import 'package:codecarrots_unotraders/model/request_job_quote_model.dart';
 import 'package:codecarrots_unotraders/model/trader_req_info_model.dart';
+import 'package:codecarrots_unotraders/model/trader_request_more_details_model.dart';
 import 'package:codecarrots_unotraders/services/job_services.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TraderInfoProvider with ChangeNotifier {
   bool isLoading = false;
+  bool traderMoreLoading = false;
   List<TraderRequestInfoModel> traderJobInfo = [];
   String errorMessage = '';
+  String traderMoreErrorMessage = '';
 
   Future<void> getTraderJobInformation({required String jobId}) async {
     final userinfo = await SharedPreferences.getInstance();
-    isLoading = true;
+    traderMoreErrorMessage = '';
+    traderMoreLoading = true;
     traderJobInfo = [];
     notifyListeners();
     try {
@@ -23,14 +27,14 @@ class TraderInfoProvider with ChangeNotifier {
     } catch (e) {
       traderJobInfo = [];
       print(e.toString());
-      errorMessage = e.toString();
+      traderMoreErrorMessage = e.toString();
     }
-    isLoading = false;
+    traderMoreLoading = false;
 
     notifyListeners();
   }
 
-  Future<void> sendQuoteReq({
+  Future<bool> sendQuoteReq({
     required RequestJobQuoteModel request,
   }) async {
     final userinfo = await SharedPreferences.getInstance();
@@ -41,20 +45,47 @@ class TraderInfoProvider with ChangeNotifier {
     print(request.userType.toString());
     print(request.traderId.toString());
     print(request.name.toString());
-    isLoading = true;
-    notifyListeners();
+
     try {
       await JobServices.requestJobQuote(request: request);
-      traderJobInfo = [];
-      traderJobInfo = await JobServices.fetchTraderjobinfo(
+
+      final data = await JobServices.fetchTraderjobinfo(
           jobId: request.jobId.toString(),
           traderId: userinfo.getString('id').toString());
+      traderJobInfo = [];
+      traderJobInfo = data;
+      notifyListeners();
+      return true;
     } catch (e) {
       traderJobInfo = [];
       print(e.toString());
-      Constant.toastMsg(msg: e.toString(), backgroundColor: AppColor.red);
+      AppConstant.toastMsg(msg: e.toString(), backgroundColor: AppColor.red);
+      notifyListeners();
+      return false;
     }
-    isLoading = false;
-    notifyListeners();
+  }
+
+  Future<bool> sendRequestMoreDetails({
+    required TraderReqMoreModel request,
+  }) async {
+    final userinfo = await SharedPreferences.getInstance();
+
+    try {
+      await JobServices.requestMoreDetails(request: request);
+
+      // final data = await JobServices.fetchTraderjobinfo(
+      //     jobId: request.jobId.toString(),
+      //     traderId: userinfo.getString('id').toString());
+      // traderJobInfo = [];
+      // traderJobInfo = data;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      traderJobInfo = [];
+      print(e.toString());
+      AppConstant.toastMsg(msg: e.toString(), backgroundColor: AppColor.red);
+      notifyListeners();
+      return false;
+    }
   }
 }

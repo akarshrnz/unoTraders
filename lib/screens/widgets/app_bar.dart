@@ -1,3 +1,4 @@
+import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   Widget? leading;
 
   final Widget? trailing;
-   AppBarWidget({
+  AppBarWidget({
     Key? key,
     this.appBarTitle,
     this.leading,
@@ -20,9 +21,10 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       centerTitle: true,
-      leading: leading??InkWell(
-          onTap: () => Navigator.pop(context),
-          child: Image.asset(PngImages.arrowBack)),
+      leading: leading ??
+          InkWell(
+              onTap: () => Navigator.pop(context),
+              child: Image.asset(PngImages.arrowBack)),
       // leading: IconButton(
       //     onPressed: () => Navigator.pop(context),
       //     icon: const Icon(
@@ -38,7 +40,8 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               ),
               bottomRight: Radius.circular(5))),
       backgroundColor: AppColor.whiteColor,
-      title: Text(appBarTitle ?? "",
+      title: TextWidget(
+          data: appBarTitle ?? "",
           style: const TextStyle(
             color: AppColor.blackColor,
           )),

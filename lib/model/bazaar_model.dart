@@ -16,6 +16,8 @@ class BazaarModel with ChangeNotifier {
   String? createdAt;
   String? updatedAt;
   int? wishlist;
+  String? name;
+  String? profilePic;
   List<String>? bazaarimages;
 
   BazaarModel(
@@ -34,6 +36,8 @@ class BazaarModel with ChangeNotifier {
       this.createdAt,
       this.updatedAt,
       this.wishlist,
+      this.name,
+      this.profilePic,
       this.bazaarimages});
 
   BazaarModel.fromJson(Map<String, dynamic> json) {
@@ -52,6 +56,8 @@ class BazaarModel with ChangeNotifier {
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     wishlist = json['wishlist'];
+    name = json['name'];
+    profilePic = json['profile_pic'];
     bazaarimages = json['bazaarimages'].cast<String>();
   }
 
@@ -72,6 +78,8 @@ class BazaarModel with ChangeNotifier {
     data['created_at'] = createdAt;
     data['updated_at'] = updatedAt;
     data['wishlist'] = wishlist;
+    data['name'] = name;
+    data['profile_pic'] = profilePic;
     data['bazaarimages'] = bazaarimages;
     return data;
   }
@@ -80,7 +88,9 @@ class BazaarModel with ChangeNotifier {
     return snapshot.map((snap) => BazaarModel.fromJson(snap)).toList();
   }
 }
-// class BazaarModel {
+
+
+// class BazaarModel with ChangeNotifier {
 //   int? id;
 //   String? categoryId;
 //   String? subCategoryId;
@@ -95,6 +105,7 @@ class BazaarModel with ChangeNotifier {
 //   String? addedBy;
 //   String? createdAt;
 //   String? updatedAt;
+//   int? wishlist;
 //   List<String>? bazaarimages;
 
 //   BazaarModel(
@@ -112,6 +123,7 @@ class BazaarModel with ChangeNotifier {
 //       this.addedBy,
 //       this.createdAt,
 //       this.updatedAt,
+//       this.wishlist,
 //       this.bazaarimages});
 
 //   BazaarModel.fromJson(Map<String, dynamic> json) {
@@ -129,6 +141,7 @@ class BazaarModel with ChangeNotifier {
 //     addedBy = json['added_by'];
 //     createdAt = json['created_at'];
 //     updatedAt = json['updated_at'];
+//     wishlist = json['wishlist'];
 //     bazaarimages = json['bazaarimages'].cast<String>();
 //   }
 
@@ -148,11 +161,12 @@ class BazaarModel with ChangeNotifier {
 //     data['added_by'] = addedBy;
 //     data['created_at'] = createdAt;
 //     data['updated_at'] = updatedAt;
+//     data['wishlist'] = wishlist;
 //     data['bazaarimages'] = bazaarimages;
 //     return data;
 //   }
-  //  static List<BazaarModel> bazaarListSnap(List snapshot){
-  //   return snapshot.map((snap) => BazaarModel.fromJson(snap)).toList();
 
-  // }
+//   static List<BazaarModel> bazaarListSnap(List snapshot) {
+//     return snapshot.map((snap) => BazaarModel.fromJson(snap)).toList();
+//   }
 // }

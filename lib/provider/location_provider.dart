@@ -1,4 +1,4 @@
-import 'package:codecarrots_unotraders/services/helper/api_services_url.dart';
+import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_place/google_place.dart';
@@ -20,7 +20,7 @@ class LocationProvider with ChangeNotifier {
   }
 
   initializeLocation() {
-    googlePlace = GooglePlace(ApiServicesUrl.locationApiKey);
+    googlePlace = GooglePlace(Url.locationApiKey);
   }
 
   onSelected({required AutocompletePrediction value}) async {

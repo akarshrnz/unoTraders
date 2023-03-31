@@ -7,7 +7,8 @@ import 'package:codecarrots_unotraders/model/login_model.dart';
 import 'package:codecarrots_unotraders/screens/auth/signup.dart';
 import 'package:codecarrots_unotraders/screens/dashboard/dashboard.dart';
 import 'package:codecarrots_unotraders/screens/widgets/dialog/loader_dialog.dart';
-import 'package:codecarrots_unotraders/services/helper/api_services_url.dart';
+import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
+import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/toast.dart';
 import 'package:flutter/material.dart';
 
@@ -39,181 +40,192 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: const BoxDecoration(
           gradient: AppColor.gradientColor,
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              backgroundColor: AppColor.whiteColor,
-              radius: MediaQuery.of(context).size.width * 0.17,
-              child: Image.asset(
-                PngImages.logo,
-                width: MediaQuery.of(context).size.width * 0.25,
-              ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            Text(
-              'Welcome!',
-              textScaleFactor: 1,
-              style: TextStyle(
-                  color: AppColor.whiteColor,
-                  fontSize: MediaQuery.of(context).size.width * 0.07,
-                  fontWeight: FontWeight.w900),
-            ),
-            const Text(
-              'Login to Continue',
-              style: TextStyle(
-                  color: AppColor.whiteColor, fontWeight: FontWeight.w500),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.05,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: TextFormField(
-                controller: _email,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                    hintText: 'Email',
-                    labelText: 'Email',
-                    labelStyle: const TextStyle(color: AppColor.whiteBtnColor),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: AppColor.whiteColor),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: AppColor.whiteColor),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  backgroundColor: AppColor.whiteColor,
+                  radius: MediaQuery.of(context).size.width * 0.17,
+                  child: Image.asset(
+                    PngImages.logo,
+                    width: MediaQuery.of(context).size.width * 0.25,
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.02,
+                ),
+                TextWidget(
+                  data: 'Welcome!',
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                      color: AppColor.whiteColor,
+                      fontSize: MediaQuery.of(context).size.width * 0.07,
+                      fontWeight: FontWeight.w900),
+                ),
+                TextWidget(
+                  data: 'Login to Continue',
+                  style: TextStyle(
+                      color: AppColor.whiteColor, fontWeight: FontWeight.w500),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.05,
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: TextFormField(
+                    controller: _email,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                        hintText: 'Email',
+                        labelText: 'Email',
+                        labelStyle:
+                            const TextStyle(color: AppColor.whiteBtnColor),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide:
+                              const BorderSide(color: AppColor.whiteColor),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide:
+                              const BorderSide(color: AppColor.whiteColor),
+                        )),
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.02,
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: TextFormField(
+                    controller: _password,
+                    obscureText: true,
+                    obscuringCharacter: '*',
+                    decoration: InputDecoration(
+                        hintText: 'Password',
+                        labelText: 'Password',
+                        labelStyle:
+                            const TextStyle(color: AppColor.whiteBtnColor),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide:
+                              const BorderSide(color: AppColor.whiteColor),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide:
+                              const BorderSide(color: AppColor.whiteColor),
+                        )),
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.02,
+                ),
+                Align(
+                    alignment: Alignment.centerRight,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextWidget(
+                          data: 'Forgot Password ?',
+                          style: TextStyle(
+                              color: AppColor.whiteColor,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.045,
+                              fontWeight: FontWeight.w500),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.13,
+                        )
+                      ],
                     )),
-              ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: TextFormField(
-                controller: _password,
-                obscureText: true,
-                obscuringCharacter: '*',
-                decoration: InputDecoration(
-                    hintText: 'Password',
-                    labelText: 'Password',
-                    labelStyle: const TextStyle(color: AppColor.whiteBtnColor),
-                    focusedBorder: OutlineInputBorder(
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.02,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    login();
+                  },
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.07,
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    decoration: BoxDecoration(
+                      color: AppColor.whiteBtnColor,
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: AppColor.whiteColor),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: AppColor.whiteColor),
+                    child: Center(
+                        child: TextWidget(
+                      data: 'Login',
+                      style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width * 0.045,
+                          fontWeight: FontWeight.w500),
                     )),
-              ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            Align(
-                alignment: Alignment.centerRight,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Forgot Password ?',
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.02,
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.07,
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  decoration: BoxDecoration(
+                    color: AppColor.whiteBtnColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(
+                        MediaQuery.of(context).size.width * 0.6),
+                    border: Border.all(
+                      color: AppColor.whiteColor,
+                    ),
+                  ),
+                  child: Center(
+                      child: MaterialButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const OtpLogin()));
+                    },
+                    child: TextWidget(
+                      data: 'Login with OTP',
+                      textScaleFactor: 1,
                       style: TextStyle(
                           color: AppColor.whiteColor,
                           fontSize: MediaQuery.of(context).size.width * 0.045,
                           fontWeight: FontWeight.w500),
                     ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.13,
-                    )
-                  ],
-                )),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            GestureDetector(
-              onTap: () {
-                login();
-              },
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.07,
-                width: MediaQuery.of(context).size.width * 0.8,
-                decoration: BoxDecoration(
-                  color: AppColor.whiteBtnColor,
-                  borderRadius: BorderRadius.circular(10.0),
+                  )),
                 ),
-                child: Center(
-                    child: Text(
-                  'Login',
-                  style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width * 0.045,
-                      fontWeight: FontWeight.w500),
-                )),
-              ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.07,
-              width: MediaQuery.of(context).size.width * 0.5,
-              decoration: BoxDecoration(
-                color: AppColor.whiteBtnColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(
-                    MediaQuery.of(context).size.width * 0.6),
-                border: Border.all(
-                  color: AppColor.whiteColor,
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.02,
                 ),
-              ),
-              child: Center(
-                  child: MaterialButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const OtpLogin()));
-                },
-                child: Text(
-                  'Login with OTP',
-                  textScaleFactor: 1,
-                  style: TextStyle(
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.07,
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  decoration: BoxDecoration(
+                    color: AppColor.whiteBtnColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(
+                        MediaQuery.of(context).size.width * 0.6),
+                    border: Border.all(
                       color: AppColor.whiteColor,
-                      fontSize: MediaQuery.of(context).size.width * 0.045,
-                      fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  child: Center(
+                      child: MaterialButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const SignupScreen()));
+                    },
+                    child: TextWidget(
+                      data: 'Create a new account',
+                      style: TextStyle(
+                          color: AppColor.whiteColor,
+                          fontSize: MediaQuery.of(context).size.width * 0.045,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  )),
                 ),
-              )),
+              ],
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.07,
-              width: MediaQuery.of(context).size.width * 0.6,
-              decoration: BoxDecoration(
-                color: AppColor.whiteBtnColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(
-                    MediaQuery.of(context).size.width * 0.6),
-                border: Border.all(
-                  color: AppColor.whiteColor,
-                ),
-              ),
-              child: Center(
-                  child: MaterialButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const SignupScreen()));
-                },
-                child: Text(
-                  'Create a new account',
-                  style: TextStyle(
-                      color: AppColor.whiteColor,
-                      fontSize: MediaQuery.of(context).size.width * 0.045,
-                      fontWeight: FontWeight.w500),
-                ),
-              )),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -229,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
     //   "email": "akarshkk777@gmail.com",
     //   "password": "Akarsh@12345"
     // };
-    var response = await http.post(Uri.parse(ApiServicesUrl.login),
+    var response = await http.post(Uri.parse(Url.login),
         // body: params,
         body: json.encode({
           "email": _email.text.toString(),
@@ -259,11 +271,14 @@ class _LoginScreenState extends State<LoginScreen> {
       sp!.setString("userType", result['data']['user_type']);
       sp!.setString("userName", result['data']['name']);
       sp!.setString("mobile", result['data']['mobile']);
+      sp!.setString("profilePic", result['data']['profile_pic']);
+      sp!.setString("email", result['data']['email']);
 
       // ignore: avoid_print
       print("user id");
       // ignore: avoid_print
       print(sp!.getString('id'));
+      print(sp!.getString('userName'));
       // ignore: avoid_print
       print(sp!.getString('userType'));
       Navigator.of(context).pushReplacement(
@@ -320,14 +335,14 @@ class _LoginScreenState extends State<LoginScreen> {
 //             SizedBox(
 //               height: MediaQuery.of(context).size.height * 0.02,
 //             ),
-//             Text(
+//             TextWidget(data:
 //               'Welcome!',
 //               style: TextStyle(
 //                   color: AppColor.whiteColor,
 //                   fontSize: MediaQuery.of(context).size.width * 0.07,
 //                   fontWeight: FontWeight.w900),
 //             ),
-//             const Text(
+//             const TextWidget(data:
 //               'Login to Continue',
 //               style: TextStyle(
 //                   color: AppColor.whiteColor, fontWeight: FontWeight.w500),
@@ -385,7 +400,7 @@ class _LoginScreenState extends State<LoginScreen> {
 //                 child: Row(
 //                   mainAxisAlignment: MainAxisAlignment.end,
 //                   children: [
-//                     Text(
+//                     TextWidget(data:
 //                       'Forgot Password ?',
 //                       style: TextStyle(
 //                           color: AppColor.whiteColor,
@@ -414,7 +429,7 @@ class _LoginScreenState extends State<LoginScreen> {
 //                   borderRadius: BorderRadius.circular(10.0),
 //                 ),
 //                 child: Center(
-//                     child: Text(
+//                     child: TextWidget(data:
 //                   'Login',
 //                   style: TextStyle(
 //                       fontSize: MediaQuery.of(context).size.width * 0.045,
@@ -442,7 +457,7 @@ class _LoginScreenState extends State<LoginScreen> {
 //                   Navigator.of(context).push(MaterialPageRoute(
 //                       builder: (context) => const OtpLogin()));
 //                 },
-//                 child: Text(
+//                 child: TextWidget(data:
 //                   'Login with OTP',
 //                   style: TextStyle(
 //                       color: AppColor.whiteColor,
@@ -471,7 +486,7 @@ class _LoginScreenState extends State<LoginScreen> {
 //                   Navigator.of(context).push(MaterialPageRoute(
 //                       builder: (context) => const SignupScreen()));
 //                 },
-//                 child: Text(
+//                 child: TextWidget(data:
 //                   'Create a new account',
 //                   style: TextStyle(
 //                       color: AppColor.whiteColor,

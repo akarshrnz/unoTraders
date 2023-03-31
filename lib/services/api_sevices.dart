@@ -4,10 +4,15 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:codecarrots_unotraders/model/add_wishlist_model.dart';
+import 'package:codecarrots_unotraders/model/all_sub_category_model.dart';
+import 'package:codecarrots_unotraders/model/bazaar_detail_post_model.dart';
+import 'package:codecarrots_unotraders/model/bazaar_detal_get_model.dart';
 import 'package:codecarrots_unotraders/model/bazaar_search_model.dart';
+import 'package:codecarrots_unotraders/model/home_category.dart';
 
 import 'package:codecarrots_unotraders/model/wishlist_model.dart';
-import 'package:codecarrots_unotraders/services/helper/api_services_url.dart';
+import 'package:codecarrots_unotraders/provider/home_provider.dart';
+import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/services/helper/dio_client.dart';
 import 'package:codecarrots_unotraders/services/helper/failure.dart';
 import 'package:codecarrots_unotraders/services/helper/header.dart';
@@ -20,13 +25,14 @@ import 'package:codecarrots_unotraders/model/traders_category_model.dart';
 import 'package:dio/dio.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiServices {
   static Future<List<BannerModel>> getBanner() async {
     // ignore: avoid_print
     print("inside future");
     var response = await http.get(
-      Uri.parse(ApiServicesUrl.banners),
+      Uri.parse(Url.banners),
       headers: Header.header,
     );
     Map data = jsonDecode(response.body);
@@ -46,9 +52,9 @@ class ApiServices {
 //trader category
   static Future<List<TradersCategoryModel>> getTraderCategory() async {
     print("categories fetched ");
-    print(ApiServicesUrl.categories);
+    print(Url.categories);
     try {
-      var url = Uri.parse(ApiServicesUrl.categories);
+      var url = Uri.parse(Url.categories);
       var response = await http.get(
         url,
         headers: Header.header,
@@ -64,20 +70,54 @@ class ApiServices {
         }
         return TradersCategoryModel.categoryfromSnapshot(tempList);
       } else {
-        throw throw data["message"];
+        throw throw data["message"] ?? "Something Went Wrong";
       }
-    }
-    //  on SocketException {
-    //   throw Failure('No Internet connection');
-    // } on HttpException {
-    //   throw Failure("Couldn't find the post");
-    // } on FormatException {
-    //   throw Failure("Bad response format");
-    // }
-    catch (e) {
+    } on SocketException {
+      throw Failure('No Internet connection');
+    } on HttpException {
+      throw Failure("Couldn't find the post");
+    } on FormatException {
+      throw Failure("Bad response format");
+    } catch (e) {
       print("error");
       print(e.toString());
-      throw Failure("Something Went Wrong");
+      throw Failure(e.toString());
+    }
+  }
+
+//all sub category
+  static Future<List<AllSubCategoryModel>> getAllSubCategory() async {
+    print("all categories fetched ");
+
+    try {
+      var url = Uri.parse('https://demo.unotraders.com/api/v1/subcategorylist');
+      var response = await http.get(
+        url,
+        headers: Header.header,
+      );
+      print(response.statusCode.toString());
+      print("category");
+      print(response.body.toString());
+      Map data = jsonDecode(response.body);
+      if (data["status"] == 200) {
+        List tempList = [];
+        for (var v in data["data"]) {
+          tempList.add(v);
+        }
+        return AllSubCategoryModel.snapshot(tempList);
+      } else {
+        return AllSubCategoryModel.snapshot([]);
+      }
+    } on SocketException {
+      throw Failure('No Internet connection');
+    } on HttpException {
+      throw Failure("Couldn't find the post");
+    } on FormatException {
+      throw Failure("Bad response format");
+    } catch (e) {
+      print("error");
+      print(e.toString());
+      throw Failure(e.toString());
     }
   }
 
@@ -87,7 +127,7 @@ class ApiServices {
     Map data = {};
 
     try {
-      var url = Uri.parse('${ApiServicesUrl.subCategories}$id');
+      var url = Uri.parse('${Url.subCategories}$id');
       var response = await http.get(
         url,
         headers: Header.header,
@@ -120,7 +160,7 @@ class ApiServices {
   static Future<List<TradersCategoryModel>> getTraderDetails() async {
     // ignore: avoid_print
     print("insdiede");
-    var url = Uri.parse(ApiServicesUrl.categories);
+    var url = Uri.parse(Url.categories);
     var response = await http.get(
       url,
       headers: Header.header,
@@ -143,15 +183,45 @@ class ApiServices {
     }
   }
 
+//home cat and sub
+  static Future<List<CategoryAndSubListModel>> getHomeCatSub() async {
+    // ignore: avoid_print
+    print("insdiede");
+    var url = Uri.parse('https://demo.unotraders.com/api/v1/categorylist');
+    var response = await http.get(
+      url,
+      headers: Header.header,
+    );
+    Map data = jsonDecode(response.body);
+
+    // ignore: avoid_print
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      // ignore: avoid_print
+      print(response.body);
+      List tempList = [];
+      for (var v in data["data"]) {
+        tempList.add(v);
+      }
+      return CategoryAndSubListModel.snapshot(tempList);
+    } else {
+      throw Exception('Failed to load');
+    }
+  }
+
 //remove
   static Future getProfile() async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    String id = sharedPrefs.getString('id')!;
+    String userType = sharedPrefs.getString('userType')!;
     // ignore: avoid_print
     print("inside future");
 
     var response;
     try {
       response = await http.get(
-        Uri.parse(ApiServicesUrl.profile),
+        Uri.parse("${Url.profile}$id"),
         headers: Header.header,
       );
       Map data = jsonDecode(response.body);
@@ -164,7 +234,6 @@ class ApiServices {
         // for (var v in data["data"]) {
         //   tempList.add(v);
         // }
-
       } else {
         throw data["message"];
       }
@@ -181,17 +250,21 @@ class ApiServices {
   }
 
   static Future<List<BazaarModel>> getBazaarproducts() async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    String id = sharedPrefs.getString('id')!;
+    String userType = sharedPrefs.getString('userType')!;
     // ignore: avoid_print
     print("inside Bazaar");
+    print('${Url.bazaarProduts}$id');
     var response = await http.get(
-      Uri.parse('${ApiServicesUrl.bazaarProduts}${ApiServicesUrl.id}'),
+      Uri.parse('${Url.bazaarProduts}$id'),
       headers: Header.header,
     );
     print(response.statusCode.toString());
     print(response.body);
 
     Map data = jsonDecode(response.body);
-    if (data["status"] == 200) {
+    if (response.statusCode == 200) {
       // ignore: avoid_print
       print(response.body);
       List tempList = [];
@@ -200,7 +273,7 @@ class ApiServices {
       }
       return BazaarModel.bazaarListSnap(tempList);
     } else {
-      throw Exception('Failed to load');
+      throw Failure('Something Went Wrong');
     }
 
     // ignore: avoid_print
@@ -209,9 +282,9 @@ class ApiServices {
   static Future<List<BazaarCategories>> getBazaarCategories() async {
     // ignore: avoid_print
     print("inside Bazaar");
-    print(ApiServicesUrl.bazaarCategories);
+    print(Url.bazaarCategories);
     var response = await http.get(
-      Uri.parse(ApiServicesUrl.bazaarCategories),
+      Uri.parse(Url.bazaarCategories),
       headers: Header.header,
     );
     print(response.body);
@@ -288,6 +361,7 @@ class ApiServices {
       {required BazaarSearchModel search}) async {
     // ignore: avoid_print
     print("inside search");
+    print(search.toJson());
     final body = jsonEncode(search.toJson());
 
     try {
@@ -295,11 +369,10 @@ class ApiServices {
           Uri.parse('https://demo.unotraders.com/api/v1/bazaar/bazaarsearch'),
           headers: Header.header,
           body: body);
-      print("response");
 
       print(response.statusCode.toString());
       Map<String, dynamic> data = jsonDecode(response.body);
-      print(data);
+      print(response.body);
 
       if (data["status"] == 200) {
         // ignore: avoid_print
@@ -312,6 +385,12 @@ class ApiServices {
       } else {
         throw data["error"] ?? "No results found";
       }
+    } on SocketException {
+      throw Failure('No Internet connection');
+    } on HttpException {
+      throw Failure("Couldn't find the post");
+    } on FormatException {
+      throw Failure("Bad response format");
     } catch (e) {
       print("error search");
       print(e.toString());
@@ -324,17 +403,21 @@ class ApiServices {
 
   //getWishlist
   static Future<List<WishListModel>> getWishlist() async {
-    print(ApiServicesUrl.id);
+    final sharedPrefs = await SharedPreferences.getInstance();
+    String id = sharedPrefs.getString('id')!;
+    String userType = sharedPrefs.getString('userType')!;
+    print(id);
     // ignore: avoid_print
     print("inside Bazaar");
-    print('${ApiServicesUrl.wishList}${ApiServicesUrl.id}');
+    print('${Url.wishList}$id');
     var response = await http.get(
-      Uri.parse('${ApiServicesUrl.wishList}${ApiServicesUrl.id}'),
+      Uri.parse('${Url.wishList}$id'),
       headers: Header.header,
     );
     Map data = jsonDecode(response.body);
+    print(data);
     try {
-      if (data["status"] == 200) {
+      if (response.statusCode == 200) {
         // ignore: avoid_print
         print(response.body);
         List tempList = [];
@@ -343,7 +426,7 @@ class ApiServices {
         }
         return WishListModel.snapshot(tempList);
       } else {
-        throw data["message"];
+        return WishListModel.snapshot([]);
       }
     } catch (e) {
       rethrow;
@@ -384,6 +467,44 @@ class ApiServices {
 
       print("Product removed sucess");
     } catch (e) {
+      print(e.toString());
+      throw e.toString();
+    }
+  }
+
+  static Future<BazaarDetailGetModel> getBazaarDetails(
+      {required BazaarDetailPostModel postBody}) async {
+    // ignore: avoid_print
+    print("inside details");
+    print(postBody.toJson());
+    final body = jsonEncode(postBody.toJson());
+
+    try {
+      var response = await http.post(
+          Uri.parse('https://demo.unotraders.com/api/v1/bazaar/details'),
+          headers: Header.header,
+          body: body);
+
+      print(response.statusCode.toString());
+      Map<String, dynamic> data = jsonDecode(response.body);
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        // ignore: avoid_print
+        print(response.body);
+
+        return BazaarDetailGetModel.fromJson(data['data']);
+      } else {
+        throw data["message"] ?? "No results found";
+      }
+    } on SocketException {
+      throw Failure('No Internet connection');
+    } on HttpException {
+      throw Failure("Couldn't find the post");
+    } on FormatException {
+      throw Failure("Bad response format");
+    } catch (e) {
+      print("error search");
       print(e.toString());
       throw e.toString();
     }

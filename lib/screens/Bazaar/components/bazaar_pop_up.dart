@@ -6,7 +6,7 @@ import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
-import 'package:codecarrots_unotraders/utils/constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -42,7 +42,7 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
   final imagePicker = ImagePicker();
   List<XFile> images = [];
   List<File> imageFile = [];
-  final _formKey = GlobalKey<FormState>();
+  static final _formKey = GlobalKey<FormState>();
 
   // pickImage() async {
   //   final List<XFile>? pickImage = await imagePicker.pickMultiImage();
@@ -156,7 +156,7 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
                   color: Colors.grey,
                 ),
                 //body
-                Constant.kheight(height: 8),
+                AppConstant.kheight(height: 8),
                 Consumer<BazaarProvider>(builder: (context, provid, _) {
                   return Container(
                     decoration: BoxDecoration(
@@ -189,7 +189,7 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
                         }),
                   );
                 }),
-                Constant.kheight(height: 10),
+                AppConstant.kheight(height: 10),
                 //sub category
                 Consumer<BazaarProvider>(builder: (context, provider, _) {
                   return Container(
@@ -223,7 +223,7 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
                         }),
                   );
                 }),
-                Constant.kheight(height: 10),
+                AppConstant.kheight(height: 10),
                 TextFieldWidget(
                     focusNode: productFocus,
                     controller: productController,
@@ -241,7 +241,7 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
                         return null;
                       }
                     }),
-                Constant.kheight(height: 10),
+                AppConstant.kheight(height: 10),
                 TextFieldWidget(
                     focusNode: priceFocus,
                     controller: priceController,
@@ -259,7 +259,7 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
                         return null;
                       }
                     }),
-                Constant.kheight(height: 10),
+                AppConstant.kheight(height: 10),
                 TextFieldWidget(
                     focusNode: descriptionFocus,
                     controller: descriptionController,
@@ -278,7 +278,7 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
                         return null;
                       }
                     }),
-                Constant.kheight(height: 10),
+                AppConstant.kheight(height: 10),
                 TextFieldWidget(
                     focusNode: locationFocus,
                     controller: locationController,
@@ -354,7 +354,7 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
                 Consumer<ImagePickProvider>(
                     builder: (context, imageProvider, _) {
                   return imageProvider.images.isEmpty == true
-                      ? Constant.kheight(height: 10)
+                      ? AppConstant.kheight(height: 10)
                       : Container(
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           height:
@@ -439,9 +439,9 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
                 //     height: 10,
                 //   )
                 // : const SizedBox(),
-                Constant.kheight(height: 10),
+                AppConstant.kheight(height: 10),
                 isLoading == true
-                    ? Constant.circularProgressIndicator()
+                    ? AppConstant.circularProgressIndicator()
                     : Consumer<LocationProvider>(
                         builder: (context, locProvider, _) {
                         return DefaultButton(
@@ -454,47 +454,48 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
                             if (_formKey.currentState!.validate()) {
                               // ignore: avoid_print
                               print("valid");
-                              await bazaarProvider
-                                  .addBazaarProduct(
-                                      userType: sp!.getString('userType')!,
-                                      userId: int.parse(sp!.getString('id')!),
-                                      productTitle:
-                                          productController.text.toString(),
-                                      price: priceController.text.toString(),
-                                      description:
-                                          descriptionController.text.toString(),
-                                      location:
-                                          locationController.text.toString(),
-                                      locationLatitude: locProvider.latitude,
-                                      locationLongitude: locProvider.longitude,
-                                      productImages:
-                                          imagePickProvider.imageFile)
-                                  .then((value) {
-                                Constant.toastMsg(
-                                    msg: "Prduct added sucessfully",
+                              bool res = await bazaarProvider.addBazaarProduct(
+                                  userType: sp!.getString('userType')!,
+                                  userId: int.parse(sp!.getString('id')!),
+                                  productTitle:
+                                      productController.text.toString(),
+                                  price: priceController.text.toString(),
+                                  description:
+                                      descriptionController.text.toString(),
+                                  location: locationController.text.toString(),
+                                  locationLatitude: locProvider.latitude,
+                                  locationLongitude: locProvider.longitude,
+                                  productImages: imagePickProvider.imageFile);
+                              if (res == true) {
+                                AppConstant.toastMsg(
+                                    msg: "Product added successfully",
                                     backgroundColor: AppColor.green);
                                 clearField(
                                     provider: bazaarProvider,
                                     imagePickProvider: imagePickProvider);
-                                return;
-                                // Navigator.push(context, MaterialPageRoute(
-                                //   builder: (context) {
-                                //     return BazaarScreen();
-                                //   },
-                                // )).then((value) {
-                                //   Constant.showSnackBar(
-                                //       _scaffoldKey,
-                                //       "Prduct added sucessfully",
-                                //       AppColor.primaryColor);
-                                //   return null;
-                                // });
-                              }).onError((error, stackTrace) {
-                                Constant.toastMsg(
-                                    msg: error.toString(),
+                                bazaarProvider.fetchBazaarProducts();
+                              } else {
+                                AppConstant.toastMsg(
+                                    msg: "Something Went Wrong",
                                     backgroundColor: AppColor.red);
+                              }
 
-                                return;
-                              });
+                              //     then((value) {
+                              // AppConstant.toastMsg(
+                              //     msg: "Product added successfully",
+                              //     backgroundColor: AppColor.green);
+                              // clearField(
+                              //     provider: bazaarProvider,
+                              //     imagePickProvider: imagePickProvider);
+                              //   return;
+
+                              // }).onError((error, stackTrace) {
+                              // AppConstant.toastMsg(
+                              //     msg: error.toString(),
+                              //     backgroundColor: AppColor.red);
+
+                              //   return;
+                              // });
                             } else {
                               // ignore: avoid_print
                               print("in valid");

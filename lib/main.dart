@@ -1,21 +1,32 @@
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
+import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
 import 'package:codecarrots_unotraders/provider/customer_job_actions_provider.dart';
+import 'package:codecarrots_unotraders/provider/dashbord_provider.dart';
 import 'package:codecarrots_unotraders/provider/home_provider.dart';
 import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
 import 'package:codecarrots_unotraders/provider/location_provider.dart';
+import 'package:codecarrots_unotraders/provider/message_provider.dart';
+import 'package:codecarrots_unotraders/provider/profile_insights_provider.dart';
 import 'package:codecarrots_unotraders/provider/profile_provider.dart';
+import 'package:codecarrots_unotraders/provider/trader_category_provider.dart';
 import 'package:codecarrots_unotraders/provider/trader_job_info_provider.dart';
-import 'package:codecarrots_unotraders/router_class.dart';
+import 'package:codecarrots_unotraders/utils/router_class.dart';
+import 'package:codecarrots_unotraders/screens/auth/login.dart';
 import 'package:codecarrots_unotraders/screens/ui/splashscreen/body.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 SharedPreferences? sp;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   sp = await SharedPreferences.getInstance();
   runApp(const MyApp());
 }
@@ -50,6 +61,11 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) {
+            return TraderCategoryProvider();
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (_) {
             return ImagePickProvider();
           },
         ),
@@ -68,8 +84,30 @@ class MyApp extends StatelessWidget {
             return TraderInfoProvider();
           },
         ),
+        ChangeNotifierProvider(
+          create: (_) {
+            return DashbordProvider();
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (_) {
+            return CurrentUserProvider();
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (_) {
+            return MessageProvider();
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (_) {
+            return ProfileInsightsProvider();
+          },
+        ),
       ],
       child: MaterialApp(
+        useInheritedMediaQuery: false,
+        routes: {"login": (context) => LoginScreen()},
         debugShowCheckedModeBanner: false,
         title: 'UNO Traders',
         onGenerateRoute: RouterClass.generateRoute,

@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'dart:io';
 
@@ -12,12 +12,15 @@ import 'package:codecarrots_unotraders/model/trader_subcategory.dart';
 import 'package:codecarrots_unotraders/model/traders_category_model.dart';
 import 'package:codecarrots_unotraders/model/update_job_model.dart';
 import 'package:codecarrots_unotraders/model/wishlist_model.dart';
+import 'package:codecarrots_unotraders/screens/job/job%20type/customer%20job%20%20type/review/customer_review.dart';
 import 'package:codecarrots_unotraders/services/api_sevices.dart';
+import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/services/job_services.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:page_transition/page_transition.dart';
 
 class JobProvider with ChangeNotifier {
   List<TradersCategoryModel> categoryList = [];
@@ -34,6 +37,8 @@ class JobProvider with ChangeNotifier {
   List<FetchJobModel> allJobList = [];
   List<CustomerSeekQuoteModel> getQuoteList = [];
   bool isLoading = false;
+  bool searchingLoading = false;
+  bool isSeekingLoading = false;
   bool sendingReq = false;
   String jobId = '';
   List<FetchJobModel> jobSearchList = [];
@@ -42,6 +47,21 @@ class JobProvider with ChangeNotifier {
   bool searchError = false;
   String JobErrorMessage = '';
   CurrentJobModel? currentjob;
+  bool isSeekingQuote = false;
+  String seekQuoteError = "";
+
+  disposeAll() {
+    _categoryErrorMessage = "";
+    _subCategoryErrorMessage = "";
+    isLoading = false;
+    isSeekingLoading = false;
+    sendingReq = false;
+    searchErrorMessage = "";
+    errorMessage = "";
+    searchError = false;
+    JobErrorMessage = '';
+  }
+
   clearCategories() {
     selectedcategory = null;
     selectedSubCategory = null;
@@ -63,6 +83,7 @@ class JobProvider with ChangeNotifier {
     selectedcategoryId = null;
     selectedSubCategoryId = null;
     jobId = '';
+    isSeekingLoading = false;
   }
 
   void changeCategory({
@@ -93,6 +114,7 @@ class JobProvider with ChangeNotifier {
     for (var element in categoryList) {
       if (element.category == categoryName) {
         selectedcategoryId = element.id;
+        print("%sek cat $selectedcategoryId");
       }
     }
   }
@@ -130,6 +152,7 @@ class JobProvider with ChangeNotifier {
       // ignore: avoid_print
       print(categoryList.length);
     } catch (e) {
+      categoryList = [];
       _categoryErrorMessage = e.toString();
     }
     notifyListeners();
@@ -139,9 +162,13 @@ class JobProvider with ChangeNotifier {
       {required String catId, required String subCatId}) async {
     selectedSubCategoryId = int.parse(subCatId);
     selectedcategoryId = int.parse(catId);
+    print("%category id $selectedcategoryId");
+    print("%sub category id $selectedSubCategoryId");
     for (var element in categoryList) {
+      print(element.id);
       if (element.id == int.parse(catId)) {
         selectedcategory = element.category;
+        print("%sel category id $selectedcategory");
       }
     }
     await fetchSubcategory(id: int.parse(catId));
@@ -149,8 +176,10 @@ class JobProvider with ChangeNotifier {
     for (var element in subCategoryList) {
       if (element.id == int.parse(subCatId)) {
         selectedSubCategory = element.category;
+        print("%sel sub category id $selectedSubCategory");
       }
     }
+    notifyListeners();
   }
 
   Future<CurrentJobModel?> fetchCurrentJob({required String jobId}) async {
@@ -195,8 +224,8 @@ class JobProvider with ChangeNotifier {
       required BuildContext context}) async {
     PostJobModel postJob = PostJobModel(
         customerId: customerId,
-        category: selectedSubCategoryId,
-        subCategory: selectedcategoryId,
+        category: selectedcategoryId,
+        subCategory: selectedSubCategoryId,
         jobTitle: jobTitle,
         jobDescription: jobDescription,
         budget: budget,
@@ -254,7 +283,7 @@ class JobProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updatejob(
+  Future<bool> updatejob(
       {required String jobTitle,
       required String jobDescription,
       required String budget,
@@ -282,6 +311,7 @@ class JobProvider with ChangeNotifier {
     );
     print(updateJobModel.materialPurchased);
     print(updateJobModel.jobImages![0]);
+
     // PostJobModel postJob = PostJobModel(
 
     //     category: selectedSubCategoryId,
@@ -335,18 +365,20 @@ class JobProvider with ChangeNotifier {
     // print(postJob.jobStatus);
 
     try {
-      await JobServices.updatePostedJob(
+      bool res = await JobServices.updatePostedJob(
           context: context, upadatejob: updateJobModel);
       // jobId = await JobServices.postJob(postJob: postJob, context: context);
-      print("job id");
+      if (res == true) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
-      print(e.toString());
-      rethrow;
+      return false;
     }
-    notifyListeners();
   }
 
-  Future<bool> postSavedJob(
+  Future<String> postAndSeekQuote(
       {required int customerId,
       required String jobTitle,
       required String jobDescription,
@@ -361,8 +393,8 @@ class JobProvider with ChangeNotifier {
       required BuildContext context}) async {
     PostJobModel postJob = PostJobModel(
         customerId: customerId,
-        category: selectedSubCategoryId,
-        subCategory: selectedcategoryId,
+        category: selectedcategoryId,
+        subCategory: selectedSubCategoryId,
         jobTitle: jobTitle,
         jobDescription: jobDescription,
         budget: budget,
@@ -408,21 +440,24 @@ class JobProvider with ChangeNotifier {
     print(postJob.jobimages);
 
     // ignore: avoid_print
-    print(postJob.jobStatus);
-    isLoading = true;
+    // print(postJob.jobStatus);
+    // jobId = '';
+    // isSeekingLoading = true;
+    // notifyListeners();
 
     try {
       jobId = await JobServices.postJob(postJob: postJob, context: context);
-      print("job id");
+      print("job id success message");
       print(jobId);
-      isLoading = false;
-      notifyListeners();
-      return true;
+      return jobId;
+      // isSeekingLoading = false;
+      // notifyListeners();
     } catch (e) {
-      isLoading = false;
-      notifyListeners();
-      return false;
+      AppConstant.toastMsg(msg: e.toString(), backgroundColor: AppColor.red);
+      return "";
     }
+    // isSeekingLoading = false;
+    // notifyListeners();
   }
 
   Future<List<FetchJobModel>> fetchJob(
@@ -456,7 +491,6 @@ class JobProvider with ChangeNotifier {
       // print("job status");
       // // ignore: avoid_print
       // print(getjobslist.length.toString());
-
     } catch (e) {
       errorMessage = e.toString();
     }
@@ -465,19 +499,24 @@ class JobProvider with ChangeNotifier {
   }
 
   //fetch seek quote
-  Future<List<CustomerSeekQuoteModel>> fetchQuote(
-      {required String jobId}) async {
+  Future<void> fetchQuote({required String jobId}) async {
+    isSeekingQuote = true;
+    seekQuoteError = "";
     getQuoteList = [];
+    notifyListeners();
     try {
       getQuoteList = await JobServices.getQuote(jobId: jobId);
       // ignore: avoid_print
       print("quote");
       // ignore: avoid_print
       print(getQuoteList.length.toString());
-      return getQuoteList;
     } catch (e) {
+      seekQuoteError = e.toString();
+      print(e.toString());
       throw Exception(e.toString());
     }
+    isSeekingQuote = false;
+    notifyListeners();
   }
 
 //serach job by location
@@ -511,7 +550,7 @@ class JobProvider with ChangeNotifier {
     // ignore: avoid_print
     print(jobSearchModel.keyword);
     // ignore: avoid_print
-    isLoading = true;
+    searchingLoading = true;
     searchError = false;
     searchErrorMessage = "";
     notifyListeners();
@@ -524,7 +563,7 @@ class JobProvider with ChangeNotifier {
       searchError = true;
       searchErrorMessage = e.toString();
     }
-    isLoading = false;
+    searchingLoading = false;
     notifyListeners();
   }
 
@@ -552,7 +591,6 @@ class JobProvider with ChangeNotifier {
       required String status,
       required String jobEndPoint,
       required String jobStatus}) async {
-    errorMessage = '';
     isLoading = true;
     notifyListeners();
     try {
@@ -564,38 +602,104 @@ class JobProvider with ChangeNotifier {
 
       getjobslist = [];
       getjobslist = data;
-      Constant.toastMsg(
+      AppConstant.toastMsg(
           msg: "Job Status Updated Successfully",
           backgroundColor: AppColor.green);
     } catch (e) {
       print(e.toString());
-      Constant.toastMsg(msg: e.toString(), backgroundColor: AppColor.red);
+      AppConstant.toastMsg(
+          msg: "Something Went Wrong", backgroundColor: AppColor.red);
     }
     isLoading = false;
     notifyListeners();
   }
 
-  // Future<void> updateJobStatus(
-  //     {required String jobId,
-  //     required String endPoints,
-  //     required String status}) async {
-  //   isLoading = true;
-  //   notifyListeners();
-  //   try {
-  //     await JobServices.customerUpdateJobStatus(
-  //         endPoints: endPoints, jobId: jobId);
-  //     final data = await JobServices.fetchAllJob();
-  //     getjobslist = [];
-  //     getjobslist = data;
-  //     Constant.toastMsg(
-  //         msg: "Job Status Updated ", backgroundColor: AppColor.green);
-  //   } catch (e) {
-  //     print(e.toString());
-  //     Constant.toastMsg(msg: e.toString(), backgroundColor: AppColor.red);
-  //   }
-  //   isLoading = false;
-  //   notifyListeners();
-  // }
+  Future<void> deleteJob({required String jobId, required int index}) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      bool res = await JobServices.deleteJob(jobId: jobId);
+      if (res == true) {
+        AppConstant.toastMsg(
+            msg: "Job Status Deleted Successfully",
+            backgroundColor: AppColor.green);
+        getjobslist.removeAt(index);
+      }
+    } catch (e) {
+      print(e.toString());
+      AppConstant.toastMsg(
+          msg: "Something Went Wrong", backgroundColor: AppColor.red);
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<bool> completeJobStatus(
+      {required String jobId,
+      required String traderId,
+      required String endPoints,
+      required String status,
+      required String jobEndPoint,
+      required String jobStatus,
+      required BuildContext ctx}) async {
+    String jId = jobId;
+    String tId = traderId;
+    isLoading = true;
+    notifyListeners();
+    try {
+      await JobServices.customerUpdateJobStatus(
+          endPoints: endPoints, jobId: jobId);
+      print("completed");
+
+      final data =
+          await JobServices.getJob(endpoint: jobEndPoint, jobStatus: jobStatus);
+      print("getjob");
+      print(tId);
+      print(jId);
+
+      getjobslist = [];
+      getjobslist = data;
+      // Navigator.push(
+      //     ctx,
+      //     PageTransition(
+      //         type: PageTransitionType.fade,
+      //         child: CustomerReviewScreen(
+      //           jobId: jId,
+      //           traderId: tId,
+      //         )));
+      AppConstant.toastMsg(
+          msg: "Job Status Updated Successfully",
+          backgroundColor: AppColor.green);
+      print("finish");
+      isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      print(e.toString());
+      AppConstant.toastMsg(
+          msg: "Something Went Wrong", backgroundColor: AppColor.red);
+      isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<void> callJobRefresh(
+      {required String endPoints, required String status}) async {
+    print("refresh star....");
+    final data =
+        await JobServices.getJob(endpoint: endPoints, jobStatus: status);
+    if (data.isNotEmpty) {
+      getjobslist = [];
+      getjobslist = data;
+      print("refresh comp....");
+      print(getjobslist.length);
+      notifyListeners();
+    }
+
+    notifyListeners();
+  }
+
   Future<void> sendQuoteReq({
     required RequestJobQuoteModel request,
   }) async {
@@ -612,7 +716,7 @@ class JobProvider with ChangeNotifier {
       await JobServices.requestJobQuote(request: request);
     } catch (e) {
       print(e.toString());
-      Constant.toastMsg(msg: e.toString(), backgroundColor: AppColor.red);
+      AppConstant.toastMsg(msg: e.toString(), backgroundColor: AppColor.red);
     }
     sendingReq = false;
     notifyListeners();

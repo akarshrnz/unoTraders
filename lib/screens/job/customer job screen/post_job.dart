@@ -1,15 +1,18 @@
 import 'dart:io';
 import 'package:codecarrots_unotraders/model/current_job_model.dart';
-import 'package:codecarrots_unotraders/screens/job/customer%20job%20screen/quote_result.dart';
+import 'package:codecarrots_unotraders/screens/job/customer%20job%20screen/customer_seek_quote_result.dart';
+import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/main.dart';
 import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
 import 'package:codecarrots_unotraders/provider/location_provider.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
-import 'package:codecarrots_unotraders/utils/constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/app_bar.dart';
 import '../../widgets/default_button.dart';
@@ -117,6 +120,8 @@ class _PostJobState extends State<PostJob> {
     if (widget.isUpdatejob != null) {
       CurrentJobModel? currentJob =
           await jobProvider.fetchCurrentJob(jobId: widget.jobId!);
+      // await jobProvider.fetchCategory();
+
       if (currentJob != null) {
         selectedCompletion = currentJob.jobCompletion;
 
@@ -131,6 +136,7 @@ class _PostJobState extends State<PostJob> {
             TextEditingController(text: currentJob.jobLocation);
         await imageProvider.networkImageToFile(
             currentJob.jobimages!.isEmpty ? null : currentJob.jobimages!);
+        // jobProvider.changeCategory(categoryName: currentJob.c)
       }
     } else {
       await jobProvider.fetchCategory();
@@ -154,7 +160,9 @@ class _PostJobState extends State<PostJob> {
         Provider.of<ImagePickProvider>(context, listen: false);
     return SafeArea(
       child: Scaffold(
-        appBar: AppBarWidget(appBarTitle: "Post a Job"),
+        appBar: AppBarWidget(
+            appBarTitle:
+                widget.isUpdatejob == null ? "Post a Job" : "Update Job"),
         body: Consumer<JobProvider>(builder: (context, jobP, _) {
           return jobP.isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -167,21 +175,23 @@ class _PostJobState extends State<PostJob> {
                         key: _formKey,
                         child: Padding(
                           padding: const EdgeInsets.only(
-                              left: 20, right: 20, top: 23),
+                              left: 20, right: 20, top: 15),
                           child: ListView(
                             shrinkWrap: true,
                             children: [
-                              const Text(
-                                "Post Your job Here",
+                              TextWidget(
+                                data: widget.isUpdatejob == null
+                                    ? "Post Your job Here"
+                                    : "Update Your job Here",
                                 style: TextStyle(
                                     color: AppColor.blackColor,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold),
                               ),
-                              Constant.kheight(height: 20),
+                              AppConstant.kheight(height: 10),
                               //name
                               columnWidget(
-                                  widgetOne: const Text("Name"),
+                                  widgetOne: TextWidget(data: "Name"),
                                   widgetTwo: TextFieldWidget(
                                       focusNode: nameFocus,
                                       controller: nameController,
@@ -201,7 +211,7 @@ class _PostJobState extends State<PostJob> {
                                         }
                                       })),
                               columnWidget(
-                                widgetOne: const Text("Phone"),
+                                widgetOne: TextWidget(data: "Phone"),
                                 widgetTwo: TextFieldWidget(
                                     focusNode: phoneFocus,
                                     enabled: false,
@@ -229,7 +239,7 @@ class _PostJobState extends State<PostJob> {
                               ),
                               //category
                               columnWidget(
-                                widgetOne: const Text("Category"),
+                                widgetOne: TextWidget(data: "Category"),
                                 widgetTwo: Consumer<JobProvider>(
                                     builder: (context, provider, _) {
                                   return Container(
@@ -239,7 +249,7 @@ class _PostJobState extends State<PostJob> {
                                             BorderRadius.circular(10)),
                                     child: DropdownButtonFormField(
                                         isExpanded: true,
-                                        hint: const Text("Category"),
+                                        hint: TextWidget(data: "Category"),
                                         decoration: const InputDecoration(
                                           border: OutlineInputBorder(
                                               borderSide: BorderSide(
@@ -259,8 +269,8 @@ class _PostJobState extends State<PostJob> {
                                                 DropdownMenuItem(
                                                   value: provider
                                                       .categoryErrorMessage,
-                                                  child: Text(
-                                                    provider
+                                                  child: TextWidget(
+                                                    data: provider
                                                         .categoryErrorMessage,
                                                     maxLines: 2,
                                                     overflow:
@@ -271,7 +281,8 @@ class _PostJobState extends State<PostJob> {
                                             : provider.categoryList.map((e) {
                                                 return DropdownMenuItem(
                                                   value: e.category,
-                                                  child: Text(e.category!),
+                                                  child: TextWidget(
+                                                      data: e.category!),
                                                 );
                                               }).toList(),
                                         onChanged: (value) {
@@ -287,7 +298,7 @@ class _PostJobState extends State<PostJob> {
 
                               //sub category
                               columnWidget(
-                                widgetOne: const Text("Sub Category"),
+                                widgetOne: TextWidget(data: "Sub Category"),
                                 widgetTwo: Consumer<JobProvider>(
                                     builder: (context, provider, _) {
                                   return Container(
@@ -297,7 +308,7 @@ class _PostJobState extends State<PostJob> {
                                             BorderRadius.circular(10)),
                                     child: DropdownButtonFormField(
                                         isExpanded: true,
-                                        hint: const Text("Sub Category"),
+                                        hint: TextWidget(data: "Sub Category"),
                                         decoration: const InputDecoration(
                                           border: OutlineInputBorder(
                                               borderSide: BorderSide(
@@ -319,8 +330,8 @@ class _PostJobState extends State<PostJob> {
                                                 DropdownMenuItem(
                                                   value: provider
                                                       .subCategoryErrorMessage,
-                                                  child: Text(
-                                                    provider
+                                                  child: TextWidget(
+                                                    data: provider
                                                         .subCategoryErrorMessage,
                                                     maxLines: 2,
                                                     overflow:
@@ -331,7 +342,8 @@ class _PostJobState extends State<PostJob> {
                                             : provider.subCategoryList.map((e) {
                                                 return DropdownMenuItem(
                                                   value: e.category,
-                                                  child: Text(e.category!),
+                                                  child: TextWidget(
+                                                      data: e.category!),
                                                 );
                                               }).toList(),
                                         onChanged: (value) {
@@ -346,7 +358,7 @@ class _PostJobState extends State<PostJob> {
                               ),
 
                               columnWidget(
-                                widgetOne: const Text("Title"),
+                                widgetOne: TextWidget(data: "Title"),
                                 widgetTwo: TextFieldWidget(
                                     focusNode: titleFocus,
                                     controller: titleController,
@@ -366,7 +378,7 @@ class _PostJobState extends State<PostJob> {
                                     }),
                               ),
                               columnWidget(
-                                widgetOne: const Text("Description"),
+                                widgetOne: TextWidget(data: "Description"),
                                 widgetTwo: TextFieldWidget(
                                     focusNode: descriptionFocus,
                                     controller: descriptionController,
@@ -387,11 +399,12 @@ class _PostJobState extends State<PostJob> {
                                     }),
                               ),
                               columnWidget(
-                                widgetOne: const Text("Budget"),
+                                widgetOne: TextWidget(data: "Budget"),
                                 widgetTwo: TextFieldWidget(
                                     focusNode: budgetFocus,
                                     controller: budgetController,
                                     hintText: "Budget/price",
+                                    keyboardType: TextInputType.number,
                                     textInputAction: TextInputAction.next,
                                     onFieldSubmitted: (p0) {
                                       titleFocus.unfocus();
@@ -408,13 +421,14 @@ class _PostJobState extends State<PostJob> {
                               ),
                               //time of completion
                               columnWidget(
-                                widgetOne: const Text("Time for Completion"),
+                                widgetOne:
+                                    TextWidget(data: "Time for Completion"),
                                 widgetTwo: Container(
                                   decoration: BoxDecoration(
                                       color: AppColor.whiteColor,
                                       borderRadius: BorderRadius.circular(10)),
                                   child: DropdownButtonFormField(
-                                      hint: const Text("Select"),
+                                      hint: TextWidget(data: "Select"),
                                       decoration: const InputDecoration(
                                         border: OutlineInputBorder(
                                             borderSide: BorderSide(
@@ -431,7 +445,7 @@ class _PostJobState extends State<PostJob> {
                                       items: completionDropDown.map((item) {
                                         return DropdownMenuItem(
                                           value: item,
-                                          child: Text(item),
+                                          child: TextWidget(data: item),
                                         );
                                       }).toList(),
                                       onChanged: (value) {
@@ -443,7 +457,7 @@ class _PostJobState extends State<PostJob> {
                               ),
 
                               columnWidget(
-                                widgetOne: Text("Location"),
+                                widgetOne: TextWidget(data: "Location"),
                                 widgetTwo: TextFieldWidget(
                                     focusNode: locationFocus,
                                     controller: locationController,
@@ -502,10 +516,11 @@ class _PostJobState extends State<PostJob> {
                                                   Icons.location_on,
                                                   color: AppColor.primaryColor,
                                                 ),
-                                                title: Text(locProvider
-                                                    .predictions[index]
-                                                    .description
-                                                    .toString()),
+                                                title: TextWidget(
+                                                    data: locProvider
+                                                        .predictions[index]
+                                                        .description
+                                                        .toString()),
                                               ),
                                             ));
                               }),
@@ -514,8 +529,8 @@ class _PostJobState extends State<PostJob> {
                                 child: Consumer<LocationProvider>(
                                     builder: (context, locProvider, _) {
                                   return locProvider.locationError.isNotEmpty
-                                      ? Text(
-                                          locProvider.locationError,
+                                      ? TextWidget(
+                                          data: locProvider.locationError,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
@@ -527,7 +542,7 @@ class _PostJobState extends State<PostJob> {
                               Consumer<ImagePickProvider>(
                                   builder: (context, imageProvider, _) {
                                 return imageProvider.imageFile.isEmpty == true
-                                    ? Constant.kheight(height: 10)
+                                    ? AppConstant.kheight(height: 10)
                                     : Container(
                                         margin: const EdgeInsets.symmetric(
                                             vertical: 8),
@@ -603,8 +618,8 @@ class _PostJobState extends State<PostJob> {
                               SizedBox(
                                 height: 45,
                                 child: ElevatedButton.icon(
-                                  label: Text(
-                                    "Add photo",
+                                  label: TextWidget(
+                                    data: "Add photo",
                                     style: TextStyle(color: Colors.grey[700]),
                                   ),
                                   onPressed: () {
@@ -626,7 +641,7 @@ class _PostJobState extends State<PostJob> {
                                   ),
                                 ),
                               ),
-                              Constant.kheight(height: 5),
+                              AppConstant.kheight(height: 5),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -644,263 +659,301 @@ class _PostJobState extends State<PostJob> {
                                       },
                                     ),
                                   ),
-                                  const Text(" Materials Purchased")
+                                  TextWidget(data: " Materials Purchased")
                                 ],
                               ),
-                              Constant.kheight(height: 5),
+                              AppConstant.kheight(height: 5),
+                              AppConstant.kheight(height: 5),
+                              _seekQuoteLoading == true
+                                  ? AppConstant.circularProgressIndicator()
+                                  : widget.isUpdatejob == true
+                                      ? const SizedBox()
+                                      : Consumer<LocationProvider>(
+                                          builder: (context, locProvider, _) {
+                                          return DefaultButton(
+                                            height: 45,
+                                            text: "Seek Quote",
+                                            onPress: () async {
+                                              final ctx = context;
+                                              if (_formKey.currentState!
+                                                      .validate() &&
+                                                  imagePickProvider
+                                                      .imageFile.isNotEmpty) {
+                                                AppConstant.overlayLoaderShow(
+                                                    context);
+                                                // ignore: avoid_print
+                                                print(" 1 valid");
+
+                                                String res = await jobProvider.postAndSeekQuote(
+                                                    customerId: int.parse(
+                                                        sp!.getString('id')!),
+                                                    jobTitle: titleController.text
+                                                        .trim()
+                                                        .toString(),
+                                                    jobDescription:
+                                                        descriptionController
+                                                            .text
+                                                            .trim()
+                                                            .toString(),
+                                                    budget: budgetController
+                                                        .text
+                                                        .trim()
+                                                        .toString(),
+                                                    timeForCompletion:
+                                                        selectedCompletion!,
+                                                    location: locationController
+                                                        .text
+                                                        .toString(),
+                                                    locationLatitude:
+                                                        locProvider.latitude,
+                                                    locationLongitude:
+                                                        locProvider.longitude,
+                                                    materialPurchased:
+                                                        materialChecked == true
+                                                            ? '1'
+                                                            : '0',
+                                                    jobimages: imagePickProvider
+                                                        .imageFile,
+                                                    jobStatus:
+                                                        status['seekQuote']!,
+                                                    context: context);
+
+                                                AppConstant.overlayLoaderHide(
+                                                    context);
+
+                                                print("ak completed");
+                                                print(res);
+
+                                                if (res.isNotEmpty) {
+                                                  print(" start");
+                                                  clearField();
+                                                  Navigator.push(
+                                                      ctx,
+                                                      PageTransition(
+                                                          type:
+                                                              PageTransitionType
+                                                                  .fade,
+                                                          child: QuoteResults(
+                                                              jobId: res)));
+                                                }
+                                              } else {
+                                                AppConstant.toastMsg(
+                                                    msg:
+                                                        "Please make sure all fields are filled in correctly",
+                                                    backgroundColor:
+                                                        AppColor.red);
+                                              }
+                                            },
+                                            radius: 5,
+                                            backgroundColor: Colors.green,
+                                          );
+                                        })
 
                               // _seekQuoteLoading == true
                               //     ? Constant.circularProgressIndicator()
                               //     :
 
+                              // widget.isUpdatejob == true
+                              //     ? const SizedBox()
+                              //     : _seekQuoteLoading
+                              //         ? Center(
+                              //             child: Constant
+                              //                 .circularProgressIndicator())
+                              //         : Consumer<JobProvider>(
+                              //             builder: (context, jProvider, _) {
+                              //             return jProvider.isLoading == true
+                              //                 ? Center(
+                              //                     child: Constant
+                              //                         .circularProgressIndicator())
+                              //                 : Consumer<LocationProvider>(
+                              //                     builder: (context,
+                              //                         locProvider, _) {
+                              //                     return DefaultButton(
+                              //                       height: 45,
+                              //                       text: "Seek Quote",
+                              //                       onPress: () async {
+                              //                         setState(() {
+                              //                           _seekQuoteLoading =
+                              //                               true;
+                              //                         });
+
+                              //                         //seekQuote
+                              //                         if (_formKey.currentState!
+                              //                             .validate()) {
+                              //                           // ignore: avoid_print
+                              //                           print("valid");
+                              // bool res = await jobProvider.postAndSeekQuote(
+                              //     customerId: int.parse(
+                              //         sp!.getString(
+                              //             'id')!),
+                              //     jobTitle: titleController.text
+                              //         .trim()
+                              //         .toString(),
+                              //     jobDescription:
+                              //         descriptionController.text
+                              //             .trim()
+                              //             .toString(),
+                              //     budget: budgetController.text
+                              //         .trim()
+                              //         .toString(),
+                              //     timeForCompletion:
+                              //         selectedCompletion!,
+                              //     location:
+                              //         locationController.text
+                              //             .toString(),
+                              //     locationLatitude:
+                              //         locProvider
+                              //             .latitude,
+                              //     locationLongitude:
+                              //         locProvider
+                              //             .longitude,
+                              //     materialPurchased:
+                              //         materialChecked == true ? '1' : '0',
+                              //     jobimages: imagePickProvider.imageFile,
+                              //     jobStatus: status['seekQuote']!,
+                              //     context: context);
+
+                              //                           if (res == true) {
+                              //                             clearField();
+                              //                             if (!mounted) return;
+                              //                             // Navigator.pop(
+                              //                             //     context);
+                              //                             Navigator.pushReplacement(
+                              //                                 context,
+                              //                                 MaterialPageRoute(
+                              //                                     builder: (context) =>
+                              //                                         QuoteResults(
+                              //                                             jobId:
+                              //                                                 "16")));
+                              //                           } else {
+                              //                             Constant.toastMsg(
+                              //                                 msg:
+                              //                                     "Something Went Wrong",
+                              //                                 backgroundColor:
+                              //                                     AppColor.red);
+                              //                           }
+                              //                         } else {
+                              //                           // ignore: avoid_print
+                              //                           print("in valid");
+                              //                           Constant.toastMsg(
+                              //                               msg:
+                              //                                   "Please make sure all fields are filled in correctly",
+                              //                               backgroundColor:
+                              //                                   AppColor.red);
+                              //                         }
+                              //                         setState(() {
+                              //                           _seekQuoteLoading =
+                              //                               false;
+                              //                         });
+                              //                       },
+                              //                       radius: 5,
+                              //                       backgroundColor:
+                              //                           Colors.green,
+                              //                     );
+                              //                   });
+                              //           }),
+                              ,
                               widget.isUpdatejob == true
                                   ? const SizedBox()
-                                  : Consumer<JobProvider>(
-                                      builder: (context, jProvider, _) {
-                                      return jProvider.isLoading == true
-                                          ? Constant.circularProgressIndicator()
-                                          : Consumer<LocationProvider>(builder:
-                                              (context, locProvider, _) {
-                                              return DefaultButton(
-                                                height: 45,
-                                                text: "Seek Quote",
-                                                onPress: () async {
-                                                  // setState(() {
-                                                  //   _seekQuoteLoading = true;
-                                                  // });
-                                                  //seekQuote
-                                                  if (_formKey.currentState!
-                                                      .validate()) {
-                                                    // ignore: avoid_print
-                                                    print("valid");
-                                                    bool res = await jobProvider.postSavedJob(
-                                                        customerId: int.parse(sp!
-                                                            .getString('id')!),
-                                                        jobTitle:
-                                                            titleController.text
-                                                                .trim()
-                                                                .toString(),
-                                                        jobDescription:
-                                                            descriptionController.text
-                                                                .trim()
-                                                                .toString(),
-                                                        budget: budgetController.text
-                                                            .trim()
-                                                            .toString(),
-                                                        timeForCompletion:
-                                                            selectedCompletion!,
-                                                        location:
-                                                            locationController.text
-                                                                .toString(),
-                                                        locationLatitude:
-                                                            locProvider
-                                                                .latitude,
-                                                        locationLongitude:
-                                                            locProvider
-                                                                .longitude,
-                                                        materialPurchased:
-                                                            materialChecked == true
-                                                                ? '1'
-                                                                : '0',
-                                                        jobimages: imagePickProvider.imageFile,
-                                                        jobStatus: status['seekQuote']!,
-                                                        context: context);
-                                                    if (res == true) {
-                                                      clearField();
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  QuoteResults(
-                                                                      jobId:
-                                                                          "60")));
-                                                    } else {
-                                                      Constant.toastMsg(
-                                                          msg:
-                                                              "Something Went Wrong",
-                                                          backgroundColor:
-                                                              AppColor.red);
-                                                    }
-
-                                                    // try {
-                                                    //   await jobProvider
-                                                    //       .postJob(
-                                                    //           customerId: int.parse(
-                                                    //               sp!.getString('id')!),
-                                                    //           jobTitle: titleController.text
-                                                    //               .trim()
-                                                    //               .toString(),
-                                                    //           jobDescription:
-                                                    //               descriptionController.text
-                                                    //                   .trim()
-                                                    //                   .toString(),
-                                                    //           budget: budgetController.text
-                                                    //               .trim()
-                                                    //               .toString(),
-                                                    //           timeForCompletion:
-                                                    //               selectedCompletion!,
-                                                    //           location: locationController
-                                                    //               .text
-                                                    //               .toString(),
-                                                    //           locationLatitude:
-                                                    //               locProvider.latitude,
-                                                    //           locationLongitude:
-                                                    //               locProvider.longitude,
-                                                    //           materialPurchased:
-                                                    //               materialChecked == true
-                                                    //                   ? '1'
-                                                    //                   : '0',
-                                                    //           jobimages:
-                                                    //               imagePickProvider.imageFile,
-                                                    //           jobStatus: status['seekQuote']!,
-                                                    //           context: context);
-                                                    //            Navigator.push(
-                                                    //           context,
-                                                    //           MaterialPageRoute(
-                                                    //             builder: (context) =>
-                                                    //                 QuoteResults(
-                                                    //                     jobId:
-                                                    //                         "60"),
-                                                    //           ));
-                                                    //   //     .then((value) {
-                                                    //   //        Navigator.push(
-                                                    //   //         context,
-                                                    //   //         MaterialPageRoute(
-                                                    //   //           builder: (context) =>
-                                                    //   //               QuoteResults(
-                                                    //   //                   jobId:
-                                                    //   //                       jProvider.jobId),
-                                                    //   //         ));
-                                                    //   //   // if (jProvider.jobId.isNotEmpty) {
-
-                                                    //   //   //   clearField();
-                                                    //   //   // }
-                                                    //   //   return true;
-                                                    //   // });
-                                                    // } catch (e) {
-                                                    //   Constant.toastMsg(
-                                                    //       msg: "Something Went Wrong",
-                                                    //       backgroundColor: AppColor.red);
-                                                    // }
-                                                    setState(() {
-                                                      _seekQuoteLoading = false;
-                                                    });
-                                                  } else {
-                                                    // ignore: avoid_print
-                                                    print("in valid");
-                                                    Constant.toastMsg(
-                                                        msg:
-                                                            "Please make sure all fields are filled in correctly",
-                                                        backgroundColor:
-                                                            AppColor.red);
-                                                  }
-                                                },
-                                                radius: 5,
-                                                backgroundColor: Colors.green,
-                                              );
-                                            });
-                                    }),
-                              widget.isUpdatejob == true
-                                  ? const SizedBox()
-                                  : Constant.kheight(height: 5),
+                                  : AppConstant.kheight(height: 5),
                               widget.isUpdatejob == true
                                   ? _postJobLoading == true
-                                      ? Constant.circularProgressIndicator()
+                                      ? AppConstant.circularProgressIndicator()
                                       : Consumer<LocationProvider>(
                                           builder: (context, locProvider, _) {
                                           return DefaultButton(
                                             height: 45,
                                             text: "Update Job",
                                             onPress: () async {
-                                              setState(() {
-                                                _postJobLoading = true;
-                                              });
+                                              AppConstant.overlayLoaderShow(
+                                                  context);
                                               if (_formKey.currentState!
-                                                  .validate()) {
+                                                      .validate() &&
+                                                  imagePickProvider
+                                                      .imageFile.isNotEmpty) {
                                                 // ignore: avoid_print
                                                 print("valid");
 
-                                                await jobProvider
-                                                    .updatejob(
-                                                        jobTitle: titleController
+                                                bool res = await jobProvider.updatejob(
+                                                    jobTitle:
+                                                        titleController
                                                             .text
                                                             .trim()
                                                             .toString(),
-                                                        jobDescription:
-                                                            descriptionController
-                                                                .text
-                                                                .trim()
-                                                                .toString(),
-                                                        budget: budgetController
+                                                    jobDescription:
+                                                        descriptionController
                                                             .text
                                                             .trim()
                                                             .toString(),
-                                                        timeForCompletion:
-                                                            selectedCompletion!,
-                                                        location:
-                                                            locationController
-                                                                .text
-                                                                .toString(),
-                                                        locationLatitude:
-                                                            locProvider
-                                                                .latitude,
-                                                        locationLongitude: locProvider
-                                                            .longitude,
-                                                        materialPurchased:
-                                                            materialChecked ==
-                                                                    true
-                                                                ? '1'
-                                                                : '0',
-                                                        jobimages:
-                                                            imagePickProvider
-                                                                .imageFile,
-                                                        jobStatus: status[
-                                                            'published']!,
-                                                        context: context)
-                                                    .then((value) {
+                                                    budget: budgetController.text
+                                                        .trim()
+                                                        .toString(),
+                                                    timeForCompletion:
+                                                        selectedCompletion!,
+                                                    location: locationController
+                                                        .text
+                                                        .toString(),
+                                                    locationLatitude:
+                                                        locProvider.latitude,
+                                                    locationLongitude:
+                                                        locProvider.longitude,
+                                                    materialPurchased:
+                                                        materialChecked ==
+                                                                true
+                                                            ? '1'
+                                                            : '0',
+                                                    jobimages: imagePickProvider
+                                                        .imageFile,
+                                                    jobStatus:
+                                                        status['published']!,
+                                                    context: context);
+                                                if (res == true) {
                                                   clearField();
-                                                  Constant.toastMsg(
+                                                  AppConstant.toastMsg(
                                                       msg:
                                                           "Job Posted Sucessfully",
-                                                      backgroundColor: AppColor
-                                                          .primaryColor);
-                                                }).onError((error, stackTrace) {
-                                                  Constant.toastMsg(
-                                                      msg: error.toString(),
+                                                      backgroundColor:
+                                                          AppColor.green);
+                                                  if (!mounted) return;
+                                                  Navigator.pop(context);
+                                                } else {
+                                                  AppConstant.toastMsg(
+                                                      msg:
+                                                          "Something Went Wrong",
                                                       backgroundColor:
                                                           AppColor.red);
-                                                  return;
-                                                });
+                                                }
                                               } else {
                                                 // ignore: avoid_print
                                                 print("in valid");
-                                                Constant.toastMsg(
+                                                AppConstant.toastMsg(
                                                     msg:
                                                         "Please make sure all fields are filled in correctly",
                                                     backgroundColor:
                                                         AppColor.red);
                                               }
-                                              setState(() {
-                                                _postJobLoading = false;
-                                              });
+                                              if (!mounted) return;
+                                              AppConstant.overlayLoaderHide(
+                                                  context);
                                             },
                                             radius: 5,
                                             backgroundColor: AppColor.green,
                                           );
                                         })
                                   : _postJobLoading == true
-                                      ? Constant.circularProgressIndicator()
+                                      ? AppConstant.circularProgressIndicator()
                                       : Consumer<LocationProvider>(
                                           builder: (context, locProvider, _) {
                                           return DefaultButton(
                                             height: 45,
                                             text: "Post Job",
                                             onPress: () async {
-                                              setState(() {
-                                                _postJobLoading = true;
-                                              });
+                                              AppConstant.overlayLoaderShow(
+                                                  context);
                                               if (_formKey.currentState!
-                                                  .validate()) {
+                                                      .validate() &&
+                                                  imagePickProvider
+                                                      .imageFile.isNotEmpty) {
                                                 // ignore: avoid_print
                                                 print("valid");
 
@@ -945,13 +998,13 @@ class _PostJobState extends State<PostJob> {
                                                         context: context)
                                                     .then((value) {
                                                   clearField();
-                                                  Constant.toastMsg(
+                                                  AppConstant.toastMsg(
                                                       msg:
-                                                          "Job Posted Sucessfully",
-                                                      backgroundColor: AppColor
-                                                          .primaryColor);
+                                                          "Job Posted Successfully",
+                                                      backgroundColor:
+                                                          AppColor.green);
                                                 }).onError((error, stackTrace) {
-                                                  Constant.toastMsg(
+                                                  AppConstant.toastMsg(
                                                       msg: error.toString(),
                                                       backgroundColor:
                                                           AppColor.red);
@@ -960,37 +1013,38 @@ class _PostJobState extends State<PostJob> {
                                               } else {
                                                 // ignore: avoid_print
                                                 print("in valid");
-                                                Constant.toastMsg(
+                                                AppConstant.toastMsg(
                                                     msg:
                                                         "Please make sure all fields are filled in correctly",
                                                     backgroundColor:
                                                         AppColor.red);
                                               }
-                                              setState(() {
-                                                _postJobLoading = false;
-                                              });
+                                              if (!mounted) return;
+                                              AppConstant.overlayLoaderHide(
+                                                  context);
                                             },
                                             radius: 5,
                                             backgroundColor:
                                                 AppColor.blackColor,
                                           );
                                         }),
-                              Constant.kheight(height: 5),
+                              AppConstant.kheight(height: 5),
                               widget.isUpdatejob == true
                                   ? const SizedBox()
                                   : _savePostLoading == true
-                                      ? Constant.circularProgressIndicator()
+                                      ? AppConstant.circularProgressIndicator()
                                       : Consumer<LocationProvider>(
                                           builder: (context, locProvider, _) {
                                           return DefaultButton(
                                             height: 45,
                                             text: "Save & Post Later",
                                             onPress: () async {
-                                              setState(() {
-                                                _savePostLoading = true;
-                                              });
+                                              AppConstant.overlayLoaderShow(
+                                                  context);
                                               if (_formKey.currentState!
-                                                  .validate()) {
+                                                      .validate() &&
+                                                  imagePickProvider
+                                                      .imageFile.isNotEmpty) {
                                                 // ignore: avoid_print
                                                 print("valid");
 
@@ -1035,13 +1089,13 @@ class _PostJobState extends State<PostJob> {
                                                         context: context)
                                                     .then((value) {
                                                   clearField();
-                                                  Constant.toastMsg(
+                                                  AppConstant.toastMsg(
                                                       msg:
                                                           "Job Saved Sucessfully",
-                                                      backgroundColor: AppColor
-                                                          .primaryColor);
+                                                      backgroundColor:
+                                                          AppColor.green);
                                                 }).onError((error, stackTrace) {
-                                                  Constant.toastMsg(
+                                                  AppConstant.toastMsg(
                                                       msg:
                                                           "Something Went Wrong",
                                                       backgroundColor:
@@ -1051,15 +1105,15 @@ class _PostJobState extends State<PostJob> {
                                               } else {
                                                 // ignore: avoid_print
                                                 print("in valid");
-                                                Constant.toastMsg(
+                                                AppConstant.toastMsg(
                                                     msg:
                                                         "Please make sure all fields are filled in correctly",
                                                     backgroundColor:
                                                         AppColor.red);
                                               }
-                                              setState(() {
-                                                _savePostLoading = false;
-                                              });
+                                              if (!mounted) return;
+                                              AppConstant.overlayLoaderHide(
+                                                  context);
                                             },
                                             radius: 5,
                                             backgroundColor: Colors.green,
@@ -1081,8 +1135,9 @@ class _PostJobState extends State<PostJob> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        AppConstant.kheight(height: 5),
         widgetOne,
-        Constant.kheight(height: 5),
+        AppConstant.kheight(height: 3),
         widgetTwo,
       ],
     );
@@ -1239,7 +1294,7 @@ class _PostJobState extends State<PostJob> {
 //                   child: ListView(
 //                     shrinkWrap: true,
 //                     children: [
-//                       const Text(
+//                       const TextWidget(data:
 //                         "Post Your job Here",
 //                         style: TextStyle(
 //                             color: AppColor.blackColor,
@@ -1249,7 +1304,7 @@ class _PostJobState extends State<PostJob> {
 //                       Constant.kheight(height: 20),
 //                       //name
 //                       columnWidget(
-//                           widgetOne: const Text("Name"),
+//                           widgetOne: const TextWidget(data:"Name"),
 //                           widgetTwo: TextFieldWidget(
 //                               focusNode: nameFocus,
 //                               controller: nameController,
@@ -1268,7 +1323,7 @@ class _PostJobState extends State<PostJob> {
 //                                 }
 //                               })),
 //                       columnWidget(
-//                         widgetOne: const Text("Phone"),
+//                         widgetOne: const TextWidget(data:"Phone"),
 //                         widgetTwo: TextFieldWidget(
 //                             focusNode: phoneFocus,
 //                             enabled: false,
@@ -1295,7 +1350,7 @@ class _PostJobState extends State<PostJob> {
 //                       ),
 //                       //category
 //                       columnWidget(
-//                         widgetOne: const Text("Category"),
+//                         widgetOne: const TextWidget(data:"Category"),
 //                         widgetTwo: Consumer<JobProvider>(
 //                             builder: (context, provider, _) {
 //                           return Container(
@@ -1304,7 +1359,7 @@ class _PostJobState extends State<PostJob> {
 //                                 borderRadius: BorderRadius.circular(10)),
 //                             child: DropdownButtonFormField(
 //                                 isExpanded: true,
-//                                 hint: const Text("Category"),
+//                                 hint: const TextWidget(data:"Category"),
 //                                 decoration: const InputDecoration(
 //                                   border: OutlineInputBorder(
 //                                       borderSide: BorderSide(
@@ -1322,7 +1377,7 @@ class _PostJobState extends State<PostJob> {
 //                                     ? [
 //                                         DropdownMenuItem(
 //                                           value: provider.categoryErrorMessage,
-//                                           child: Text(
+//                                           child: TextWidget(data:
 //                                             provider.categoryErrorMessage,
 //                                             maxLines: 2,
 //                                             overflow: TextOverflow.ellipsis,
@@ -1332,7 +1387,7 @@ class _PostJobState extends State<PostJob> {
 //                                     : provider.categoryList.map((e) {
 //                                         return DropdownMenuItem(
 //                                           value: e.category,
-//                                           child: Text(e.category!),
+//                                           child: TextWidget(data:e.category!),
 //                                         );
 //                                       }).toList(),
 //                                 onChanged: (value) {
@@ -1347,7 +1402,7 @@ class _PostJobState extends State<PostJob> {
 
 //                       //sub category
 //                       columnWidget(
-//                         widgetOne: const Text("Sub Category"),
+//                         widgetOne: const TextWidget(data:"Sub Category"),
 //                         widgetTwo: Consumer<JobProvider>(
 //                             builder: (context, provider, _) {
 //                           return Container(
@@ -1356,7 +1411,7 @@ class _PostJobState extends State<PostJob> {
 //                                 borderRadius: BorderRadius.circular(10)),
 //                             child: DropdownButtonFormField(
 //                                 isExpanded: true,
-//                                 hint: const Text("Category"),
+//                                 hint: const TextWidget(data:"Category"),
 //                                 decoration: const InputDecoration(
 //                                   border: OutlineInputBorder(
 //                                       borderSide: BorderSide(
@@ -1378,7 +1433,7 @@ class _PostJobState extends State<PostJob> {
 //                                         DropdownMenuItem(
 //                                           value:
 //                                               provider.subCategoryErrorMessage,
-//                                           child: Text(
+//                                           child: TextWidget(data:
 //                                             provider.subCategoryErrorMessage,
 //                                             maxLines: 2,
 //                                             overflow: TextOverflow.ellipsis,
@@ -1388,7 +1443,7 @@ class _PostJobState extends State<PostJob> {
 //                                     : provider.subCategoryList.map((e) {
 //                                         return DropdownMenuItem(
 //                                           value: e.category,
-//                                           child: Text(e.category!),
+//                                           child: TextWidget(data:e.category!),
 //                                         );
 //                                       }).toList(),
 //                                 onChanged: (value) {
@@ -1403,7 +1458,7 @@ class _PostJobState extends State<PostJob> {
 //                       ),
 
 //                       columnWidget(
-//                         widgetOne: const Text("Title"),
+//                         widgetOne: const TextWidget(data:"Title"),
 //                         widgetTwo: TextFieldWidget(
 //                             focusNode: titleFocus,
 //                             controller: titleController,
@@ -1422,7 +1477,7 @@ class _PostJobState extends State<PostJob> {
 //                             }),
 //                       ),
 //                       columnWidget(
-//                         widgetOne: const Text("Description"),
+//                         widgetOne: const TextWidget(data:"Description"),
 //                         widgetTwo: TextFieldWidget(
 //                             focusNode: descriptionFocus,
 //                             controller: descriptionController,
@@ -1442,7 +1497,7 @@ class _PostJobState extends State<PostJob> {
 //                             }),
 //                       ),
 //                       columnWidget(
-//                         widgetOne: const Text("Budget"),
+//                         widgetOne: const TextWidget(data:"Budget"),
 //                         widgetTwo: TextFieldWidget(
 //                             focusNode: budgetFocus,
 //                             controller: budgetController,
@@ -1462,13 +1517,13 @@ class _PostJobState extends State<PostJob> {
 //                       ),
 //                       //time of completion
 //                       columnWidget(
-//                         widgetOne: const Text("Time for Completion"),
+//                         widgetOne: const TextWidget(data:"Time for Completion"),
 //                         widgetTwo: Container(
 //                           decoration: BoxDecoration(
 //                               color: AppColor.whiteColor,
 //                               borderRadius: BorderRadius.circular(10)),
 //                           child: DropdownButtonFormField(
-//                               hint: const Text("Select"),
+//                               hint: const TextWidget(data:"Select"),
 //                               decoration: const InputDecoration(
 //                                 border: OutlineInputBorder(
 //                                     borderSide:
@@ -1485,7 +1540,7 @@ class _PostJobState extends State<PostJob> {
 //                               items: completionDropDown.map((item) {
 //                                 return DropdownMenuItem(
 //                                   value: item,
-//                                   child: Text(item),
+//                                   child: TextWidget(data:item),
 //                                 );
 //                               }).toList(),
 //                               onChanged: (value) {
@@ -1497,7 +1552,7 @@ class _PostJobState extends State<PostJob> {
 //                       ),
 
 //                       columnWidget(
-//                         widgetOne: Text("Location"),
+//                         widgetOne: TextWidget(data:"Location"),
 //                         widgetTwo: TextFieldWidget(
 //                             focusNode: locationFocus,
 //                             controller: locationController,
@@ -1549,7 +1604,7 @@ class _PostJobState extends State<PostJob> {
 //                                           Icons.location_on,
 //                                           color: AppColor.primaryColor,
 //                                         ),
-//                                         title: Text(locProvider
+//                                         title: TextWidget(data:locProvider
 //                                             .predictions[index].description
 //                                             .toString()),
 //                                       ),
@@ -1560,7 +1615,7 @@ class _PostJobState extends State<PostJob> {
 //                         child: Consumer<LocationProvider>(
 //                             builder: (context, locProvider, _) {
 //                           return locProvider.locationError.isNotEmpty
-//                               ? Text(
+//                               ? TextWidget(data:
 //                                   locProvider.locationError,
 //                                   maxLines: 1,
 //                                   overflow: TextOverflow.ellipsis,
@@ -1630,7 +1685,7 @@ class _PostJobState extends State<PostJob> {
 //                       SizedBox(
 //                         height: 45,
 //                         child: ElevatedButton.icon(
-//                           label: Text(
+//                           label: TextWidget(data:
 //                             "Add photo",
 //                             style: TextStyle(color: Colors.grey[700]),
 //                           ),
@@ -1670,7 +1725,7 @@ class _PostJobState extends State<PostJob> {
 //                               },
 //                             ),
 //                           ),
-//                           const Text(" Materials Purchased")
+//                           const TextWidget(data:" Materials Purchased")
 //                         ],
 //                       ),
 //                       Constant.kheight(height: 5),

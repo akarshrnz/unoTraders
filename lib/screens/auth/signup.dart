@@ -1,6 +1,9 @@
 import 'dart:convert';
 
-import 'package:codecarrots_unotraders/services/helper/api_services_url.dart';
+import 'package:codecarrots_unotraders/model/auth%20Model/register_model.dart';
+import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
+import 'package:codecarrots_unotraders/services/api_sevices.dart';
+import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/toast.dart';
 import 'package:codecarrots_unotraders/screens/widgets/dialog/loader_dialog.dart';
 import 'package:flutter/material.dart';
@@ -63,15 +66,15 @@ class _SignupScreenState extends State<SignupScreen> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.02,
               ),
-              Text(
-                'Create Account',
+              TextWidget(
+                data: 'Create Account',
                 style: TextStyle(
                     color: AppColor.whiteColor,
                     fontSize: MediaQuery.of(context).size.width * 0.07,
                     fontWeight: FontWeight.w900),
               ),
-              const Text(
-                'Create a new account',
+              TextWidget(
+                data: 'Create a new account',
                 style: TextStyle(
                     color: AppColor.whiteColor, fontWeight: FontWeight.w500),
               ),
@@ -110,8 +113,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                 ? PngImages.radioActive
                                 : PngImages.radioDActive),
                           ),
-                          Text(
-                            'Customer',
+                          TextWidget(
+                            data: 'Customer',
                             style: TextStyle(
                                 color: _userType.text == 'customer'
                                     ? AppColor.secondaryColor
@@ -153,8 +156,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                 ? PngImages.radioActive
                                 : PngImages.radioDActive),
                           ),
-                          Text(
-                            'Trader',
+                          TextWidget(
+                            data: 'Trader',
                             style: TextStyle(
                                 color: _userType.text == 'trader'
                                     ? AppColor.secondaryColor
@@ -203,8 +206,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                           ? PngImages.radioActive
                                           : PngImages.radioDActive),
                                 ),
-                                Text(
-                                  'Individual',
+                                TextWidget(
+                                  data: 'Individual',
                                   style: TextStyle(
                                       color: _traderType.text == 'individual'
                                           ? AppColor.secondaryColor
@@ -247,8 +250,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                           ? PngImages.radioActive
                                           : PngImages.radioDActive),
                                 ),
-                                Text(
-                                  'Company',
+                                TextWidget(
+                                  data: 'Company',
                                   style: TextStyle(
                                       color: _traderType.text == 'company'
                                           ? AppColor.secondaryColor
@@ -446,8 +449,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   child: Center(
-                      child: Text(
-                    'Create Account',
+                      child: TextWidget(
+                    data: 'Create Account',
                     style: TextStyle(
                         fontSize: MediaQuery.of(context).size.width * 0.045,
                         fontWeight: FontWeight.w500),
@@ -457,8 +460,8 @@ class _SignupScreenState extends State<SignupScreen> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.02,
               ),
-              const Text(
-                'Already have an account?',
+              TextWidget(
+                data: 'Already have an account?',
                 style: TextStyle(
                     color: AppColor.whiteColor, fontWeight: FontWeight.w500),
               ),
@@ -482,8 +485,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => const LoginScreen()));
                   },
-                  child: Text(
-                    'Login',
+                  child: TextWidget(
+                    data: 'Login',
                     style: TextStyle(
                         color: AppColor.whiteColor,
                         fontSize: MediaQuery.of(context).size.width * 0.045,
@@ -491,6 +494,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 )),
               ),
+              SizedBox(
+                height: 15,
+              )
             ],
           ),
         ),
@@ -500,33 +506,39 @@ class _SignupScreenState extends State<SignupScreen> {
 
   void create() async {
     LoadingDialog.show(context);
-    final params = {
-      "userType": "customer",
-      "traderType": "individual",
-      "name": "akarsh123",
-      "email": "sod123@mailinator.com",
-      "userName": "sod53335",
-      "mobile": "1234567895",
-      "password": "Akarsh@12345",
-      "confirmPassword": "Akarsh@12345"
-    };
+    RegisterModel registerModel = RegisterModel(
+        userType: _userType.text,
+        traderType: _traderType.text,
+        name: _name.text,
+        email: _email.text,
+        userName: _userName.text,
+        mobile: _mobile.text,
+        password: _password.text,
+        confirmPassword: _confirmPassword.text);
     // final params = {
-    //   "userType": _userType.text.toString(),
-    //   "traderType": _traderType.text.toString(),
-    //   "name": _name.text.toString(),
-    //   "email": _email.text.toString(),
-    //   "userName": _userName.text.toString(),
-    //   "mobile": _mobile.text.toString(),
-    //   "password": _password.text.toString(),
-    //   "confirmPassword": _confirmPassword.text.toString(),
+    //   'userType': _userType.text,
+    //   'traderType': _traderType.text,
+    //   'name': _name.text,
+    //   'email': _email.text,
+    //   'userName': _userName.text,
+    //   'mobile': _mobile.text,
+    //   'password': _password.text,
+    //   'confirmPassword': _confirmPassword.text
     // };
-    var response = await http.post(
-        Uri.parse('https://demo.unotraders.com/api/v1/register'),
-        body: jsonEncode(params),
-        headers: {
-          "Accept": "application/json",
+    var response = await http
+        .post(Uri.parse('https://demo.unotraders.com/api/v1/register'),
+            body: json.encode(
+              registerModel.toJson(),
+            ),
+            headers: {
+          "Content-Type": "application/json",
+          "Connection": "keep-alive",
+          "Accept-Encoding": "gzip, deflate",
+          "User-Agent": "Fetch Client",
+          "Accept": "*/*",
+          "Cache-Control": "no-cache"
         });
-    print(params);
+    print(registerModel.toJson());
     print(response.body);
     final result = jsonDecode(response.body);
     LoadingDialog.hide(context);
@@ -538,12 +550,52 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
+  // void create() async {
+  //   LoadingDialog.show(context);
+  //   // final params = {
+  //   //   "userType": "customer",
+  //   //   "traderType": "individual",
+  //   //   "name": "akarsh123",
+  //   //   "email": "sod123@mailinator.com",
+  //   //   "userName": "sod53335",
+  //   //   "mobile": "1234567895",
+  //   //   "password": "Akarsh@12345",
+  //   //   "confirmPassword": "Akarsh@12345"
+  //   // };
+  //   final params = {
+  //     "userType": _userType.text.toString(),
+  //     "traderType": _traderType.text.toString(),
+  //     "name": _name.text.toString(),
+  //     "email": _email.text.toString(),
+  //     "userName": _userName.text.toString(),
+  //     "mobile": _mobile.text.toString(),
+  //     "password": _password.text.toString(),
+  //     "confirmPassword": _confirmPassword.text.toString(),
+  //   };
+  //   var response = await http.post(
+  //       Uri.parse('https://demo.unotraders.com/api/v1/register'),
+  //       body: jsonEncode(params),
+  //       headers: {
+  //         "Accept": "application/json",
+  //       });
+  //   print(params);
+  //   print(response.body);
+  //   final result = jsonDecode(response.body);
+  //   LoadingDialog.hide(context);
+  //   if (result['status'] == 200) {
+  //     ToastMsg.toastMsg(result['message']);
+  //     _controllers();
+  //   } else {
+  //     ToastMsg.toastMsg(result['message']);
+  //   }
+  // }
+
   void checkUser() async {
     // LoadingDialog.show(context);
     var response = await http.get(
-      Uri.parse(ApiServicesUrl.checkUsername + _userName.text),
+      Uri.parse(Url.checkUsername + _userName.text),
     );
-    print(ApiServicesUrl.checkUsername + _userName.text);
+    print(Url.checkUsername + _userName.text);
     print(response.body);
     final result = jsonDecode(response.body);
     // LoadingDialog.hide(context);
@@ -551,7 +603,7 @@ class _SignupScreenState extends State<SignupScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Colors.red,
-        content: Text(result['message']),
+        content: TextWidget(data: result['message']),
         duration: const Duration(seconds: 2),
       ));
     }

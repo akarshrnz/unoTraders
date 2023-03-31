@@ -20,12 +20,15 @@ class FetchJobModel with ChangeNotifier {
   String? quoteProvided;
   String? createdAt;
   String? updatedAt;
+  int? isReviewed;
+  int? traderId;
   List<String>? jobimages;
 
   FetchJobModel(
       {this.id,
       this.userType,
       this.userId,
+      this.isReviewed,
       this.categoryId,
       this.subCategoryId,
       this.title,
@@ -33,6 +36,7 @@ class FetchJobModel with ChangeNotifier {
       this.budget,
       this.jobCompletion,
       this.status,
+      this.traderId,
       this.jobStatus,
       this.jobLocation,
       this.latitude,
@@ -47,23 +51,25 @@ class FetchJobModel with ChangeNotifier {
   FetchJobModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userType = json['user_type'];
-    userId = json['user_id'];
-    categoryId = json['category_id'];
-    subCategoryId = json['sub_category_id'];
+    userId = json['user_id'].toString();
+    categoryId = json['category_id'].toString();
+    subCategoryId = json['sub_category_id'].toString();
     title = json['title'];
     description = json['description'];
     budget = json['budget'];
+    isReviewed = json['reviewed'];
     jobCompletion = json['job_completion'];
     status = json['status'] as String;
     jobStatus = json['job_status'];
     jobLocation = json['job_location'];
-    latitude = json['latitude'];
-    longitude = json['longitude'];
+    latitude = json['latitude'].toString();
+    longitude = json['longitude'].toString();
     materialPurchased = "";
     // json['material_purchased'];
-    jobViews = json['job_views'];
-    quoteProvided = json['quote_provided'];
+    jobViews = json['job_views'].toString();
+    quoteProvided = json['quote_provided'].toString();
     createdAt = json['created_at'];
+    traderId = json['trader_id'];
     updatedAt = json['updated_at'];
     jobimages = json['jobimages'].cast<String>() ?? "";
   }

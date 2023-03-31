@@ -1,19 +1,22 @@
 import 'dart:io';
 
 import 'package:codecarrots_unotraders/model/add_wishlist_model.dart';
+import 'package:codecarrots_unotraders/model/bazaar_detal_get_model.dart';
 import 'package:codecarrots_unotraders/model/bazaar_search_model.dart';
 
 import 'package:codecarrots_unotraders/model/wishlist_model.dart';
-import 'package:codecarrots_unotraders/services/helper/api_services_url.dart';
+import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/model/sell_at_bazaar.dart';
 import 'package:codecarrots_unotraders/model/bazaar_categories.dart';
 import 'package:codecarrots_unotraders/model/bazaar_model.dart';
 import 'package:codecarrots_unotraders/model/traders_category_model.dart';
 import 'package:codecarrots_unotraders/services/api_sevices.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+import '../model/bazaar_detail_post_model.dart';
 
 class BazaarProvider with ChangeNotifier {
   List<BazaarModel> _bazaarProductsList = [];
@@ -34,7 +37,12 @@ class BazaarProvider with ChangeNotifier {
   int? selectedcategoryId;
   int? selectedSubCategoryId;
   bool isLoading = false;
+  bool searchLoading = false;
+  bool uploading = false;
   List<WishListModel> wishList = [];
+  bool detailLoading = false;
+  String bazaarDetailError = "";
+  BazaarDetailGetModel? bazaarDetailsGetModel;
 
   void changeCategory({
     required String categoryName,
@@ -69,6 +77,8 @@ class BazaarProvider with ChangeNotifier {
   }
 
   clearCategories() {
+    selectedSubCategoryId == null;
+    selectedcategoryId = null;
     selectedcategory = null;
     selectedSubCategory = null;
     notifyListeners();
@@ -85,9 +95,10 @@ class BazaarProvider with ChangeNotifier {
   }
 
   Future<void> fetchBazaarProducts() async {
-    _bazaarProductsList = [];
     try {
       var data = await ApiServices.getBazaarproducts();
+      _bazaarProductsList = [];
+
       _bazaarProductsList = data;
       // ignore: avoid_print
       print(_bazaarProductsList.length.toString());
@@ -150,7 +161,7 @@ class BazaarProvider with ChangeNotifier {
   }
 
   //add bazaar
-  Future<void> addBazaarProduct(
+  Future<bool> addBazaarProduct(
       {required String userType,
       required int userId,
       required String productTitle,
@@ -199,8 +210,9 @@ class BazaarProvider with ChangeNotifier {
       await ApiServices.sellAtBazaar(
         sellAtBazaar: sellAtBazaar,
       );
+      return true;
     } catch (e) {
-      rethrow;
+      return false;
     }
   }
 
@@ -232,7 +244,7 @@ class BazaarProvider with ChangeNotifier {
     // ignore: avoid_print
     print(searchModel.product);
     // ignore: avoid_print
-    isLoading = true;
+    searchLoading = true;
     searchError = false;
     searchErrorMessage = "";
     notifyListeners();
@@ -245,7 +257,7 @@ class BazaarProvider with ChangeNotifier {
       searchError = true;
       searchErrorMessage = e.toString();
     }
-    isLoading = false;
+    searchLoading = false;
     notifyListeners();
   }
 
@@ -269,6 +281,8 @@ class BazaarProvider with ChangeNotifier {
 
   //add wishlist
   Future<void> addWishlist({required AddWishListModel wishlist}) async {
+    uploading = true;
+    notifyListeners();
     try {
       await ApiServices.addWishlist(wishlist: wishlist);
       // ignore: avoid_print
@@ -279,6 +293,8 @@ class BazaarProvider with ChangeNotifier {
       print(e.toString());
       throw Exception(e.toString());
     }
+    uploading = false;
+    notifyListeners();
   }
 
   removeFetchWishList({required AddWishListModel wishlist}) async {
@@ -289,7 +305,7 @@ class BazaarProvider with ChangeNotifier {
       final data = await ApiServices.getWishlist();
       wishList = [];
       wishList = data;
-      Constant.toastMsg(
+      AppConstant.toastMsg(
           msg: "Product Removed from Wishlist",
           backgroundColor: AppColor.green);
       // ignore: avoid_print
@@ -298,7 +314,7 @@ class BazaarProvider with ChangeNotifier {
       print(wishList.length.toString());
     } catch (e) {
       print(e.toString());
-      Constant.toastMsg(
+      AppConstant.toastMsg(
           msg: "Something Went Wrong", backgroundColor: AppColor.red);
     }
     isLoading = false;
@@ -307,6 +323,8 @@ class BazaarProvider with ChangeNotifier {
 
   //remove wishlist
   Future<void> removeWishlist({required AddWishListModel wishlist}) async {
+    uploading = true;
+    notifyListeners();
     try {
       await ApiServices.removeWishlist(wishlist: wishlist);
       // ignore: avoid_print
@@ -317,9 +335,82 @@ class BazaarProvider with ChangeNotifier {
       print(e.toString());
       throw Exception(e.toString());
     }
+    uploading = false;
+    notifyListeners();
+  }
+
+  Future<void> bazaarDetail({required BazaarDetailPostModel postBody}) async {
+    detailLoading = true;
+    bazaarDetailsGetModel = null;
+    bazaarDetailError = '';
+    notifyListeners();
+    try {
+      // bazaarDetailsGetModel = await ApiServices.getBazaarDetails(postBody: postBody);
+      await getBazaarDetail(postBody: postBody);
+      // ignore: avoid_print
+      print("success");
+      // ignore: avoid_print
+    } catch (e) {
+      bazaarDetailError = e.toString();
+    }
+    detailLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> getBazaarDetail(
+      {required BazaarDetailPostModel postBody}) async {
+    try {
+      final data = await ApiServices.getBazaarDetails(postBody: postBody);
+      bazaarDetailsGetModel = data;
+      // ignore: avoid_print
+
+      // ignore: avoid_print
+    } catch (e) {
+      rethrow;
+    }
+    notifyListeners();
+  }
+
+  Future<void> addWishlistFromDetails(
+      {required AddWishListModel wishlist,
+      required BazaarDetailPostModel postBody}) async {
+    try {
+      await ApiServices.addWishlist(wishlist: wishlist);
+      await getBazaarDetail(postBody: postBody);
+      // ignore: avoid_print
+      print("wishList");
+      // ignore: avoid_print
+      print(wishList.length.toString());
+    } catch (e) {
+      print(e.toString());
+      throw Exception(e.toString());
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> removeWishlistFromDetails(
+      {required AddWishListModel wishlist,
+      required BazaarDetailPostModel postBody}) async {
+    uploading = true;
+    notifyListeners();
+    try {
+      await ApiServices.removeWishlist(wishlist: wishlist);
+      await getBazaarDetail(postBody: postBody);
+      // ignore: avoid_print
+      print("wishList");
+      // ignore: avoid_print
+      print(wishList.length.toString());
+    } catch (e) {
+      print(e.toString());
+      throw Exception(e.toString());
+    }
+    uploading = false;
+    notifyListeners();
   }
 
   void intialValue() {
+    uploading = false;
     searchError = false;
     searchErrorMessage = "";
     bazaarCategoriesList = [];
@@ -328,5 +419,21 @@ class BazaarProvider with ChangeNotifier {
     _error = false;
     _errorMessage = "";
     _categoryErrorMessage = "";
+  }
+
+  clearBazaar() {
+    detailLoading = false;
+    bazaarDetailError = "";
+    searchLoading = false;
+    uploading = false;
+    searchError = false;
+    searchErrorMessage = "";
+    bazaarCategoriesList = [];
+    subCategoriesList = [];
+    _bazaarProductsList = [];
+    _error = false;
+    _errorMessage = "";
+    _categoryErrorMessage = "";
+    notifyListeners();
   }
 }

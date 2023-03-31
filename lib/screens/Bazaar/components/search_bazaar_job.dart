@@ -1,6 +1,7 @@
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/components/search_results.dart';
 import 'package:codecarrots_unotraders/screens/job/components/job_search_results.dart';
+import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:location/location.dart';
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
@@ -8,7 +9,7 @@ import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
-import 'package:codecarrots_unotraders/utils/constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -67,6 +68,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
 
   @override
   Widget build(BuildContext context) {
+    print("pop up");
     final size = MediaQuery.of(context).size;
 
     return AlertDialog(
@@ -85,8 +87,10 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const SizedBox(),
-                    Text(
-                      widget.isJob == false ? "Search Products" : "Search Job",
+                    TextWidget(
+                      data: widget.isJob == false
+                          ? "Search Products"
+                          : "Search Job",
                       style: const TextStyle(
                           fontSize: 20,
                           color: AppColor.blackColor,
@@ -111,7 +115,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                   color: Colors.grey,
                 ),
                 //body
-                Constant.kheight(height: 8),
+                AppConstant.kheight(height: 8),
                 TextFieldWidget(
                     controller: searchController,
                     hintText: widget.isJob == false
@@ -126,7 +130,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                         return null;
                       }
                     }),
-                Constant.kheight(height: 10),
+                AppConstant.kheight(height: 10),
                 widget.isJob
                     ? Consumer<JobProvider>(builder: (context, provider, _) {
                         return Container(
@@ -135,7 +139,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                               borderRadius: BorderRadius.circular(10)),
                           child: DropdownButtonFormField(
                               isExpanded: true,
-                              hint: const Text("Main Category"),
+                              hint: TextWidget(data: "Main Category"),
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
                                     borderSide:
@@ -153,8 +157,8 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                                   ? [
                                       DropdownMenuItem(
                                         value: provider.categoryErrorMessage,
-                                        child: Text(
-                                          provider.categoryErrorMessage,
+                                        child: TextWidget(
+                                          data: provider.categoryErrorMessage,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -163,7 +167,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                                   : provider.categoryList.map((e) {
                                       return DropdownMenuItem(
                                         value: e.category,
-                                        child: Text(e.category!),
+                                        child: TextWidget(data: e.category!),
                                       );
                                     }).toList(),
                               onChanged: (value) {
@@ -180,7 +184,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                               color: AppColor.whiteColor,
                               borderRadius: BorderRadius.circular(10)),
                           child: DropdownButtonFormField(
-                              hint: const Text("Main Category"),
+                              hint: TextWidget(data: "Main Category"),
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
                                     borderSide:
@@ -197,7 +201,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                               items: provid.bazaarCategoriesList.map((e) {
                                 return DropdownMenuItem(
                                   value: e.category,
-                                  child: Text(e.category!),
+                                  child: TextWidget(data: e.category!),
                                 );
                               }).toList(),
                               onChanged: (value) {
@@ -206,7 +210,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                               }),
                         );
                       }),
-                Constant.kheight(height: 10),
+                AppConstant.kheight(height: 10),
                 //sub category
 
                 widget.isJob
@@ -217,7 +221,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                               borderRadius: BorderRadius.circular(10)),
                           child: DropdownButtonFormField(
                               isExpanded: true,
-                              hint: const Text("Sub Category"),
+                              hint: TextWidget(data: "Sub Category"),
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
                                     borderSide:
@@ -237,8 +241,9 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                                   ? [
                                       DropdownMenuItem(
                                         value: provider.subCategoryErrorMessage,
-                                        child: Text(
-                                          provider.subCategoryErrorMessage,
+                                        child: TextWidget(
+                                          data:
+                                              provider.subCategoryErrorMessage,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -247,7 +252,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                                   : provider.subCategoryList.map((e) {
                                       return DropdownMenuItem(
                                         value: e.category,
-                                        child: Text(e.category!),
+                                        child: TextWidget(data: e.category!),
                                       );
                                     }).toList(),
                               onChanged: (value) {
@@ -264,7 +269,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                               color: AppColor.whiteColor,
                               borderRadius: BorderRadius.circular(10)),
                           child: DropdownButtonFormField(
-                              hint: const Text("Sub Category"),
+                              hint: TextWidget(data: "Sub Category"),
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
                                     borderSide:
@@ -281,7 +286,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                               items: provider.subCategoriesList.map((e) {
                                 return DropdownMenuItem(
                                   value: e.category,
-                                  child: Text(e.category!),
+                                  child: TextWidget(data: e.category!),
                                 );
                               }).toList(),
                               onChanged: (value) {
@@ -290,7 +295,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                               }),
                         );
                       }),
-                Constant.kheight(height: 10),
+                AppConstant.kheight(height: 10),
                 TextFieldWidget(
                     focusNode: locationFocus,
                     controller: locationController,
@@ -340,9 +345,10 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                                     Icons.location_on,
                                     color: AppColor.primaryColor,
                                   ),
-                                  title: Text(locProvider
-                                      .predictions[index].description
-                                      .toString()),
+                                  title: TextWidget(
+                                      data: locProvider
+                                          .predictions[index].description
+                                          .toString()),
                                 ),
                               ));
                 }),
@@ -351,8 +357,8 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                   child: Consumer<LocationProvider>(
                       builder: (context, locProvider, _) {
                     return locProvider.locationError.isNotEmpty
-                        ? Text(
-                            locProvider.locationError,
+                        ? TextWidget(
+                            data: locProvider.locationError,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(color: Colors.red),
@@ -360,13 +366,13 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                         : const SizedBox();
                   }),
                 ),
-                Constant.kheight(height: 10),
+                AppConstant.kheight(height: 10),
                 SizedBox(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Location Range"),
+                      TextWidget(data: "Location Range"),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -378,8 +384,8 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                                 max: 50,
                                 value: _value,
                                 thumbIcon: Center(
-                                  child: Text(
-                                    _value.toStringAsFixed(0).toString(),
+                                  child: TextWidget(
+                                    data: _value.toStringAsFixed(0).toString(),
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                         fontSize: 10, color: Colors.white),
@@ -406,9 +412,9 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
                     ],
                   ),
                 ),
-                Constant.kheight(height: 10),
+                AppConstant.kheight(height: 10),
                 isLoading == true
-                    ? Constant.circularProgressIndicator()
+                    ? AppConstant.circularProgressIndicator()
                     : Consumer<LocationProvider>(
                         builder: (context, locProvider, _) {
                         return DefaultButton(
@@ -525,7 +531,7 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
 //     serviceEnabled = await Geolocator.isLocationServiceEnabled();
 //     if (!serviceEnabled) {
 //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-//           content: Text(
+//           content: TextWidget(data:
 //               'Location services are disabled. Please enable the services')));
 //       return false;
 //     }
@@ -534,13 +540,13 @@ class _SearchBazaarState extends State<SearchJobBazaar> {
 //       permission = await Geolocator.requestPermission();
 //       if (permission == LocationPermission.denied) {
 //         ScaffoldMessenger.of(context).showSnackBar(
-//             const SnackBar(content: Text('Location permissions are denied')));
+//             const SnackBar(content: TextWidget(data:'Location permissions are denied')));
 //         return false;
 //       }
 //     }
 //     if (permission == LocationPermission.deniedForever) {
 //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-//           content: Text(
+//           content: TextWidget(data:
 //               'Location permissions are permanently denied, we cannot request permissions.')));
 //       return false;
 //     }

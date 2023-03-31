@@ -6,8 +6,9 @@ import 'package:codecarrots_unotraders/provider/profile_provider.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
+import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -19,8 +20,10 @@ import '../../../provider/job_provider.dart';
 import '../../../provider/location_provider.dart';
 
 class EditCustomerProfile extends StatefulWidget {
+  final String customerId;
   final CustomerProfileModel customerProfile;
-  const EditCustomerProfile({super.key, required this.customerProfile});
+  const EditCustomerProfile(
+      {super.key, required this.customerProfile, required this.customerId});
 
   @override
   State<EditCustomerProfile> createState() => _EditCustomerProfileState();
@@ -162,7 +165,7 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                                     )),
                       );
                     }),
-                    Constant.kWidth(width: size.width * .03),
+                    AppConstant.kWidth(width: size.width * .03),
                     InkWell(
                       onTap: () {
                         imageProvider.pickProfileImage();
@@ -175,15 +178,15 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                             borderRadius:
                                 BorderRadius.circular(size.width * .04),
                             border: Border.all(color: AppColor.green)),
-                        child: const Text("Picture Upload"),
+                        child: TextWidget(data: "Picture Upload"),
                       ),
                     )
                   ],
                 ),
-                Constant.kheight(height: size.width * .03),
+                AppConstant.kheight(height: size.width * .03),
                 columnWidget(
                     context: context,
-                    widgetOne: const Text("User Name"),
+                    widgetOne: TextWidget(data: "User Name"),
                     widgetTwo: TextFieldWidget(
                         focusNode: userNameFocus,
                         controller: userNameController,
@@ -198,7 +201,7 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                         })),
                 columnWidget(
                   context: context,
-                  widgetOne: const Text("Name"),
+                  widgetOne: TextWidget(data: "Name"),
                   widgetTwo: TextFieldWidget(
                       focusNode: nameFocus,
                       controller: nameController,
@@ -219,7 +222,7 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                 ),
                 columnWidget(
                   context: context,
-                  widgetOne: const Text("Email"),
+                  widgetOne: TextWidget(data: "Email"),
                   widgetTwo: TextFieldWidget(
                       focusNode: emailFocus,
                       controller: emailController,
@@ -240,7 +243,7 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                 ),
                 columnWidget(
                   context: context,
-                  widgetOne: const Text("Mobile"),
+                  widgetOne: TextWidget(data: "Mobile"),
                   widgetTwo: TextFieldWidget(
                       focusNode: mobileFocus,
                       controller: mobileController,
@@ -260,7 +263,7 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                 ),
                 columnWidget(
                   context: context,
-                  widgetOne: const Text("Address"),
+                  widgetOne: TextWidget(data: "Address"),
                   widgetTwo: TextFieldWidget(
                       focusNode: addressFocus,
                       controller: addressController,
@@ -281,7 +284,7 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                 ),
                 columnWidget(
                   context: context,
-                  widgetOne: const Text("location"),
+                  widgetOne: TextWidget(data: "location"),
                   widgetTwo: TextFieldWidget(
                       focusNode: locationFocus,
                       controller: locationController,
@@ -331,9 +334,10 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                                     Icons.location_on,
                                     color: AppColor.primaryColor,
                                   ),
-                                  title: Text(locProvider
-                                      .predictions[index].description
-                                      .toString()),
+                                  title: TextWidget(
+                                      data: locProvider
+                                          .predictions[index].description
+                                          .toString()),
                                 ),
                               ));
                 }),
@@ -342,8 +346,8 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                   child: Consumer<LocationProvider>(
                       builder: (context, locProvider, _) {
                     return locProvider.locationError.isNotEmpty
-                        ? Text(
-                            locProvider.locationError,
+                        ? TextWidget(
+                            data: locProvider.locationError,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(color: Colors.red),
@@ -351,13 +355,13 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                         : const SizedBox();
                   }),
                 ),
-                Constant.kheight(height: size.width * .07),
+                AppConstant.kheight(height: size.width * .07),
                 Consumer<ImagePickProvider>(builder: (context, imgProvider, _) {
                   return Consumer<LocationProvider>(
                       builder: (context, locProvider, _) {
                     return Consumer<ProfileProvider>(
                         builder: (context, profile, _) {
-                      return profile.isLoading
+                      return profile.isUpLoading
                           ? const Center(
                               child: CircularProgressIndicator(),
                             )
@@ -382,8 +386,15 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                                               imgProvider.imageFile.isEmpty
                                                   ? null
                                                   : imgProvider.imageFile[0]);
-                                  await profileProvider.updateProfile(
-                                      updateProfile: updateModel);
+                                  print(updateModel.toJson());
+                                  bool res =
+                                      await profileProvider.updateProfile(
+                                          updateProfile: updateModel,
+                                          context: context);
+                                  if (res == true) {
+                                    profileProvider.refreshCustomerProfile(
+                                        userId: widget.customerId);
+                                  }
                                   if (!mounted) return;
                                   Navigator.pop(context);
                                 } else {}
@@ -408,9 +419,9 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Constant.kheight(height: size.width * .02),
+        AppConstant.kheight(height: size.width * .02),
         widgetOne,
-        Constant.kheight(height: 5),
+        AppConstant.kheight(height: 5),
         widgetTwo,
       ],
     );

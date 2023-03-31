@@ -1,6 +1,7 @@
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/components/bazaar_items.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
+import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/circular_progress.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:flutter/material.dart';
@@ -35,10 +36,13 @@ class SearchResults extends StatelessWidget {
             ),
             itemBuilder: (BuildContext context) => <PopupMenuItem<int>>[
                   new PopupMenuItem<int>(
-                      value: 1, child: new Text('Most Rcent')),
-                  new PopupMenuItem<int>(value: 2, child: new Text('Lowest')),
-                  new PopupMenuItem<int>(value: 3, child: new Text('Oldest')),
-                  new PopupMenuItem<int>(value: 4, child: new Text('Highest'))
+                      value: 1, child: new TextWidget(data: 'Most Rcent')),
+                  new PopupMenuItem<int>(
+                      value: 2, child: new TextWidget(data: 'Lowest')),
+                  new PopupMenuItem<int>(
+                      value: 3, child: new TextWidget(data: 'Oldest')),
+                  new PopupMenuItem<int>(
+                      value: 4, child: new TextWidget(data: 'Highest'))
                 ],
             onSelected: (int value) {
               print(latitude.toString());
@@ -66,7 +70,7 @@ class SearchResults extends StatelessWidget {
                 shrinkWrap: true,
                 children: [
                   Consumer<BazaarProvider>(builder: (context, provider, _) {
-                    return provider.isLoading
+                    return provider.searchLoading
                         ? SizedBox(
                             width: size.width,
                             height: size.height,
@@ -76,9 +80,16 @@ class SearchResults extends StatelessWidget {
                                 width: size.width,
                                 height: size.height,
                                 child: Center(
-                                    child: Text(provider.searchErrorMessage
-                                        .toString())),
+                                    child: TextWidget(
+                                        data: provider.searchErrorMessage
+                                            .toString())),
                               )
+                            // : provider.uploading
+                            //     ? SizedBox(
+                            //         width: size.width,
+                            //         height: size.height,
+                            //         child: Center(
+                            //             child: CircularProgress.indicator()))
                             : ListView.separated(
                                 separatorBuilder: (context, index) =>
                                     const SizedBox(

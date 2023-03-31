@@ -1,8 +1,8 @@
 import 'package:codecarrots_unotraders/model/trader_subcategory.dart';
-import 'package:codecarrots_unotraders/screens/homepage/components/list_traders.dart';
+import 'package:codecarrots_unotraders/screens/category%20screen/list_traders.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -40,7 +40,9 @@ class ViewMoreCategories extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => ListTraders(
-                                id: subCategoryList[index].id.toString(), category:  subCategoryList[index].category!,),
+                              id: subCategoryList[index].id.toString(),
+                              category: subCategoryList[index].category!,
+                            ),
                           ));
                     },
                     child: Row(
@@ -51,7 +53,7 @@ class ViewMoreCategories extends StatelessWidget {
                           size: 17,
                           color: AppColor.secondaryColor,
                         ),
-                        Constant.kWidth(width: 5),
+                        AppConstant.kWidth(width: 5),
                         Text(
                           subCategoryList[index].category!,
                           style: TextStyle(fontSize: 17),

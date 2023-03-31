@@ -1,16 +1,25 @@
 import 'package:codecarrots_unotraders/model/add_wishlist_model.dart';
+import 'package:codecarrots_unotraders/model/bazaar_detail_post_model.dart';
 import 'package:codecarrots_unotraders/model/bazaar_model.dart';
+import 'package:codecarrots_unotraders/model/message/bazaar_store_message_model.dart';
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
+import 'package:codecarrots_unotraders/provider/message_provider.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_detail.dart';
-import 'package:codecarrots_unotraders/services/helper/api_services_url.dart';
+import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_detail_page.dart';
+import 'package:codecarrots_unotraders/screens/Message%20Section/chat_screen.dart';
+import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
+import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:mj_image_slider/mj_image_slider.dart';
 import 'package:mj_image_slider/mj_options.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BazaarItems extends StatelessWidget {
   final bool? isShortListOnly;
@@ -24,15 +33,30 @@ class BazaarItems extends StatelessWidget {
     final BazaarModel bazaarModelProvider = Provider.of<BazaarModel>(context);
     BazaarProvider bazaarProvider =
         Provider.of<BazaarProvider>(context, listen: false);
+    MessageProvider messageProvider =
+        Provider.of<MessageProvider>(context, listen: false);
     DateTime date = DateTime.parse(bazaarModelProvider.createdAt!);
     return InkWell(
-      onTap: () {
+      onTap: () async {
+        final sharedPrefs = await SharedPreferences.getInstance();
+        String id = sharedPrefs.getString('id')!;
+        String userType = sharedPrefs.getString('userType')!;
+        BazaarDetailPostModel postBody = BazaarDetailPostModel(
+            productId: bazaarModelProvider.id,
+            userId: int.parse(id),
+            userType: userType);
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => BazaarDetail(
-                      bazaarModel: bazaarModelProvider,
+                builder: (context) => BazaarDetailScreen(
+                      postBody: postBody,
                     )));
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         builder: (context) => BazaarDetail(
+        //               bazaarModel: bazaarModelProvider,
+        //             )));
       },
       child: Card(
         shadowColor: AppColor.blackColor,
@@ -52,12 +76,12 @@ class BazaarItems extends StatelessWidget {
                     ? Center(
                         child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(
                             Icons.broken_image,
                             color: Colors.grey,
                           ),
-                          Text("No image")
+                          TextWidget(data: "No image")
                         ],
                       ))
                     : ClipRRect(
@@ -92,8 +116,8 @@ class BazaarItems extends StatelessWidget {
                 const SizedBox(
                   height: 10,
                 ),
-                Text(
-                  bazaarModelProvider.product!,
+                TextWidget(
+                  data: bazaarModelProvider.product!,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -101,12 +125,13 @@ class BazaarItems extends StatelessWidget {
                       fontSize: 15,
                       fontWeight: FontWeight.w600),
                 ),
-                Text(
-                  "Posted: ${date.day} ${DateFormat.MMM().format(date)} ${date.year}, ${DateFormat('hh:mm a').format(date)}",
+                TextWidget(
+                  data:
+                      "Posted: ${date.day} ${DateFormat.MMM().format(date)} ${date.year}, ${DateFormat('hh:mm a').format(date)}",
                   style: const TextStyle(color: Colors.grey),
                 ),
-                Text(
-                  bazaarModelProvider.addedUsertype!,
+                TextWidget(
+                  data: bazaarModelProvider.addedUsertype!,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -121,28 +146,36 @@ class BazaarItems extends StatelessWidget {
                       bazaarModelProvider.wishlist == 1
                           ? ElevatedButton.icon(
                               onPressed: () async {
+                                AppConstant.overlayLoaderShow(context);
+                                final sharedPrefs =
+                                    await SharedPreferences.getInstance();
+                                String id = sharedPrefs.getString('id')!;
+                                String userType =
+                                    sharedPrefs.getString('userType')!;
                                 print("shortlisted pressed");
                                 AddWishListModel wishlist = AddWishListModel(
                                     productId: bazaarModelProvider.id,
-                                    userId: int.parse(ApiServicesUrl.id),
-                                    userType: ApiServicesUrl.userType);
+                                    userId: int.parse(id),
+                                    userType: userType);
 
                                 await bazaarProvider
                                     .removeWishlist(wishlist: wishlist)
                                     .then((value) {
-                                  Constant.toastMsg(
+                                  AppConstant.toastMsg(
                                       msg: "Product Removed from Wishlist",
                                       backgroundColor: AppColor.green);
                                   bazaarProvider.fetchBazaarProducts();
 
                                   return;
                                 }).onError((error, stackTrace) {
-                                  Constant.toastMsg(
+                                  AppConstant.toastMsg(
                                       msg: "Something Went Wrong",
                                       backgroundColor: AppColor.red);
                                   return;
                                 });
 
+                                // ignore: use_build_context_synchronously
+                                AppConstant.overlayLoaderHide(context);
                                 // AddWishListModel wishlist = AddWishListModel(
                                 //     productId: bazaarModelProvider
                                 //         .bazaarProductsList[
@@ -184,7 +217,7 @@ class BazaarItems extends StatelessWidget {
                                 Icons.check_box,
                                 size: 15,
                               ),
-                              label: const Text("Shortlisted"),
+                              label: TextWidget(data: "Shortlisted"),
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColor.blackColor,
                                   minimumSize: const Size(60, 26),
@@ -193,32 +226,40 @@ class BazaarItems extends StatelessWidget {
                             )
                           : ElevatedButton.icon(
                               onPressed: () async {
+                                AppConstant.overlayLoaderShow(context);
+                                final sharedPrefs =
+                                    await SharedPreferences.getInstance();
+                                String id = sharedPrefs.getString('id')!;
+                                String userType =
+                                    sharedPrefs.getString('userType')!;
                                 AddWishListModel wishlist = AddWishListModel(
                                     productId: bazaarModelProvider.id,
-                                    userId: int.parse(ApiServicesUrl.id),
-                                    userType: ApiServicesUrl.userType);
+                                    userId: int.parse(id),
+                                    userType: userType);
 
                                 await bazaarProvider
                                     .addWishlist(wishlist: wishlist)
                                     .then((value) {
-                                  Constant.toastMsg(
+                                  AppConstant.toastMsg(
                                       msg: "Product Added to Wishlist",
                                       backgroundColor: AppColor.green);
                                   bazaarProvider.fetchBazaarProducts();
 
                                   return;
                                 }).onError((error, stackTrace) {
-                                  Constant.toastMsg(
+                                  AppConstant.toastMsg(
                                       msg: "Something Went Wrong",
                                       backgroundColor: AppColor.red);
                                   return;
                                 });
+                                // ignore: use_build_context_synchronously
+                                AppConstant.overlayLoaderHide(context);
                               },
                               icon: const Icon(
                                 Icons.add_circle,
                                 size: 15,
                               ),
-                              label: const Text("Shortlist"),
+                              label: TextWidget(data: "Shortlist"),
                               style: ElevatedButton.styleFrom(
                                   minimumSize: const Size(60, 26),
                                   shape: RoundedRectangleBorder(
@@ -230,13 +271,55 @@ class BazaarItems extends StatelessWidget {
                       isShortListOnly != null
                           ? const SizedBox()
                           : ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                final sharedPrefs =
+                                    await SharedPreferences.getInstance();
+                                String id = sharedPrefs.getString('id')!;
+                                String userType =
+                                    sharedPrefs.getString('userType')!;
+                                if (bazaarModelProvider.addedBy.toString() ==
+                                        id &&
+                                    bazaarModelProvider.addedUsertype
+                                            .toString() ==
+                                        userType) {
+                                  AppConstant.toastMsg(
+                                      msg: "This product is added by you",
+                                      backgroundColor: AppColor.red);
+                                } else {
+                                  final model = bazaarModelProvider;
+                                  BazaarStoreMessageModel storeBazaar =
+                                      BazaarStoreMessageModel(
+                                          fromUserId: int.parse(id),
+                                          fromUserType: userType,
+                                          productId: bazaarModelProvider.id,
+                                          toUserId: int.parse(
+                                              bazaarModelProvider.addedBy ??
+                                                  "0"),
+                                          toUserType: bazaarModelProvider
+                                                  .addedUsertype ??
+                                              "");
+
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          type: PageTransitionType.fade,
+                                          child: ChatScreen(
+                                            name: model.name ?? "",
+                                            toUserId:
+                                                int.parse(model.addedBy ?? "0"),
+                                            profilePic: model.profilePic ?? "",
+                                            toUsertype:
+                                                model.addedUsertype ?? "",
+                                            storeBazaar: storeBazaar,
+                                          )));
+                                }
+                              },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColor.blackColor,
                                   minimumSize: const Size(70, 26),
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20))),
-                              child: const Text("Message"),
+                              child: TextWidget(data: "Message"),
                             ),
                       const SizedBox(
                         width: 5,
@@ -251,7 +334,7 @@ class BazaarItems extends StatelessWidget {
                                       color: AppColor.primaryColor),
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20))),
-                              child: const Text("Report"))
+                              child: TextWidget(data: "Report"))
                     ],
                   ),
                 )

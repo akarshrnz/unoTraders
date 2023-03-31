@@ -1,9 +1,11 @@
 import 'package:codecarrots_unotraders/model/add_wishlist_model.dart';
 import 'package:codecarrots_unotraders/model/wishlist_model.dart';
+import 'package:codecarrots_unotraders/provider/message_provider.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_detail.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/components/bazaar_items.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/components/search_bazaar_job.dart';
-import 'package:codecarrots_unotraders/services/helper/api_services_url.dart';
+import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
+import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/circular_progress.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
@@ -11,7 +13,7 @@ import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/components/bazaar_pop_up.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
 
-import 'package:codecarrots_unotraders/utils/constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:flutter/material.dart';
 import '../../../provider/location_provider.dart';
@@ -31,17 +33,21 @@ class BazaarScreen extends StatefulWidget {
 
 class _BazaarScreenState extends State<BazaarScreen> {
   late BazaarProvider provider;
-
+  late MessageProvider messageProvider;
   @override
   void initState() {
     super.initState();
+    messageProvider = Provider.of<MessageProvider>(context, listen: false);
+    provider = Provider.of<BazaarProvider>(context, listen: false);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       // locationProvider = Provider.of<LocationProvider>(context, listen: false);
-      provider = Provider.of<BazaarProvider>(context, listen: false);
+
       // locationProvider.initalizeLocation();
       // locationProvider.clearAll();
+      messageProvider.clearLoading();
       provider.intialValue();
+      provider.clearBazaar();
       provider.fetchBazaarProducts();
       provider.fetchCategory();
     });
@@ -76,11 +82,23 @@ class _BazaarScreenState extends State<BazaarScreen> {
                   Consumer<BazaarProvider>(builder: (context, provider, _) {
                     return provider.bazaarProductsList.isEmpty &&
                             provider.error == false
-                        ? Center(child: CircularProgress.indicator())
+                        ? SizedBox(
+                            width: size.width,
+                            height: size.height / 1.2,
+                            child: Center(child: CircularProgress.indicator()))
                         : provider.error == true
                             ? Center(
-                                child: Text(provider.errorMessage.toString()))
-                            : ListView.separated(
+                                child: TextWidget(
+                                    data: provider.errorMessage.toString()))
+                            :
+                            //  provider.uploading
+                            //     ? SizedBox(
+                            //         width: size.width,
+                            //         height: size.height / 1.2,
+                            //         child: Center(
+                            //             child: CircularProgress.indicator()))
+                            //     :
+                            ListView.separated(
                                 separatorBuilder: (context, index) =>
                                     const SizedBox(
                                   height: 10,
@@ -119,13 +137,14 @@ class _BazaarScreenState extends State<BazaarScreen> {
             await showDialog(
               context: context,
               builder: (context) => const BazaarPopUp(),
-            ).then((value) {
-              provider.intialValue();
-              provider.fetchBazaarProducts();
-              provider.fetchCategory();
-              setState(() {});
-              return;
-            });
+            );
+            // then((value) {
+            //   provider.intialValue();
+            //   provider.fetchBazaarProducts();
+            //   provider.fetchCategory();
+            //   setState(() {});
+            //   return;
+            // });
           },
           child: Container(
             margin: const EdgeInsets.only(right: 5),
@@ -135,7 +154,7 @@ class _BazaarScreenState extends State<BazaarScreen> {
             decoration: BoxDecoration(
                 border: Border.all(color: AppColor.primaryColor),
                 borderRadius: BorderRadius.circular(20)),
-            child: const Text("Sell at Bazaar Now"),
+            child: TextWidget(data: "Sell at Bazaar Now"),
           ),
         ),
         Flexible(

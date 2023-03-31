@@ -1,7 +1,7 @@
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/components/bazaar_items.dart';
-import 'package:codecarrots_unotraders/screens/job/job%20status/trader%20job%20View/trader_all_job_card.dart';
+import 'package:codecarrots_unotraders/screens/job/job%20type/trader%20job%20type/trader_all_job_card.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
 import 'package:codecarrots_unotraders/utils/circular_progress.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
@@ -68,7 +68,7 @@ class JobSearchResults extends StatelessWidget {
                 shrinkWrap: true,
                 children: [
                   Consumer<JobProvider>(builder: (context, provider, _) {
-                    return provider.isLoading
+                    return provider.searchingLoading
                         ? SizedBox(
                             width: size.width,
                             height: size.height,

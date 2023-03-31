@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import '../../services/helper/api_services_url.dart';
+import '../../services/helper/url.dart';
 import '../../utils/color.dart';
 import '../../utils/png.dart';
 import '../../utils/toast.dart';
@@ -107,29 +107,26 @@ class _OtpLoginState extends State<OtpLogin> {
   }
 
   void otpLogin() async {
-    
-    
-
-      LoadingDialog.show(context);
-      final params = {
-        "mobile": _mobile.text,
-      };
-      var response = await http.post(
-        Uri.parse(ApiServicesUrl.otpLogin),
-        body: params,
-      );
-      print(params);
-      print(response.body);
-      final result = jsonDecode(response.body);
-      LoadingDialog.hide(context);
-      if (result['status'] == 200) {
-        ToastMsg.toastMsg(result['message']);
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => EnterOtp(
-                  mobile: _mobile.text,
-                )));
-      } else {
-        ToastMsg.toastMsg(result['message']);
-      }
+    LoadingDialog.show(context);
+    final params = {
+      "mobile": _mobile.text,
+    };
+    var response = await http.post(
+      Uri.parse(Url.otpLogin),
+      body: params,
+    );
+    print(params);
+    print(response.body);
+    final result = jsonDecode(response.body);
+    LoadingDialog.hide(context);
+    if (result['status'] == 200) {
+      ToastMsg.toastMsg(result['message']);
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => EnterOtp(
+                mobile: _mobile.text,
+              )));
+    } else {
+      ToastMsg.toastMsg(result['message']);
+    }
   }
 }

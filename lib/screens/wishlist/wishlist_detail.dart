@@ -3,8 +3,9 @@ import 'package:codecarrots_unotraders/model/wishlist_model.dart';
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
+import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -103,7 +104,7 @@ class WishListDetail extends StatelessWidget {
                               "Posted: ${date.day} ${DateFormat.MMM().format(date)} ${date.year}, ${DateFormat('hh:mm a').format(date)}",
                             ),
                           ),
-                          Constant.kWidth(width: size.width * .02),
+                          AppConstant.kWidth(width: size.width * .02),
                           Container(
                             alignment: Alignment.center,
                             height: size.width * .07,
@@ -121,7 +122,7 @@ class WishListDetail extends StatelessWidget {
                           )
                         ],
                       ),
-                      Constant.kheight(height: size.width * .02),
+                      AppConstant.kheight(height: size.width * .02),
                     ],
                   ),
                 )),
@@ -155,8 +156,7 @@ class WishListDetail extends StatelessWidget {
                             itemCount: snapshot.data!.length,
                             itemBuilder: (context, index) {
                               WishListModel data = snapshot.data![index];
-                              DateTime date = DateTime.parse(
-                                data.createdAt!);
+                              DateTime date = DateTime.parse(data.createdAt!);
 
                               return Card(
                                 clipBehavior: Clip.antiAlias,
@@ -178,11 +178,13 @@ class WishListDetail extends StatelessWidget {
                                     ),
                                     Padding(
                                       padding: EdgeInsets.only(
-                                        left: size.width * .03,bottom: size.width * .03,top: size.width * .01
-                                      ),
+                                          left: size.width * .03,
+                                          bottom: size.width * .03,
+                                          top: size.width * .01),
                                       child: textWidget(
-                                          text: "Posted: ${date.day} ${DateFormat.MMM().format(date)} ${date.year}, ${DateFormat('hh:mm a').format(date)}",color: AppColor.green
-,
+                                          text:
+                                              "Posted: ${date.day} ${DateFormat.MMM().format(date)} ${date.year}, ${DateFormat('hh:mm a').format(date)}",
+                                          color: AppColor.green,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500),
                                     ),
@@ -241,7 +243,7 @@ class WishListDetail extends StatelessWidget {
                             child: Text("Document does not exist"));
                       }
                     } else {
-                      return Constant.circularProgressIndicator();
+                      return AppConstant.circularProgressIndicator();
                     }
                   })
             ]),
@@ -251,16 +253,17 @@ class WishListDetail extends StatelessWidget {
     );
   }
 
-  Text textWidget(
+  Widget textWidget(
       {required String text,
       required double fontSize,
-      required FontWeight fontWeight,Color? color}) {
-    return Text(
-      text,
+      required FontWeight fontWeight,
+      Color? color}) {
+    return TextWidget(
+      data: text,
       maxLines: 5,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-          color:color?? AppColor.blackColor,
+          color: color ?? AppColor.blackColor,
           fontSize: fontSize,
           fontWeight: fontWeight),
     );

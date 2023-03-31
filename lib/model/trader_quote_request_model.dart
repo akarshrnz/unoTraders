@@ -1,6 +1,7 @@
 class TraderQuoteReqModel {
   String? traderId;
   String? name;
+  String? profilePic;
   String? quoteId;
   String? quoteReason;
   String? quotedPrice;
@@ -10,6 +11,7 @@ class TraderQuoteReqModel {
       {this.traderId,
       this.name,
       this.quoteId,
+      this.profilePic,
       this.quoteReason,
       this.quotedPrice,
       this.status});
@@ -17,6 +19,7 @@ class TraderQuoteReqModel {
   TraderQuoteReqModel.fromJson(Map<String, dynamic> json) {
     traderId = json['trader_id'];
     name = json['name'];
+    profilePic = json['profile_pic'];
     quoteId = json['quote_id'];
     quoteReason = json['quote_reason'];
     quotedPrice = json['quoted_price'];

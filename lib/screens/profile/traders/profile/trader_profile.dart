@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:codecarrots_unotraders/model/Feeds/trader_feed_model.dart';
 import 'package:codecarrots_unotraders/model/add_post.dart';
@@ -231,7 +232,7 @@ class _TraderProfileState extends State<TraderProfile> {
                                     backgroundColor: AppColor.whiteColor,
                                     radius: MediaQuery.of(context).size.width *
                                         0.06,
-                                    backgroundImage: NetworkImage(
+                                    backgroundImage: CachedNetworkImageProvider(
                                       profileModel.profilePic!,
                                     ),
                                   ),

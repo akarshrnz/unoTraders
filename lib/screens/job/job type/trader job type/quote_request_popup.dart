@@ -21,11 +21,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class QuoteRequestPopUp extends StatefulWidget {
   final bool? isRequestMoreDetails;
-  final FetchJobModel jobDetails;
+  final bool callMessage;
+
+  final String jobId;
+  final String jobTitle;
+  final String userid;
   const QuoteRequestPopUp({
     this.isRequestMoreDetails,
     super.key,
-    required this.jobDetails,
+    required this.jobTitle,
+    required this.userid,
+    required this.jobId,
+    required this.callMessage,
   });
 
   @override
@@ -37,6 +44,7 @@ class _QuotePopUpState extends State<QuoteRequestPopUp> {
   TextEditingController priceController = TextEditingController();
   TextEditingController reasonController = TextEditingController();
   FocusNode reasonFocus = FocusNode();
+  FocusNode tempFocus = FocusNode();
   final _formKey = GlobalKey<FormState>();
   late TraderInfoProvider jProvider;
 
@@ -50,11 +58,9 @@ class _QuotePopUpState extends State<QuoteRequestPopUp> {
   @override
   void dispose() {
     priceController.dispose();
-
+    tempFocus.dispose();
     reasonController.dispose();
-
     reasonFocus.dispose();
-
     super.dispose();
   }
 
@@ -85,7 +91,7 @@ class _QuotePopUpState extends State<QuoteRequestPopUp> {
                   children: [
                     const SizedBox(),
                     TextWidget(
-                      data: widget.jobDetails.title ?? "",
+                      data: widget.jobTitle,
                       style: const TextStyle(
                           fontSize: 20,
                           color: AppColor.blackColor,
@@ -120,6 +126,7 @@ class _QuotePopUpState extends State<QuoteRequestPopUp> {
                 TextFieldWidget(
                     focusNode: reasonFocus,
                     controller: reasonController,
+                    maxLines: widget.isRequestMoreDetails != null ? 5 : 1,
                     hintText: widget.isRequestMoreDetails != null
                         ? "Request More Details"
                         : "Reason",
@@ -143,6 +150,8 @@ class _QuotePopUpState extends State<QuoteRequestPopUp> {
                                 height: 50,
                                 text: "Send Request",
                                 onPress: () async {
+                                  FocusScope.of(context)
+                                      .requestFocus(tempFocus);
                                   setState(() {
                                     isLoading = true;
                                   });
@@ -162,16 +171,19 @@ class _QuotePopUpState extends State<QuoteRequestPopUp> {
                                       traderId: int.parse(id ?? "0"),
                                       requestDetails:
                                           reasonController.text.toString(),
-                                      jobId: widget.jobDetails.id,
+                                      jobId: int.parse(widget.jobId),
                                       jobQuoteDetailsId: 0,
                                       userId: int.parse(
-                                        widget.jobDetails.userId ?? "",
+                                        widget.userid,
                                       ),
                                       userType: "customer",
                                     );
 
-                                    bool res = await jProvider
-                                        .sendRequestMoreDetails(request: req);
+                                    bool res =
+                                        await jProvider.sendRequestMoreDetails(
+                                            request: req,
+                                            callMessage: widget.callMessage,
+                                            jobId: widget.jobId);
                                     if (res == true) {
                                       if (!mounted) return;
                                       Navigator.pop(context);
@@ -205,6 +217,8 @@ class _QuotePopUpState extends State<QuoteRequestPopUp> {
                                 height: 50,
                                 text: "Send",
                                 onPress: () async {
+                                  FocusScope.of(context)
+                                      .requestFocus(tempFocus);
                                   setState(() {
                                     isLoading = true;
                                   });
@@ -222,10 +236,9 @@ class _QuotePopUpState extends State<QuoteRequestPopUp> {
                                                 priceController.text.toString(),
                                             quoteReason: reasonController.text
                                                 .toString(),
-                                            jobId: widget.jobDetails.id,
-                                            userId: int.parse(widget
-                                                .jobDetails.userId
-                                                .toString()),
+                                            jobId: int.parse(widget.jobId),
+                                            userId: int.parse(
+                                                widget.userid.toString()),
                                             userType: 'provider',
                                             name:
                                                 userinfo.getString('userName'),
@@ -237,6 +250,8 @@ class _QuotePopUpState extends State<QuoteRequestPopUp> {
                                     // Navigator.pop(context);
 
                                     bool res = await jProvider.sendQuoteReq(
+                                        callMessage: widget.callMessage,
+                                        jobId: widget.jobId,
                                         request: req);
                                     if (res == true) {
                                       if (!mounted) return;

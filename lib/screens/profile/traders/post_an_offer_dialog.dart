@@ -46,6 +46,7 @@ class _BazaarPopUpState extends State<PostAnOfferDialog> {
   FocusNode validToFocus = FocusNode();
   FocusNode fullPriceFocus = FocusNode();
   FocusNode offerPriceFocus = FocusNode();
+  FocusNode tempFocus = FocusNode();
   bool isLoading = false;
   DateTime? validFrom;
   DateTime? validTo;
@@ -94,6 +95,7 @@ class _BazaarPopUpState extends State<PostAnOfferDialog> {
 
   @override
   void dispose() {
+    tempFocus.dispose();
     validFromController.dispose();
     validToController.dispose();
     offerTitleController.dispose();
@@ -262,6 +264,7 @@ class _BazaarPopUpState extends State<PostAnOfferDialog> {
                 AppConstant.kheight(height: 10),
                 InkWell(
                   onTap: () async {
+                    FocusScope.of(context).requestFocus(tempFocus);
                     final date = await pickDate();
                     if (date == null) return;
                     final time = await picktime();
@@ -304,6 +307,7 @@ class _BazaarPopUpState extends State<PostAnOfferDialog> {
                 //valid to
                 InkWell(
                   onTap: () async {
+                    FocusScope.of(context).requestFocus(tempFocus);
                     final date = await pickDate();
                     if (date == null) return;
                     final time = await picktime();
@@ -409,6 +413,7 @@ class _BazaarPopUpState extends State<PostAnOfferDialog> {
                       style: TextStyle(color: Colors.grey[700]),
                     ),
                     onPressed: () {
+                      FocusScope.of(context).requestFocus(tempFocus);
                       imagePickProvider.pickImage();
                     },
                     style: ElevatedButton.styleFrom(

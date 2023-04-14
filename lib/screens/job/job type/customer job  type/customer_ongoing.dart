@@ -38,7 +38,6 @@ class _CustomerOngoingjobState extends State<CustomerOngoingjob> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     print("ongoing job build");
     return Scaffold(
         appBar: AppBar(

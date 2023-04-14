@@ -160,9 +160,11 @@ class DraftJobCard extends StatelessWidget {
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               CustomerJobMoreDetails(
-                                                  jobDetails: jobModel,
-                                                  endPoint: endPoint,
-                                                  jobStatus: jobStatus),
+                                            jobId: jobModel.id.toString(),
+                                            // jobDetails: jobModel,
+                                            // endPoint: endPoint,
+                                            // jobStatus: jobStatus
+                                          ),
                                         ));
                                   },
                                   radius: 20,

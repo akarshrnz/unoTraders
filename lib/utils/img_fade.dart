@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:flutter/material.dart';
 import 'package:image_fade/image_fade.dart';
@@ -26,7 +27,8 @@ class ImgFade {
       {required String url, double? width, double? height, BoxFit? fit}) {
     return ImageFade(
       // whenever the image changes, it will be loaded, and then faded in:
-      image: NetworkImage(url),
+      image: CachedNetworkImageProvider(url),
+      // NetworkImage(url),
 
       // slow fade for newly loaded images:
       duration: const Duration(milliseconds: 900),

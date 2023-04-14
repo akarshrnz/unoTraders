@@ -46,7 +46,7 @@ class _CustomerLiveJobCardState extends State<CustomerLiveJobCard> {
     final jobModel = Provider.of<FetchJobModel>(context);
     final jobProvider = Provider.of<JobProvider>(context, listen: true);
     final size = MediaQuery.of(context).size;
-    DateTime date = DateTime.parse(jobModel.createdAt!);
+    DateTime date = DateTime.parse(jobModel.createdAt ?? "");
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
@@ -172,9 +172,11 @@ class _CustomerLiveJobCardState extends State<CustomerLiveJobCard> {
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               CustomerJobMoreDetails(
-                                                  jobDetails: jobModel,
-                                                  endPoint: widget.endPoint,
-                                                  jobStatus: widget.jobStatus),
+                                            jobId: jobModel.id.toString(),
+                                            // jobDetails: jobModel,
+                                            // endPoint: widget.endPoint,
+                                            // jobStatus: widget.jobStatus
+                                          ),
                                         ));
                                   },
                                   radius: 20,

@@ -139,7 +139,22 @@ class _EnterOtpState extends State<EnterOtp> {
     final result = jsonDecode(response.body);
     LoadingDialog.hide(context);
     if (result['status'] == 200) {
+      print("ot p login data");
       sp!.setString('token', result['data']['token']);
+      sp!.setString("id", result['data']['user_id'].toString());
+      sp!.setString("userType", result['data']['user_type']);
+      sp!.setString("userName", result['data']['name']);
+      sp!.setString("mobile", result['data']['mobile']);
+      sp!.setString("profilePic", result['data']['profile_pic']);
+      sp!.setString("email", result['data']['email']);
+
+      // ignore: avoid_print
+      print("user id");
+      // ignore: avoid_print
+      print(sp!.getString('id'));
+      print(sp!.getString('userName'));
+      // ignore: avoid_print
+      print(sp!.getString('userType'));
       ToastMsg.toastMsg(result['message']);
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => Dashboard()));

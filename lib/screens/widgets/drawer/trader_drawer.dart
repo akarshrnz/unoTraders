@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:codecarrots_unotraders/model/trader_profile_model.dart';
 import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
+import 'package:codecarrots_unotraders/screens/job/job%20type/trader%20job%20type/trader_job_quote_requests.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/router_class.dart';
 import 'package:codecarrots_unotraders/screens/Profile/customer_blocked_screen.dart';
@@ -69,8 +71,10 @@ class TraderDrawer extends StatelessWidget {
                                   child: CircleAvatar(
                                       backgroundColor: AppColor.whiteColor,
                                       radius: 27,
-                                      backgroundImage: NetworkImage(
-                                          user.currentUserProfilePic ?? "")),
+                                      backgroundImage:
+                                          CachedNetworkImageProvider(
+                                              user.currentUserProfilePic ??
+                                                  "")),
                                 ),
                           SizedBox(
                             width: 5,
@@ -217,6 +221,11 @@ class TraderDrawer extends StatelessWidget {
             image: PngImages.drawerJob,
             text: "Job Quote Request",
             onPressed: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.fade,
+                      child: TraderJobQuoteRequests()));
               // Navigator.of(context).push(
               //     MaterialPageRoute(builder: (context) => const TraderJob()));
             },

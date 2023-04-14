@@ -40,6 +40,7 @@ class Url {
   // static String jobStatu = baseUrl + 'job/status/${id}/';
   static const String customerSeekQuote = baseUrl + 'customer/seek-quote/';
   static const String customerGetQuote = baseUrl + 'job/getquote';
+  static const String jobMoreDetails = baseUrl + 'job/details';
 
   //Customer side job status
   static String customerJobAcceptReject =

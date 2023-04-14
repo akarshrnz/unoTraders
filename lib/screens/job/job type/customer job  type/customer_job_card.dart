@@ -150,13 +150,22 @@ class CustomerJobCard extends StatelessWidget {
 
                                     if (onlyMoreDetails == true) {
                                       print("only more details");
+
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                CustomerMoreDetails(
-                                                    jobDetails: jobModel),
+                                                CustomerJobMoreDetails(
+                                                    jobId:
+                                                        jobModel.id.toString()),
                                           ));
+                                      // Navigator.push(
+                                      //     context,
+                                      //     MaterialPageRoute(
+                                      //       builder: (context) =>
+                                      //           CustomerMoreDetails(
+                                      //               jobDetails: jobModel),
+                                      //     ));
                                     } else {
                                       // Navigator.push(context, MaterialPageRoute(
                                       //   builder: (context) {

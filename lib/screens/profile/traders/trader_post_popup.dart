@@ -41,6 +41,7 @@ class _BazaarPopUpState extends State<TraderPostPopUp> {
   late ProfileProvider profileProvider;
   late FocusNode postTitleFocus;
   late FocusNode descriptionFocus;
+  late FocusNode tempFocus;
   late TextEditingController postTitleController;
   late TextEditingController descriptionController;
 
@@ -55,6 +56,7 @@ class _BazaarPopUpState extends State<TraderPostPopUp> {
   }
 
   initialize() async {
+    tempFocus = FocusNode();
     postTitleFocus = FocusNode();
     descriptionFocus = FocusNode();
     postTitleController = TextEditingController(
@@ -77,6 +79,7 @@ class _BazaarPopUpState extends State<TraderPostPopUp> {
     super.dispose();
     imagePickProvider.images = [];
     imagePickProvider.imageFile = [];
+    tempFocus.dispose();
     postTitleFocus.dispose();
     descriptionFocus.dispose();
     postTitleController.dispose();
@@ -166,11 +169,10 @@ class _BazaarPopUpState extends State<TraderPostPopUp> {
               focusNode: descriptionFocus,
               controller: descriptionController,
               hintText: "Product",
-              textInputAction: TextInputAction.next,
+              textInputAction: TextInputAction.done,
               onFieldSubmitted: (p0) {
                 descriptionFocus.unfocus();
               },
-              onEditingComplete: () => FocusScope.of(context).nextFocus(),
               validate: (value) {
                 if (value == null || value.isEmpty) {
                   return "This field is required";
@@ -247,6 +249,7 @@ class _BazaarPopUpState extends State<TraderPostPopUp> {
                 style: TextStyle(color: Colors.grey[700]),
               ),
               onPressed: () {
+                FocusScope.of(context).requestFocus(tempFocus);
                 imagePickProvider.pickImage();
               },
               style: ElevatedButton.styleFrom(

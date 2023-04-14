@@ -9,9 +9,13 @@ import 'package:codecarrots_unotraders/model/customer_quote_action_model.dart';
 import 'package:codecarrots_unotraders/model/customer_seek_quote_model.dart';
 import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
 import 'package:codecarrots_unotraders/model/get_accept_reject_model.dart';
+import 'package:codecarrots_unotraders/model/job_clarification_model.dart';
+import 'package:codecarrots_unotraders/model/job_more_details_model.dart';
 import 'package:codecarrots_unotraders/model/job_search_model.dart';
 import 'package:codecarrots_unotraders/model/post_job_model.dart';
+import 'package:codecarrots_unotraders/model/post_job_more_details_model.dart';
 import 'package:codecarrots_unotraders/model/quote/get_quote_model.dart';
+import 'package:codecarrots_unotraders/model/reply_job_more_details_model.dart';
 import 'package:codecarrots_unotraders/model/request_job_quote_model.dart';
 import 'package:codecarrots_unotraders/model/trader_quote_request_model.dart';
 import 'package:codecarrots_unotraders/model/trader_req_info_model.dart';
@@ -54,7 +58,38 @@ class JobServices {
         }
         return FetchJobModel.jobSnapshot(tempList);
       } else {
-        throw body["message"];
+        throw body["message"] ?? "Something Went Wrong";
+      }
+    } catch (e) {
+      print(e.toString());
+      throw Failure("Something Went Wrong");
+    }
+  }
+
+  static Future<List<FetchJobModel>> fetchAllJobQuoteRequests() async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    String id = sharedPrefs.getString('id')!;
+    try {
+      var response = await http.get(
+        Uri.parse(
+            'https://demo.unotraders.com/api/v1/job/traderjobsquoterequests/$id'),
+        headers: Header.header,
+      );
+      print("job fetched successfully");
+
+      print(response.body);
+      print(response.statusCode);
+      Map body = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        print("sucess");
+        List tempList = [];
+        for (var data in body["data"]) {
+          tempList.add(data);
+        }
+        return FetchJobModel.jobSnapshot(tempList);
+      } else {
+        throw body["message"] ?? "Something Went Wrong";
       }
     } catch (e) {
       print(e.toString());
@@ -207,6 +242,38 @@ class JobServices {
         return FetchJobModel.jobSnapshot(tempList);
       } else {
         return FetchJobModel.jobSnapshot([]);
+      }
+    } catch (e) {
+      print(e.toString());
+      throw Failure("Something Went Wrong");
+    }
+  }
+
+  //fetch job clarification req
+  static Future<List<JobClarificationModel>>
+      getJobClarificationRequest() async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    String id = sharedPrefs.getString('id')!;
+    String userType = sharedPrefs.getString('userType')!;
+
+    try {
+      var response = await http.get(
+        Uri.parse(
+            'https://demo.unotraders.com/api/v1/job/jobclarificationlist/$id'),
+        headers: Header.header,
+      );
+      Map body = jsonDecode(response.body);
+      print(response.body);
+
+      if (body["status"] == 200) {
+        print("sucess");
+        List tempList = [];
+        for (var data in body["data"] ?? []) {
+          tempList.add(data);
+        }
+        return JobClarificationModel.snapshot(tempList);
+      } else {
+        return JobClarificationModel.snapshot([]);
       }
     } catch (e) {
       print(e.toString());
@@ -603,10 +670,11 @@ class JobServices {
 
   //request job quote
 
-  static Future<void> requestJobQuote(
+  static Future<bool> requestJobQuote(
       {required RequestJobQuoteModel request}) async {
     // ignore: avoid_print
     print("sending job quote...");
+    print(request.toJson());
 
     final body = jsonEncode(request.toJson());
     print(body);
@@ -626,14 +694,19 @@ class JobServices {
         print("sucess");
         // ignore: avoid_print
         AppConstant.toastMsg(
-            msg: data["message"], backgroundColor: AppColor.green);
+            msg: data["message"] ?? "", backgroundColor: AppColor.green);
         print(response.body);
         // List tempList = [];
         // for (var v in data["data"]) {
         //   tempList.add(v);
         // }
+        return true;
       } else {
-        throw data["error"] ?? "Something Went Wrong";
+        AppConstant.toastMsg(
+            msg: data["message"] ?? "Something Went Wrong",
+            backgroundColor: AppColor.red);
+
+        return false;
       }
     } catch (e) {
       print(e.toString());
@@ -641,7 +714,7 @@ class JobServices {
     }
   }
 
-  static Future<void> requestMoreDetails(
+  static Future<bool> requestMoreDetails(
       {required TraderReqMoreModel request}) async {
     // ignore: avoid_print
     print("sending job quote...");
@@ -662,17 +735,23 @@ class JobServices {
       Map<String, dynamic> data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        print("sucess");
+        print("sucess ..sended  more details");
+        print(response.body);
         // ignore: avoid_print
         AppConstant.toastMsg(
-            msg: data["message"], backgroundColor: AppColor.green);
+            msg: data["message"] ?? "Success", backgroundColor: AppColor.green);
         print(response.body);
+        return true;
         // List tempList = [];
         // for (var v in data["data"]) {
         //   tempList.add(v);
         // }
       } else {
-        throw data["error"] ?? "Something Went Wrong";
+        AppConstant.toastMsg(
+            msg: data["message"] ?? "Something Went Wrong",
+            backgroundColor: AppColor.red);
+
+        return false;
       }
     } catch (e) {
       print(e.toString());
@@ -683,8 +762,13 @@ class JobServices {
   //trader job ifo fetch
   static Future<List<TraderRequestInfoModel>> fetchTraderjobinfo(
       {required String jobId, required String traderId}) async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    String id = sharedPrefs.getString('id')!;
+    String userType = sharedPrefs.getString('userType')!;
     // ignore: avoid_print
-    print("inside job trader info fetch");
+    print("inside job trader info request more details page fetch");
+    print(
+        "https://demo.unotraders.com/api/v1/job/jobquotedetails/$jobId/$traderId");
 
     try {
       var response = await http.get(
@@ -747,6 +831,79 @@ class JobServices {
     } catch (e) {
       print(e.toString());
       AppConstant.toastMsg(msg: e.toString(), backgroundColor: AppColor.red);
+    }
+  }
+
+  //get job more details
+  static Future<JobMoreDetailsModel> getJobMoreDetails(
+      {required PostJobMoreDetailsModel jobDetailsModel}) async {
+    try {
+      var response = await http.post(Uri.parse(Url.jobMoreDetails),
+          headers: Header.header, body: jsonEncode(jobDetailsModel.toJson()));
+      Map<String, dynamic> body = jsonDecode(response.body);
+      print(body);
+      if (response.statusCode == 200) {
+        return JobMoreDetailsModel.fromJson(body['data']);
+      } else {
+        throw "Something Went Wrong";
+      }
+    } on http.ClientException {
+      throw Failure('Failed to establish connection');
+    } on RedirectException {
+      throw Failure('Failed to redirect');
+    } on TimeoutException {
+      throw Failure('Request timed out');
+    } on SocketException {
+      throw Failure('No Internet connection 😑');
+    } on HttpException {
+      throw Failure("404 The requested resource could not be found");
+    } on FormatException {
+      throw Failure('Bad response format');
+    } catch (e) {
+      print("service errpr");
+      throw Failure(e.toString());
+    }
+  }
+
+  static Future<List<Details>> postJobMoreDetailsReplyComment(
+      {required ReplyMoreDetailsModel reply}) async {
+    print(reply.toJson());
+    print(reply.toJson());
+    try {
+      var response = await http.post(
+          Uri.parse('https://demo.unotraders.com/api/v1/job/quotereply'),
+          headers: Header.header,
+          body: jsonEncode(reply.toJson()));
+      Map<String, dynamic> body = jsonDecode(response.body);
+      print(body);
+      List tempList = [];
+
+      if (response.statusCode == 200) {
+        // ignore: avoid_print
+        print(response.body);
+        List tempList = [];
+        for (var v in body["data"] ?? []) {
+          tempList.add(v);
+        }
+        return Details.snapshot(tempList);
+      } else {
+        return [];
+      }
+    } on http.ClientException {
+      throw Failure('Failed to establish connection');
+    } on RedirectException {
+      throw Failure('Failed to redirect');
+    } on TimeoutException {
+      throw Failure('Request timed out');
+    } on SocketException {
+      throw Failure('No Internet connection 😑');
+    } on HttpException {
+      throw Failure("404 The requested resource could not be found");
+    } on FormatException {
+      throw Failure('Bad response format');
+    } catch (e) {
+      print("service errpr");
+      throw Failure(e.toString());
     }
   }
 }

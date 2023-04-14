@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
+import 'package:codecarrots_unotraders/screens/job/job%20type/customer%20job%20%20type/job_clarification_request.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/router_class.dart';
 import 'package:codecarrots_unotraders/screens/appointments/appointment_listing.dart';
@@ -82,9 +83,10 @@ class CustomerDrawer extends StatelessWidget {
                                             backgroundColor:
                                                 AppColor.whiteColor,
                                             radius: 27,
-                                            backgroundImage: NetworkImage(
-                                                user.currentUserProfilePic ??
-                                                    "")),
+                                            backgroundImage:
+                                                CachedNetworkImageProvider(
+                                                    user.currentUserProfilePic ??
+                                                        "")),
                                       ),
                             SizedBox(
                               width: 5,
@@ -266,10 +268,10 @@ class CustomerDrawer extends StatelessWidget {
             const SizedBox(height: 10),
             drawerTile(
               image: PngImages.drawerJob,
-              text: "Job Quote Request",
+              text: "Clarification Request",
               onPressed: () {
-                // Navigator.of(context).push(
-                //     MaterialPageRoute(builder: (context) => const TraderJob()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const JobClarificationRequest()));
               },
             ),
             const SizedBox(height: 10),

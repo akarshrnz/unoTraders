@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:codecarrots_unotraders/model/current_job_model.dart';
 import 'package:codecarrots_unotraders/model/customer_seek_quote_model.dart';
 import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
+import 'package:codecarrots_unotraders/model/job_clarification_model.dart';
 import 'package:codecarrots_unotraders/model/job_search_model.dart';
 import 'package:codecarrots_unotraders/model/post_job_model.dart';
 import 'package:codecarrots_unotraders/model/request_job_quote_model.dart';
@@ -49,7 +50,7 @@ class JobProvider with ChangeNotifier {
   CurrentJobModel? currentjob;
   bool isSeekingQuote = false;
   String seekQuoteError = "";
-
+  List<JobClarificationModel> jobClarificationList = [];
   disposeAll() {
     _categoryErrorMessage = "";
     _subCategoryErrorMessage = "";
@@ -498,6 +499,24 @@ class JobProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  //get job calrification request
+  Future<void> fetchJobClarification() async {
+    isLoading = true;
+    jobClarificationList = [];
+    errorMessage = '';
+
+    notifyListeners();
+    try {
+      jobClarificationList = await JobServices.getJobClarificationRequest();
+      print(jobClarificationList.length.toString());
+    } catch (e) {
+      jobClarificationList = [];
+      errorMessage = e.toString();
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
   //fetch seek quote
   Future<void> fetchQuote({required String jobId}) async {
     isSeekingQuote = true;
@@ -576,6 +595,22 @@ class JobProvider with ChangeNotifier {
     notifyListeners();
     try {
       allJobList = await JobServices.fetchAllJob();
+      print(allJobList.length);
+    } catch (e) {
+      print(e.toString());
+      errorMessage = e.toString();
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> fetchAllJobQuoteRequests() async {
+    isLoading = true;
+    allJobList = [];
+    errorMessage = '';
+    notifyListeners();
+    try {
+      allJobList = await JobServices.fetchAllJobQuoteRequests();
       print(allJobList.length);
     } catch (e) {
       print(e.toString());

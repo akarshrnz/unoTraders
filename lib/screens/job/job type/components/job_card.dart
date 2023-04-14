@@ -167,9 +167,10 @@ class JobCard extends StatelessWidget {
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 CustomerJobMoreDetails(
-                                              jobDetails: jobModel,
-                                              endPoint: '',
-                                              jobStatus: '',
+                                              jobId: jobModel.id.toString(),
+                                              // jobDetails: jobModel,
+                                              // endPoint: '',
+                                              // jobStatus: '',
                                             ),
                                           ));
                                     } else {

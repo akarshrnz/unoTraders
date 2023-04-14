@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
 import 'package:codecarrots_unotraders/model/get_accept_reject_model.dart';
 import 'package:codecarrots_unotraders/screens/job/job%20type/customer%20job%20%20type/customer_job_more_details.dart';
@@ -53,6 +54,15 @@ class TraderJobCard extends StatelessWidget {
                   child: jobModel.jobimages!.isEmpty
                       ? ImgFade.errorImage(
                           height: size.height * .1, width: size.width * .2)
+                      // : CachedNetworkImage(
+                      //     imageUrl: jobModel.jobimages == null
+                      //         ? ""
+                      //         : jobModel.jobimages![0],
+                      //     height: size.height * .1,
+                      //     width: size.width * .2,
+                      //     errorWidget: (context, url, error) =>
+                      //         Icon(Icons.error),
+                      //   ),
                       : ImgFade.fadeImage(
                           height: size.height * .1,
                           width: size.width * .2,
@@ -151,7 +161,7 @@ class TraderJobCard extends StatelessWidget {
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               TraderJobMoreDetail(
-                                            jobDetails: jobModel,
+                                            jobId: jobModel.jobId.toString(),
                                             isAlljobs: false,
                                           ),
                                         ));

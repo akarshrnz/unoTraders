@@ -150,11 +150,20 @@ class TraderJobViewCard extends StatelessWidget {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              TraderAllJobMoreDetail(
-                                            jobDetails: jobModel,
+                                              TraderJobMoreDetail(
+                                            jobId: jobModel.id.toString(),
                                             isAlljobs: true,
                                           ),
                                         ));
+                                    // Navigator.push(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //       builder: (context) =>
+                                    //           TraderAllJobMoreDetail(
+                                    //         jobDetails: jobModel,
+                                    //         isAlljobs: true,
+                                    //       ),
+                                    //     ));
                                   },
                                   radius: 20,
                                 ),
@@ -169,7 +178,10 @@ class TraderJobViewCard extends StatelessWidget {
                                     await showDialog(
                                       context: context,
                                       builder: (context) => QuoteRequestPopUp(
-                                        jobDetails: jobModel,
+                                        callMessage: false,
+                                        jobId: jobModel.id.toString(),
+                                        jobTitle: jobModel.title ?? "",
+                                        userid: jobModel.userId.toString(),
                                       ),
                                     );
                                   },
@@ -195,7 +207,10 @@ class TraderJobViewCard extends StatelessWidget {
                                     await showDialog(
                                       context: context,
                                       builder: (context) => QuoteRequestPopUp(
-                                        jobDetails: jobModel,
+                                        callMessage: false,
+                                        jobTitle: jobModel.title ?? "",
+                                        userid: jobModel.userId.toString(),
+                                        jobId: jobModel.id.toString(),
                                         isRequestMoreDetails: true,
                                       ),
                                     );

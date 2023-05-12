@@ -928,13 +928,19 @@ class _TraderProfileState extends State<TraderProfileVisit> {
                               AppConstant.kWidth(width: 5),
                               Expanded(
                                   flex: 1,
-                                  child: Container(
-                                      height: 40,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: AppColor.green)),
-                                      child: TextWidget(data: "Bad Review")))
+                                  child: InkWell(
+                                    onTap: () {
+                                      profileProvider.getBadReview(
+                                          traderId: widget.id);
+                                    },
+                                    child: Container(
+                                        height: 40,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: AppColor.green)),
+                                        child: TextWidget(data: "Bad Review")),
+                                  ))
                             ],
                           ),
                           ViewReviewScreen(

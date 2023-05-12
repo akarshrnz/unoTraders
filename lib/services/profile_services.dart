@@ -576,6 +576,38 @@ class ProfileServices {
       throw e.toString();
     }
   }
+
+  //get bad review
+  static Future<List<ViewCustomerReviewModel>> getTraderBadReviews(
+      {required String traderId}) async {
+    print(' trader review fetching....');
+    print('https://demo.unotraders.com/api/v1/trader/reviewlist/$traderId');
+    Map body = {};
+    try {
+      var response = await http.get(
+        Uri.parse(
+            'https://demo.unotraders.com/api/v1/trader/badreviewlist/$traderId'),
+        headers: Header.header,
+      );
+      print(response.statusCode.toString());
+      print(response.body);
+
+      body = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        print("sucess");
+        List tempList = [];
+        for (var data in body["data"] ?? []) {
+          tempList.add(data);
+        }
+        return ViewCustomerReviewModel.snapshot(tempList);
+      } else {
+        throw body["message"] ?? "Something Went Wrong";
+      }
+    } catch (e) {
+      print(e.toString());
+      throw e.toString();
+    }
+  }
   //add review by customer visiting trader profile or trader by own profile
 
   static Future<bool> addMainReview(

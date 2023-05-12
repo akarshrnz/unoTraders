@@ -62,7 +62,12 @@ class ProfileProvider with ChangeNotifier {
   String qrCodeUserId = "";
   bool qrLoading = false;
   String qrError = "";
+  // bool isBadReviewLoading = false;
+  // String badReviewFetchingError = "";
+  // List<ViewCustomerReviewModel> badReviewList = [];
 
+  // List<TextEditingController> badReviewTextControllerList = [];
+  // List<TextEditingController> badReviewReplyTextControllerList = [];
   changeTab({required int index}) {
     currentIndex = index;
     notifyListeners();
@@ -226,10 +231,10 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
   }
 
-//review
+  //review
   Future<void> getReview({required String traderId}) async {
-    fetchingError = '';
-    if (allReviewList.isNotEmpty) return;
+    // fetchingError = '';
+    // if (allReviewList.isNotEmpty) return;
     print("after return");
     isReviewLoading = true;
     expandable = [];
@@ -269,6 +274,92 @@ class ProfileProvider with ChangeNotifier {
     }
     notifyListeners();
   }
+
+//bad review
+  Future<void> getBadReview({required String traderId}) async {
+    // fetchingError = '';
+    // if (allReviewList.isNotEmpty) return;
+    print("after return");
+    isReviewLoading = true;
+    expandable = [];
+    allReviewList = [];
+    reviewTextControllerList = [];
+    reviewReplyTextControllerList = [];
+    fetchingError = '';
+    notifyListeners();
+    await getAllBadReviews(traderId: traderId);
+
+    isReviewLoading = false;
+
+    notifyListeners();
+  }
+
+  Future<void> getAllBadReviews({required String traderId}) async {
+    try {
+      final data =
+          await ProfileServices.getTraderBadReviews(traderId: traderId);
+      allReviewList = [];
+      allReviewList = data;
+      reviewTextControllerList = List.generate(
+          allReviewList.length, (index) => TextEditingController());
+      allReviewList.forEach((element) {
+        element.comment!.forEach((comment) {
+          comment.isExapand = false;
+        });
+      });
+      // reviewReplyTextControllerList = List.generate(
+      //     allReviewList.length, (index) => TextEditingController());
+      // expandable = List.generate(allReviewList.length, (index) => false);
+
+      print('allReviewList length ${allReviewList.length.toString()}');
+    } catch (e) {
+      fetchingError = e.toString();
+      allReviewList = [];
+    }
+    notifyListeners();
+  }
+  // Future<void> getBadReview({required String traderId}) async {
+  //   badReviewFetchingError = '';
+  //   if (badReviewList.isNotEmpty) return;
+  //   print("after return");
+  //   isBadReviewLoading = true;
+  //   expandable = [];
+  //   badReviewList = [];
+  //   badReviewTextControllerList = [];
+  //   badReviewReplyTextControllerList = [];
+  //   badReviewFetchingError = '';
+  //   notifyListeners();
+  //   await getAllBadReviews(traderId: traderId);
+
+  //   isBadReviewLoading = false;
+
+  //   notifyListeners();
+  // }
+  // Future<void> getAllBadReviews({required String traderId}) async {
+  //   try {
+  //     final data =
+  //         await ProfileServices.getTraderAllReviews(traderId: traderId);
+  //     badReviewList = [];
+  //     badReviewList = data;
+  //     badReviewTextControllerList = List.generate(
+  //         badReviewList.length, (index) => TextEditingController());
+  //     badReviewList.forEach((element) {
+  //       element.comment!.forEach((comment) {
+  //         comment.isExapand = false;
+  //       });
+  //     });
+  //     // reviewReplyTextControllerList = List.generate(
+  //     //     badReviewList.length, (index) => TextEditingController());
+  //     // expandable = List.generate(allReviewList.length, (index) => false);
+
+  //     print('bad review length ${badReviewList.length.toString()}');
+  //   } catch (e) {
+  //     badReviewFetchingError = e.toString();
+  //     badReviewList = [];
+  //   }
+  //   notifyListeners();
+  // }
+
   //expand or hide
 
   expandHide({required int mainIndex, required int commentId}) {

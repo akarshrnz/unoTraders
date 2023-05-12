@@ -184,36 +184,7 @@ class _CustomerReviewScreenState extends State<CustomerReviewScreen> {
                                       }
                                     }
 
-                                    // if (value == true &&
-                                    //     _completedIsChecked.contains(true)) {
-
-                                    //   print("after return");
-                                    // _completedIsChecked = List<bool>.filled(
-                                    //     ReviewData.reviewQuestions.length,
-                                    //     false);
-                                    //   setState(
-                                    //     () {
-                                    //       _completedIsChecked[index] = value!;
-                                    //       completedValue =
-                                    //           ReviewData.reviewQuestionsValues(
-                                    //               reviewtype: ReviewData
-                                    //                   .reviewQuestions[index]);
-                                    //       print(completedValue.toString());
-                                    //     },
-                                    //   );
-                                    //   print("already true values");
-                                    // } else {
-                                    //   setState(
-                                    //     () {
-                                    //       _completedIsChecked[index] = value!;
-                                    //       completedValue =
-                                    //           ReviewData.reviewQuestionsValues(
-                                    //               reviewtype: ReviewData
-                                    //                   .reviewQuestions[index]);
-                                    //       print(completedValue.toString());
-                                    //     },
-                                    //   );
-                                    // }
+                                   
                                   },
                                 )).toList(),
                       ),

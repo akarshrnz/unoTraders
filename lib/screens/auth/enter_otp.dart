@@ -26,6 +26,7 @@ class _EnterOtpState extends State<EnterOtp> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.mobile.toString());
     return Scaffold(
       body: Container(
         height: double.infinity,

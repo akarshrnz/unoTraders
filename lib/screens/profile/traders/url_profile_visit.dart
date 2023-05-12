@@ -982,13 +982,24 @@ class _TraderProfileState extends State<UrlTraderProfileVisit> {
                               AppConstant.kWidth(width: 5),
                               Expanded(
                                   flex: 1,
-                                  child: Container(
-                                      height: 40,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: AppColor.green)),
-                                      child: TextWidget(data: "Bad Review")))
+                                  child: Consumer<ProfileProvider>(
+                                      builder: (context, userIdProvider, _) {
+                                    return InkWell(
+                                      onTap: () {
+                                        profileProvider.getBadReview(
+                                            traderId:
+                                                userIdProvider.qrCodeUserId);
+                                      },
+                                      child: Container(
+                                          height: 40,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: AppColor.green)),
+                                          child:
+                                              TextWidget(data: "Bad Review")),
+                                    );
+                                  }))
                             ],
                           ),
                           ViewReviewScreen(

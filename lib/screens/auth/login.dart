@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:codecarrots_unotraders/main.dart';
 import 'package:codecarrots_unotraders/model/login_model.dart';
+import 'package:codecarrots_unotraders/screens/auth/forgot_password.dart';
 import 'package:codecarrots_unotraders/screens/auth/signup.dart';
 import 'package:codecarrots_unotraders/screens/dashboard/dashboard.dart';
 import 'package:codecarrots_unotraders/screens/widgets/dialog/loader_dialog.dart';
@@ -11,6 +12,7 @@ import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/toast.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../../utils/color.dart';
 import '../../utils/png.dart';
@@ -123,24 +125,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.02,
                 ),
-                Align(
-                    alignment: Alignment.centerRight,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextWidget(
-                          data: 'Forgot Password ?',
-                          style: TextStyle(
-                              color: AppColor.whiteColor,
-                              fontSize:
-                                  MediaQuery.of(context).size.width * 0.045,
-                              fontWeight: FontWeight.w500),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.13,
-                        )
-                      ],
-                    )),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.fade,
+                            child: ForgotPassword()));
+                  },
+                  child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextWidget(
+                            data: 'Forgot Password ?',
+                            style: TextStyle(
+                                color: AppColor.whiteColor,
+                                fontSize:
+                                    MediaQuery.of(context).size.width * 0.045,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.13,
+                          )
+                        ],
+                      )),
+                ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.02,
                 ),

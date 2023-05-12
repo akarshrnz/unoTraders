@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:codecarrots_unotraders/model/auth%20Model/register_model.dart';
+import 'package:codecarrots_unotraders/screens/auth/enter_otp.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/services/api_sevices.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
@@ -544,9 +545,14 @@ class _SignupScreenState extends State<SignupScreen> {
     LoadingDialog.hide(context);
     if (result['status'] == 200) {
       ToastMsg.toastMsg(result['message']);
-      _controllers();
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => EnterOtp(
+                mobile: _mobile.text,
+              )));
+      // _controllers();
+      //test
     } else {
-      ToastMsg.toastMsg(result['message']);
+      ToastMsg.toastMsg(result['message'][0] ?? "Something went wrong");
     }
   }
 
@@ -603,7 +609,7 @@ class _SignupScreenState extends State<SignupScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Colors.red,
-        content: TextWidget(data: result['message']),
+        content: TextWidget(data: result['message'] ?? "Something Went Wrong"),
         duration: const Duration(seconds: 2),
       ));
     }

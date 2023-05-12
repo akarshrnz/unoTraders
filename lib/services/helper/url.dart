@@ -15,6 +15,7 @@ class Url {
   static const String login = baseUrl + 'login';
   static const String otpLogin = baseUrl + 'login-with-otp';
   static const String validateOtp = baseUrl + 'validate-otp';
+  static const String forgotPassword = baseUrl + 'reset_password';
 
   //Dashboard
   static const String banners = baseUrl + 'banners';

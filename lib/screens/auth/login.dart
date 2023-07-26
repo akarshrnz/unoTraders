@@ -7,6 +7,7 @@ import 'package:codecarrots_unotraders/model/login_model.dart';
 import 'package:codecarrots_unotraders/screens/auth/forgot_password.dart';
 import 'package:codecarrots_unotraders/screens/auth/signup.dart';
 import 'package:codecarrots_unotraders/screens/dashboard/dashboard.dart';
+import 'package:codecarrots_unotraders/screens/Location/location_permission_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/dialog/loader_dialog.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
@@ -292,8 +293,11 @@ class _LoginScreenState extends State<LoginScreen> {
       print(sp!.getString('userName'));
       // ignore: avoid_print
       print(sp!.getString('userType'));
+      // Navigator.of(context).pushReplacement(
+      //     MaterialPageRoute(builder: (context) => const Dashboard()));
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const Dashboard()));
+          MaterialPageRoute(builder: (context) => PermissionScreen()));
+
       ToastMsg.toastMsg(result['message']);
       _controllers();
     } else {

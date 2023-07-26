@@ -75,8 +75,8 @@ class _TraderProfileState extends State<TraderProfileVisit> {
         customerType: userType.toLowerCase() == 'provider' ? null : userType);
 
     profileProvider.getFeeds(
-      userType: 'trader',
-      userId: widget.id,
+      urlUserType: 'trader',
+      traderId: widget.id,
     );
   }
 
@@ -837,10 +837,14 @@ class _TraderProfileState extends State<TraderProfileVisit> {
 
                                 if (index == 0) {
                                   profileProvider.getFeeds(
-                                      userType: 'trader', userId: widget.id);
+                                      urlUserType: 'trader',
+                                      traderId: profileModel.id == null
+                                          ? ""
+                                          : profileModel.id.toString());
                                 } else if (index == 1) {
                                   profileProvider.getOffers(
-                                      userType: 'trader', userId: widget.id);
+                                      urlUserType: 'trader',
+                                      traderId: widget.id);
                                 } else if (index == 2) {
                                   profileProvider.getReview(
                                       traderId: widget.id);

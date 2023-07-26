@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:codecarrots_unotraders/model/Feeds/trader_feed_model.dart';
 import 'package:codecarrots_unotraders/model/add_post.dart';
 import 'package:codecarrots_unotraders/model/add_review_comment_model.dart';
@@ -17,9 +15,7 @@ import 'package:codecarrots_unotraders/model/trader_profile_model.dart';
 import 'package:codecarrots_unotraders/model/update_profile.dart';
 import 'package:codecarrots_unotraders/model/view_customer_review_model.dart';
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
-import 'package:codecarrots_unotraders/services/api_sevices.dart';
 import 'package:codecarrots_unotraders/services/helper/failure.dart';
-import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/services/profile_services.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/app_constant.dart';
@@ -28,6 +24,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/appointments/change_appoint_status_model.dart';
 import '../model/appointments/reshedule_model.dart';
+import '../model/report_feed-model.dart';
 
 class ProfileProvider with ChangeNotifier {
   int currentIndex = 0;
@@ -40,6 +37,7 @@ class ProfileProvider with ChangeNotifier {
   String fetchingError = "";
   List<ReceiptModel> receiptList = [];
   bool isFeedLoading = false;
+  bool isOfferLoading = false;
   bool commentFetching = false;
   bool isReviewLoading = false;
   String reviewErro = "";
@@ -50,6 +48,8 @@ class ProfileProvider with ChangeNotifier {
   List<ViewCustomerReviewModel> allReviewList = [];
   int? currentFeedReactionIndex;
   List<bool> isFeedReactionOpen = [];
+  int? currentOfferReactionIndex;
+  List<bool> isOfferReactionOpen = [];
   List<TraderFeedModel> feed = [];
   List<TraderOfferListingModel> offerListing = [];
   List<BazaarModel> marketOrBazaarList = [];
@@ -145,14 +145,13 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getFeeds(
-      {required String userType, required String userId}) async {
+  Future<void> getFeeds({required String urlUserType, String? traderId}) async {
     fetchingError = '';
     if (feed.isNotEmpty) return;
     print("after return");
     isFeedLoading = true;
     fetchingError = '';
-    await getTraderFeeds(userType: userType, userId: userId);
+    await getTraderFeeds(urlUserType: urlUserType, traderId: traderId);
 
     // try {
     //   await getTraderFeeds();
@@ -165,11 +164,13 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getTraderFeeds(
-      {required String userType, required String userId}) async {
+  Future<void> getTraderFeeds({
+    required String urlUserType,
+    String? traderId,
+  }) async {
     try {
-      List<TraderFeedModel> jsonData =
-          await ProfileServices.getTraderFeeds(id: userId, userType: userType);
+      List<TraderFeedModel> jsonData = await ProfileServices.getTraderFeeds(
+          urlUserType: urlUserType, traderId: traderId);
       feed = [];
       isFeedReactionOpen = [];
       currentFeedReactionIndex = null;
@@ -184,6 +185,28 @@ class ProfileProvider with ChangeNotifier {
       feed = [];
     }
     notifyListeners();
+  }
+
+  //report trader feed
+  Future<bool> reportFeeds({required ReportFeedModel report}) async {
+    try {
+      bool res = await ProfileServices.reportFeed(report: report);
+      if (res == true) {
+        AppConstant.toastMsg(
+            msg: "Post Reported Successfully", backgroundColor: AppColor.green);
+        return true;
+      } else {
+        AppConstant.toastMsg(
+            msg: "You already reported this post",
+            backgroundColor: AppColor.green);
+        return false;
+      }
+    } catch (e) {
+      AppConstant.toastMsg(
+          msg: "Something Went Wrong", backgroundColor: AppColor.red);
+      return false;
+    }
+    //notifyListeners();
   }
 
 //reaction
@@ -204,12 +227,17 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
   }
 
-//call reaction api
-  Future<void> postReaction(
+//call feed reaction api
+  Future<void> postFeedReaction(
       {required int postId,
       required String reactionEmoji,
       required int index}) async {
     feed[index].isReactionOpened = !feed[index].isReactionOpened!;
+
+    if (feed[index].emoji!.isEmpty) {
+      feed[index].likes = feed[index].likes! + 1;
+    }
+    feed[index].emoji = reactionEmoji;
     currentFeedReactionIndex = null;
     notifyListeners();
     final sharedPrefs = await SharedPreferences.getInstance();
@@ -220,9 +248,67 @@ class ProfileProvider with ChangeNotifier {
         traderPostId: postId,
         userId: int.parse(id),
         userType: userType);
+    print("post reaction in provider");
+    print(reaction.dataReaction);
 
     try {
-      bool res = await ProfileServices.postFeedReaction(reaction: reaction);
+      bool res = await ProfileServices.postCustomerReaction(
+          reaction: reaction, reactionEndpoints: "traderpostreaction");
+
+      print('completed}');
+    } catch (e) {
+      print(e.toString());
+    }
+    notifyListeners();
+  }
+
+  //offer reaction
+  changeOfferReactionByIndex(int index) {
+    print(index);
+    currentOfferReactionIndex = index;
+    offerListing[index].isReactionOpened =
+        !offerListing[index].isReactionOpened!;
+    // isFeedReactionOpen[index] = !isFeedReactionOpen[index];
+
+    notifyListeners();
+  }
+
+  closeAllOfferReaction() {
+    currentOfferReactionIndex = null;
+    offerListing.forEach((element) {
+      element.isReactionOpened = false;
+    });
+    notifyListeners();
+  }
+
+  //post offer reaction
+  Future<void> postOfferReaction(
+      {required int postId,
+      required String reactionEmoji,
+      required int index}) async {
+    offerListing[index].isReactionOpened =
+        !offerListing[index].isReactionOpened!;
+
+    if (offerListing[index].emoji!.isEmpty) {
+      offerListing[index].likes = offerListing[index].likes! + 1;
+    }
+    offerListing[index].emoji = reactionEmoji;
+    currentOfferReactionIndex = null;
+    notifyListeners();
+    final sharedPrefs = await SharedPreferences.getInstance();
+    String id = sharedPrefs.getString('id')!;
+    String userType = sharedPrefs.getString('userType')!;
+    FeedReactionModel reaction = FeedReactionModel(
+        dataReaction: reactionEmoji,
+        traderOfferId: postId,
+        userId: int.parse(id),
+        userType: userType);
+    print("post reaction in provider");
+    print(reaction.dataReaction);
+
+    try {
+      bool res = await ProfileServices.postCustomerReaction(
+          reaction: reaction, reactionEndpoints: "traderofferreaction");
 
       print('completed}');
     } catch (e) {
@@ -414,25 +500,35 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getOffers(
-      {required String userType, required String userId}) async {
+  Future<void> getOffers({
+    required String urlUserType,
+    String? traderId,
+  }) async {
     fetchingError = '';
     if (offerListing.isNotEmpty) return;
 
-    isFeedLoading = true;
+    isOfferLoading = true;
     fetchingError = '';
-    await getTraderOffers(userType: userType, userId: userId);
-    isFeedLoading = false;
+    await getTraderOffers(urlUserType: urlUserType, traderId: traderId);
+    isOfferLoading = false;
     notifyListeners();
   }
 
-  Future<void> getTraderOffers(
-      {required String userType, required String userId}) async {
+  Future<void> getTraderOffers({
+    required String urlUserType,
+    String? traderId,
+  }) async {
     try {
-      final offerData =
-          await ProfileServices.getTraderOffer(id: userId, userType: userType);
+      final offerData = await ProfileServices.getTraderOffer(
+          traderId: traderId, urlUserType: urlUserType);
       offerListing.clear();
+      isOfferReactionOpen = [];
+      currentOfferReactionIndex = null;
       offerListing = offerData;
+      if (offerListing.isNotEmpty) {
+        isOfferReactionOpen =
+            List.generate(offerListing.length, (index) => false);
+      }
     } catch (e) {
       fetchingError = e.toString();
       offerListing = [];
@@ -663,20 +759,42 @@ class ProfileProvider with ChangeNotifier {
   //post an offer
   Future<bool> postAnOffer({required PostOfferModel offerModel}) async {
     try {
-      await ProfileServices.postoffer(postOffer: offerModel);
-      return true;
+      bool res = await ProfileServices.postoffer(postOffer: offerModel);
+      if (res == true) {
+        AppConstant.toastMsg(
+            msg: "Offer posted successfully", backgroundColor: AppColor.green);
+        return true;
+      } else {
+        AppConstant.toastMsg(
+            msg: "Failed to post offer", backgroundColor: AppColor.red);
+        return false;
+      }
+
       // ignore: avoid_print
     } catch (e) {
-      throw e.toString();
+      AppConstant.toastMsg(
+          msg: "Something Went Wrong", backgroundColor: AppColor.red);
+      return false;
     }
   }
 
-  Future<void> updateOffer({required PostOfferModel offerModel}) async {
+  Future<bool> updateOffer({required PostOfferModel offerModel}) async {
     try {
-      await ProfileServices.updateoffer(postOffer: offerModel);
+      bool res = await ProfileServices.updateoffer(postOffer: offerModel);
+      if (res == true) {
+        AppConstant.toastMsg(
+            msg: "Offer updated successfully", backgroundColor: AppColor.green);
+        return true;
+      } else {
+        AppConstant.toastMsg(
+            msg: "Failed to update offer", backgroundColor: AppColor.red);
+        return false;
+      }
       // ignore: avoid_print
     } catch (e) {
-      throw e.toString();
+      AppConstant.toastMsg(
+          msg: "Something Went Wrong", backgroundColor: AppColor.red);
+      return false;
     }
   }
 
@@ -861,7 +979,8 @@ class ProfileProvider with ChangeNotifier {
       qrLoading = false;
       notifyListeners();
       if (profileModelData.id != null) {
-        getFeeds(userType: 'trader', userId: profileModelData.id.toString());
+        getFeeds(
+            urlUserType: 'trader', traderId: profileModelData.id.toString());
       } else {}
       return profileModelData;
     } catch (e) {

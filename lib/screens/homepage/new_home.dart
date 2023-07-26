@@ -1,29 +1,30 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:codecarrots_unotraders/model/all_sub_category_model.dart';
+import 'package:codecarrots_unotraders/model/Trader%20Search/trader_search.dart';
 import 'package:codecarrots_unotraders/model/banner_model.dart';
-import 'package:codecarrots_unotraders/model/trader_subcategory.dart';
 import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
 import 'package:codecarrots_unotraders/provider/home_provider.dart';
-import 'package:codecarrots_unotraders/provider/message_provider.dart';
+import 'package:codecarrots_unotraders/provider/location_provider.dart';
+import 'package:codecarrots_unotraders/screens/Location/select_location_screen.dart';
+import 'package:codecarrots_unotraders/screens/homepage/trader_search_popup.dart';
+import 'package:codecarrots_unotraders/screens/homepage/trader_search_result_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/router_class.dart';
-import 'package:codecarrots_unotraders/screens/homepage/components/view_all_categories.dart';
 import 'package:codecarrots_unotraders/screens/Notification/notification_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/drawer/customer_drawer.dart';
 import 'package:codecarrots_unotraders/screens/widgets/drawer/trader_drawer.dart';
-import 'package:codecarrots_unotraders/services/api_sevices.dart';
 import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:hive/hive.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../category screen/list_traders.dart';
 import 'components/view_more.dart';
 
 class NewHomePage extends StatefulWidget {
@@ -36,15 +37,26 @@ class NewHomePage extends StatefulWidget {
 class _NewHomePageState extends State<NewHomePage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   late HomeProvider homeProvider;
+  late LocationProvider locationProvider;
   bool isServices = true;
 
   @override
   void initState() {
     homeProvider = Provider.of<HomeProvider>(context, listen: false);
+    locationProvider = Provider.of<LocationProvider>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // locationProvider.requestPermissionAndStoreLocation();
+      // locationProvider.assignCurrentLocation();
       homeProvider.getHome();
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    Hive.close();
   }
 
   @override
@@ -70,39 +82,74 @@ class _NewHomePageState extends State<NewHomePage> {
             ),
           ),
         ),
-        title: Container(
-            height: MediaQuery.of(context).size.height * 0.05,
-            width: MediaQuery.of(context).size.width * 0.5,
-            decoration: BoxDecoration(
-              color: AppColor.whiteBtnColor,
-              borderRadius: BorderRadius.circular(5.0),
-            ),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Image.asset(PngImages.navigation),
-                ),
-                TextWidget(
-                  data: 'Location',
-                  style: TextStyle(
-                    color: AppColor.secondaryColor,
-                    fontSize: MediaQuery.of(context).size.width * 0.04,
+        title: Consumer<LocationProvider>(builder: (context, locProvider, _) {
+          return Container(
+              margin: EdgeInsets.symmetric(vertical: 10),
+              height: MediaQuery.of(context).size.height * 0.043,
+              width: MediaQuery.of(context).size.width * 0.9,
+              decoration: BoxDecoration(
+                color: AppColor.whiteBtnColor,
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image.asset(PngImages.navigation),
                   ),
-                ),
-              ],
-            )),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(
+                          context, SelectUserLocationScreen.routeName,
+                          arguments: true);
+                      // Navigator.push(
+                      //     context,
+                      //     PageTransition(
+                      //         type: PageTransitionType.fade,
+                      //         child: const SelectUserLocationScreen()));
+                    },
+                    child: TextWidget(
+                      data: locProvider.currentLocationName.isEmpty
+                          ? 'Location'
+                          : locProvider.currentLocationName,
+                      style: TextStyle(
+                        color: AppColor.secondaryColor,
+                        fontSize: MediaQuery.of(context).size.width * 0.04,
+                      ),
+                    ),
+                  ),
+                ],
+              ));
+        }),
         actions: [
-          CircleAvatar(
-            backgroundColor: AppColor.whiteBtnColor,
-            radius: MediaQuery.of(context).size.width * 0.05,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(PngImages.search),
-            ),
+          // CircleAvatar(
+          //   backgroundColor: AppColor.whiteBtnColor,
+          //   radius: MediaQuery.of(context).size.width * 0.05,
+          //   child: Padding(
+          //     padding: const EdgeInsets.all(8.0),
+          //     child: Image.asset(PngImages.search),
+          //   ),
+          // ),
+          Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: IconButton(
+                onPressed: () async {
+                  // TraderSearch traderSearch = TraderSearch(
+                  //     distance: 100,
+                  //     lat: 11.8440352,
+                  //     long: 75.637582,
+                  //     userId: 1,
+                  //     userType: "customer",
+                  //     trade: "a");
+                  await showDialog(
+                    context: context,
+                    builder: (context) => TraderSearchPopUp(),
+                  );
+                },
+                icon: const Icon(Icons.search)),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(right: 8.0),
             child: IconButton(
                 onPressed: () {
                   Navigator.push(
@@ -127,10 +174,14 @@ class _NewHomePageState extends State<NewHomePage> {
                   color: AppColor.green,
                 ))
               : provider.errorMessage.isNotEmpty
-                  ? Center(
-                      child: TextWidget(
-                      data: "Something Went Wrong",
-                    ))
+                  ? SizedBox(
+                      width: size.width,
+                      height: size.height,
+                      child: Center(
+                          child: TextWidget(
+                        data: "Something Went Wrong",
+                      )),
+                    )
                   : Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 15),

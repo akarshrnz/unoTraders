@@ -10,10 +10,13 @@ class TraderOfferListingModel {
   String? validFrom;
   String? validTo;
   String? status;
-  String? likes;
+  String? emoji;
+  int? likes;
+  String? firstUser;
   String? reactions;
   String? createdAt;
   String? updatedAt;
+  bool? isReactionOpened;
   List<String>? traderofferimages;
 
   TraderOfferListingModel(
@@ -21,9 +24,12 @@ class TraderOfferListingModel {
       this.profilePic,
       this.id,
       this.traderId,
+      this.isReactionOpened,
       this.title,
       this.description,
+      this.emoji,
       this.fullPrice,
+      this.firstUser,
       this.discountPrice,
       this.validFrom,
       this.validTo,
@@ -45,6 +51,9 @@ class TraderOfferListingModel {
     id = json['id'];
     traderId = json['trader_id'];
     title = json['title'];
+    isReactionOpened = false;
+    emoji = json['emoji'];
+    firstUser = json['first_user'];
     description = json['description'];
     fullPrice = json['full_price'];
     discountPrice = json['discount_price'];

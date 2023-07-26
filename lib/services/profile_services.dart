@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:codecarrots_unotraders/model/Feeds/feed_body.dart';
 import 'package:codecarrots_unotraders/model/Feeds/trader_feed_model.dart';
 import 'package:codecarrots_unotraders/model/add_post.dart';
 import 'package:codecarrots_unotraders/model/add_review_comment_model.dart';
@@ -28,12 +29,13 @@ import 'package:codecarrots_unotraders/model/provider_profile_model.dart';
 import 'package:codecarrots_unotraders/model/receipt%20model/add_receipt_model.dart';
 import 'package:codecarrots_unotraders/model/receipt%20model/receipt_model.dart';
 import 'package:codecarrots_unotraders/model/receipt%20model/remove_receipt.dart';
+import 'package:codecarrots_unotraders/model/report_feed-model.dart';
 import 'package:codecarrots_unotraders/model/trader_profile_model.dart';
-import 'package:codecarrots_unotraders/model/update_cust_profile_model.dart';
+
 import 'package:codecarrots_unotraders/model/update_profile.dart';
 import 'package:codecarrots_unotraders/model/view_customer_review_model.dart';
 import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
-import 'package:codecarrots_unotraders/screens/Profile/traders/profile/trader_profile.dart';
+
 import 'package:codecarrots_unotraders/services/helper/failure.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/services/helper/dio_client.dart';
@@ -42,7 +44,6 @@ import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -206,7 +207,7 @@ class ProfileServices {
           headers: Header.header, body: jsonEncode(postBody));
       Map body = jsonDecode(response.body);
       if (body["status"] == 200) {
-        print("sucess");
+        print("profile sucess");
 
         return TraderProfileModel.fromJson(body["data"]);
       } else {
@@ -274,16 +275,29 @@ class ProfileServices {
     }
   }
 
-  //provider profile
-  static Future<List<ProviderProfileModel>> getProviderProfile(
-      {required String id}) async {
-    print('https://demo.unotraders.com/api/v1/subcategory/$id');
+  //findTraderCategory
+  static Future<List<ProviderProfileModel>> findTraderByCategory({
+    required String id,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String currentUserLatitude = prefs.getDouble("latitude").toString();
+    String currentUserLongitude = prefs.getDouble("longitude").toString();
+
+    Map<String, dynamic> postBody = {
+      "subcategory_id": id,
+      "location_latitude": currentUserLatitude,
+      "location_longitude": currentUserLongitude
+    };
+    print('https://demo.unotraders.com/api/v1/subcategory');
+    print(postBody);
     Map body = {};
     try {
-      var response = await http.get(
-        Uri.parse('https://demo.unotraders.com/api/v1/subcategory/$id'),
-        headers: Header.header,
-      );
+      // var response = await http.get(
+      //   Uri.parse('https://demo.unotraders.com/api/v1/subcategory/$id'),
+      //   headers: Header.header,
+      // );
+      var response = await http.post(Uri.parse(Url.findTraderByCategory),
+          headers: Header.header, body: jsonEncode(postBody));
       print(response.body);
       body = jsonDecode(response.body);
       if (body["status"] == 200) {
@@ -394,7 +408,7 @@ class ProfileServices {
   }
 
   //add offer
-  static Future<void> postoffer({required PostOfferModel postOffer}) async {
+  static Future<bool> postoffer({required PostOfferModel postOffer}) async {
     var dio = Dio();
 
     print("add post");
@@ -413,20 +427,25 @@ class ProfileServices {
         MapEntry("offerImages[]", await MultipartFile.fromFile(file.path)),
       ]);
     }
-    var resp;
+    Response resp;
     try {
       resp = await dio.post(
           'https://demo.unotraders.com/api/v1/trader/add-offer',
           data: formData,
           options: Options(headers: Header.header));
+      if (resp.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
       throw e.toString();
     }
-    print("sataus");
-    print(resp.data["status"]);
+    // print("sataus");
+    // print(resp.data["status"]);
   }
 
-  static Future<void> updateoffer({required PostOfferModel postOffer}) async {
+  static Future<bool> updateoffer({required PostOfferModel postOffer}) async {
     var dio = Dio();
 
     print("add post");
@@ -445,17 +464,22 @@ class ProfileServices {
         MapEntry("offerImages[]", await MultipartFile.fromFile(file.path)),
       ]);
     }
-    var resp;
+    Response resp;
     try {
       resp = await dio.post(
           'https://demo.unotraders.com/api/v1/trader/add-offer',
           data: formData,
           options: Options(headers: Header.header));
+      if (resp.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
       throw "Something Went Wrong";
     }
-    print("sataus");
-    print(resp.data["status"]);
+    // print("sataus");
+    // print(resp.data["status"]);
   }
 
   //fetch trader by using sub category id
@@ -488,16 +512,33 @@ class ProfileServices {
   }
 
   static Future<List<TraderFeedModel>> getTraderFeeds(
-      {required String id, required String userType}) async {
-    print(' trader feeds');
-    print('https://demo.unotraders.com/api/v1/$userType/posts/$id');
+      {required String urlUserType, String? traderId}) async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    String currentUserId = sharedPrefs.getString('id')!;
+    String currentUserType = sharedPrefs.getString('userType')!;
+    if (currentUserType != "customer") {
+      currentUserType = "provider";
+    }
+    print(' trader feeds service');
+    print('https://demo.unotraders.com/api/v1/$urlUserType/posts');
+
+    FeedsBodyModel feedBody = FeedsBodyModel(
+        traderId: traderId == null ? null : int.tryParse(traderId),
+        userId: int.tryParse(currentUserId),
+        userType: currentUserType);
+    print("input");
+    print(jsonEncode(feedBody.toJson()));
     Map body = {};
     try {
-      var response = await http.get(
-        Uri.parse('https://demo.unotraders.com/api/v1/$userType/posts/$id'),
-        headers: Header.header,
-      );
-      print(response.statusCode.toString());
+      // var response = await http.get(
+      //   Uri.parse('https://demo.unotraders.com/api/v1/$userType/posts/$id'),
+      //   headers: Header.header,
+      // );
+      var response = await http.post(
+          Uri.parse('https://demo.unotraders.com/api/v1/$urlUserType/posts'),
+          headers: Header.header,
+          body: jsonEncode(feedBody.toJson()));
+      print("status code ${response.statusCode.toString()}");
       print(response.body);
 
       body = jsonDecode(response.body);
@@ -517,15 +558,43 @@ class ProfileServices {
     }
   }
 
-  //reaction
-  static Future<bool> postFeedReaction(
-      {required FeedReactionModel reaction}) async {
+  //report feed
+  static Future<bool> reportFeed({required ReportFeedModel report}) async {
+    print(' report feeds');
+    print(Url.reportFeed);
+    print(jsonEncode(report.toJson()));
+
     Map body = {};
+    try {
+      var response = await http.post(Uri.parse(Url.reportFeed),
+          headers: Header.header, body: jsonEncode(report.toJson()));
+      print(response.statusCode.toString());
+      print(response.body);
+
+      body = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      throw "Something Went Wrong";
+    }
+  }
+
+  //reaction
+  static Future<bool> postCustomerReaction(
+      {required FeedReactionModel reaction,
+      required String reactionEndpoints}) async {
+    Map body = {};
+    print("reaction start");
+    print("https://demo.unotraders.com/api/v1/trader/$reactionEndpoints");
+    print(reaction.toJson());
 
     try {
       var response = await http.post(
           Uri.parse(
-              "https://demo.unotraders.com/api/v1/trader/traderpostreaction"),
+              "https://demo.unotraders.com/api/v1/trader/$reactionEndpoints"),
           headers: Header.header,
           body: jsonEncode(reaction.toJson()));
       print(response.statusCode.toString());
@@ -540,6 +609,7 @@ class ProfileServices {
         throw body["message"] ?? "Something Went Wrong";
       }
     } catch (e) {
+      print("reaction failed>>>>>>>");
       print(e.toString());
       throw "Something Went Wrong";
     }
@@ -614,7 +684,7 @@ class ProfileServices {
       {required AddReviewCommentModel addMainReview,
       required String url}) async {
     final sharedPrefs = await SharedPreferences.getInstance();
-    String id = sharedPrefs.getString('id')!;
+
     String userType = sharedPrefs.getString('userType')!;
     if (userType.toLowerCase() == "provider") {
       userType = 'trader';
@@ -648,16 +718,32 @@ class ProfileServices {
   //get offer
 
   static Future<List<TraderOfferListingModel>> getTraderOffer(
-      {required String id, required String userType}) async {
+      {required String urlUserType, String? traderId}) async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    String currentUserId = sharedPrefs.getString('id')!;
+    String currentUserType = sharedPrefs.getString('userType')!;
+    if (currentUserType != "customer") {
+      currentUserType = "provider";
+    }
+    FeedsBodyModel feedBody = FeedsBodyModel(
+        traderId: traderId == null ? null : int.tryParse(traderId),
+        userId: int.tryParse(currentUserId),
+        userType: currentUserType);
     print(' offer');
-    print("https://demo.unotraders.com/api/v1/$userType/offers/$id");
+    print("https://demo.unotraders.com/api/v1/$urlUserType/offers");
+    print("input");
+    print(jsonEncode(feedBody.toJson()));
     Map body = {};
     try {
-      var response = await http.get(
-        Uri.parse('https://demo.unotraders.com/api/v1/$userType/offers/$id'),
-        headers: Header.header,
-      );
-      print(response.statusCode.toString());
+      // var response = await http.get(
+      //   Uri.parse('https://demo.unotraders.com/api/v1/$userType/offers'),
+      //   headers: Header.header,
+      // );
+      var response = await http.post(
+          Uri.parse('https://demo.unotraders.com/api/v1/$urlUserType/offers'),
+          headers: Header.header,
+          body: jsonEncode(feedBody.toJson()));
+      print("status code ${response.statusCode.toString()}");
       print(response.body);
 
       body = jsonDecode(response.body);
@@ -971,10 +1057,6 @@ class ProfileServices {
 
   static Future<bool> addAppointment(
       {required AddAppointmentModel appointments}) async {
-    final sharedPrefs = await SharedPreferences.getInstance();
-    String id = sharedPrefs.getString('id')!;
-    String userType = sharedPrefs.getString('userType')!;
-
     Map body = {};
 
     try {
@@ -1011,10 +1093,6 @@ class ProfileServices {
   static Future<bool> rescheduleCancelAppointment({
     required RescheduleModel appointments,
   }) async {
-    final sharedPrefs = await SharedPreferences.getInstance();
-    String id = sharedPrefs.getString('id')!;
-    String userType = sharedPrefs.getString('userType')!;
-
     Map body = {};
 
     try {
@@ -1123,7 +1201,7 @@ class ProfileServices {
     required ChangeAppointmentStatusModel changeStatus,
   }) async {
     final sharedPrefs = await SharedPreferences.getInstance();
-    String id = sharedPrefs.getString('id')!;
+
     String userType = sharedPrefs.getString('userType')!;
     if (userType.toLowerCase() == "provider") {
       userType = "trader";

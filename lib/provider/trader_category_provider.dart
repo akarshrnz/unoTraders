@@ -1,10 +1,12 @@
+import 'package:codecarrots_unotraders/model/home_category.dart';
 import 'package:codecarrots_unotraders/model/provider_profile_model.dart';
-import 'package:codecarrots_unotraders/model/traders_category_model.dart';
+
 import 'package:codecarrots_unotraders/services/api_sevices.dart';
 import 'package:codecarrots_unotraders/services/profile_services.dart';
 import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:flutter/material.dart';
+import 'package:multi_dropdown/multiselect_dropdown.dart';
 
 class TraderCategoryProvider with ChangeNotifier {
   bool traderFetching = false;
@@ -12,30 +14,18 @@ class TraderCategoryProvider with ChangeNotifier {
   List<ProviderProfileModel> traderList = [];
   bool isLoading = false;
   String errorMessage = "";
-  List<TradersCategoryModel> traderCategoryList = [];
-  List<TradersCategoryModel> serviceList = [];
-  List<TradersCategoryModel> salesList = [];
+  List<CategoryAndSubListModel> categoryList = [];
+  List<Subcategories> subCategoryList = [];
+
   Future<void> getAllTraderCategory() async {
-    if (traderCategoryList.isNotEmpty) return;
+    // if (categoryList.isNotEmpty) return;
     isLoading = true;
     errorMessage = "";
-    traderCategoryList = [];
-    serviceList = [];
-    salesList = [];
+    categoryList = [];
+
     notifyListeners();
     try {
-      traderCategoryList = await ApiServices.getTraderCategory();
-      serviceList = traderCategoryList;
-      // if (traderCategoryList.isNotEmpty) {
-      //   for (var element in traderCategoryList) {
-      //     if (element.mainCategory == "Service") {
-      //       serviceList.add(element);
-      //     } else if (element.mainCategory == "Seller") {
-      //       // salesList.add(element);
-      //       serviceList.add(element);
-      //     }
-      //   }
-      // }
+      categoryList = await ApiServices.getHomeCatSub();
     } catch (e) {
       print(e.toString());
       AppConstant.toastMsg(msg: e.toString(), backgroundColor: AppColor.red);
@@ -44,14 +34,32 @@ class TraderCategoryProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  //sort sub category from category
+  getSubCategoryFromCategory(List<ValueItem> options) {
+    subCategoryList.clear();
+    if (categoryList.isNotEmpty && options.isNotEmpty) {
+      options.forEach((optionItem) {
+        categoryList.forEach((category) {
+          if (optionItem.value.toString() == category.id.toString()) {
+            subCategoryList.addAll(category.subcategories ?? []);
+          }
+        });
+      });
+      notifyListeners();
+    }
+  }
+
   Future<void> findTraderCategory({required String id}) async {
+    print("findTraderCategory");
     traderList = [];
     traderFetching = true;
     traderFetchError = "";
 
     notifyListeners();
+
     try {
-      traderList = await ProfileServices.getProviderProfile(id: id);
+      traderList = await ProfileServices.findTraderByCategory(id: id);
+
       //  if (traderList.isNotEmpty) {
       //   traderList.forEach((element) {  if (element.id.toString() == id && element.type == userType) {
       //     } else {

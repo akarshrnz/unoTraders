@@ -886,12 +886,19 @@ class _TraderProfileState extends State<UrlTraderProfileVisit> {
 
                                   if (index == 0) {
                                     profileProvider.getFeeds(
-                                        userType: 'trader',
-                                        userId: userIdProvider.qrCodeUserId);
+                                        urlUserType: 'trader',
+                                        traderId: profileModel.id == null
+                                            ? ""
+                                            : profileModel.id.toString());
+                                    // profileProvider.getFeeds(
+                                    //     userType: 'trader',
+                                    //     userId: userIdProvider.qrCodeUserId);
                                   } else if (index == 1) {
                                     profileProvider.getOffers(
-                                        userType: 'trader',
-                                        userId: userIdProvider.qrCodeUserId);
+                                        urlUserType: 'trader',
+                                        traderId: profileModel.id == null
+                                            ? ""
+                                            : profileModel.id.toString());
                                   } else if (index == 2) {
                                     profileProvider.getReview(
                                         traderId: userIdProvider.qrCodeUserId);

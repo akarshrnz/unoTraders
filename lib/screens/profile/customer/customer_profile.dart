@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:codecarrots_unotraders/model/Feeds/trader_feed_model.dart';
 import 'package:codecarrots_unotraders/model/bazaar_model.dart';
+import 'package:codecarrots_unotraders/model/feed_reaction_model.dart';
 import 'package:codecarrots_unotraders/model/offer%20listing/trader_offer_listing.dart';
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
@@ -11,12 +12,14 @@ import 'package:codecarrots_unotraders/screens/Profile/comment%20section/comment
 import 'package:codecarrots_unotraders/screens/Profile/customer/edit_customer_profile.dart';
 import 'package:codecarrots_unotraders/screens/Profile/follow_list.dart';
 import 'package:codecarrots_unotraders/screens/Profile/traders/components/trader_feeds_screen.dart';
+import 'package:codecarrots_unotraders/screens/Profile/traders/components/trader_offer_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/circular_progress.dart';
 import 'package:codecarrots_unotraders/utils/app_constant.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
@@ -24,6 +27,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:read_more_text/read_more_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:show_up_animation/show_up_animation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../utils/color.dart';
@@ -70,7 +74,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
     String id = sharedPrefs.getString('id')!;
     String userType = sharedPrefs.getString('userType')!;
     profileProvider.getCustomerProfile(userId: id);
-    profileProvider.getFeeds(userType: 'customer', userId: id);
+    profileProvider.getFeeds(urlUserType: 'customer', traderId: null);
   }
 
   @override
@@ -660,12 +664,13 @@ class _CustomerProfileState extends State<CustomerProfile> {
                                                     index: index);
                                                 if (index == 0) {
                                                   profileProvider.getFeeds(
-                                                      userType: 'customer',
-                                                      userId: id);
+                                                    traderId: null,
+                                                    urlUserType: 'customer',
+                                                  );
                                                 } else if (index == 1) {
                                                   profileProvider.getOffers(
-                                                      userType: 'customer',
-                                                      userId: id);
+                                                      urlUserType: 'customer',
+                                                      traderId: null);
                                                 } else if (index == 2) {
                                                   profileProvider
                                                       .getMarketOrBazaar(
@@ -725,13 +730,16 @@ class _CustomerProfileState extends State<CustomerProfile> {
                                       })
                                     : const SizedBox(),
                                 provider.currentIndex == 1
-                                    ? Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: size.width * .02),
-                                        child: viewOffer(
-                                          size: size,
-                                        ),
-                                      )
+                                    ? Consumer<CurrentUserProvider>(
+                                        builder: (context, userprovider, _) {
+                                        return Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: size.width * .02),
+                                          child: viewOffer(
+                                            size: size,
+                                          ),
+                                        );
+                                      })
                                     : const SizedBox(),
                                 provider.currentIndex == 2
                                     ? Padding(
@@ -754,8 +762,11 @@ class _CustomerProfileState extends State<CustomerProfile> {
   }) {
     return Consumer<ProfileProvider>(
         builder: (context, ProfileProvider provider, _) {
-      return provider.isFeedLoading
-          ? const Center(child: CircularProgressIndicator())
+      return provider.isOfferLoading
+          ? SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 200,
+              child: const Center(child: CircularProgressIndicator()))
           : Column(
               children: [
                 AppConstant.kheight(height: size.width * .017),
@@ -769,256 +780,616 @@ class _CustomerProfileState extends State<CustomerProfile> {
                     TraderOfferListingModel offerModel =
                         provider.offerListing[index];
                     DateTime createdAt = DateTime.parse(offerModel.createdAt!);
-                    return Card(
-                      clipBehavior: Clip.antiAlias,
-                      elevation: 2,
-                      shadowColor: AppColor.blackColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(size.width * .02)),
-                      child: Padding(
-                          padding: EdgeInsets.all(size.width * .02),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundColor: AppColor.green,
-                                      radius: size.width * .055,
-                                      child: CircleAvatar(
-                                        radius: size.width * .049,
-                                        backgroundImage: NetworkImage(
-                                            offerModel.profilePic!),
-                                      ),
-                                    ),
-                                    AppConstant.kWidth(
-                                        width: size.width * .018),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          TextWidget(
-                                            data: offerModel.name ?? "",
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                                color: AppColor.blackColor,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: size.width * .036),
-                                          ),
-                                          TextWidget(
-                                            data:
-                                                "Posted: ${createdAt.day} ${DateFormat.MMM().format(createdAt)} ${createdAt.year}, ${DateFormat('hh:mm a').format(createdAt)}",
-                                            maxLines: 1,
-                                          )
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                AppConstant.kheight(height: size.width * .02),
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.all(size.width * .02),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                              size.width * .029),
-                                          color:
-                                              Color.fromARGB(255, 235, 212, 8)
-                                                  .withOpacity(.9)),
-                                      child: TextWidget(
-                                        data:
-                                            "Offer Price: \$ ${offerModel.discountPrice}",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColor.whiteColor),
-                                      ),
-                                    ),
-                                    AppConstant.kWidth(width: size.width * .02),
-                                    Container(
-                                      padding: EdgeInsets.all(size.width * .02),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                              size.width * .029),
-                                          color: Colors.green),
-                                      child: TextWidget(
-                                        data:
-                                            "Full Price: \$ ${offerModel.fullPrice}",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColor.whiteColor),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                AppConstant.kheight(height: size.width * .018),
-                                Container(
-                                  child: CarouselSlider.builder(
-                                      itemCount:
-                                          offerModel.traderofferimages!.length,
-                                      itemBuilder:
-                                          (context, carIndex, realIndex) {
-                                        return Container(
-                                          margin: EdgeInsets.all(5),
-                                          child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              child: CachedNetworkImage(
-                                                fit: BoxFit.cover,
-                                                imageUrl: offerModel
-                                                        .traderofferimages![
-                                                    carIndex],
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Center(
-                                                            child: const Icon(
-                                                                Icons.error)),
-                                              )
-                                              //  Image.network(
-                                              // offerModel
-                                              //     .traderofferimages![carIndex],
-                                              //   fit: BoxFit.cover,
-                                              // ),
-                                              ),
-                                        );
-                                      },
-                                      options: CarouselOptions(
-                                        padEnds: false,
-                                        scrollPhysics: BouncingScrollPhysics(),
-                                        clipBehavior: Clip.antiAlias,
-                                        enableInfiniteScroll: false,
-                                        viewportFraction: .6,
-                                        autoPlayAnimationDuration:
-                                            const Duration(milliseconds: 200),
-                                        // viewportFraction: 1,
-                                        height: size.width * .5,
-
-                                        autoPlay: false,
-                                        reverse: false,
-                                        autoPlayInterval:
-                                            const Duration(seconds: 5),
-                                      )),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      left: size.width * .02,
-                                      right: size.width * .02,
-                                      top: size.width * .02),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
+                    return InkWell(
+                      onTap: provider.currentOfferReactionIndex == null
+                          ? () {}
+                          : () {
+                              profileProvider.closeAllOfferReaction();
+                            },
+                      child: Card(
+                        clipBehavior: Clip.antiAlias,
+                        elevation: 2,
+                        shadowColor: AppColor.blackColor,
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(size.width * .02)),
+                        child: Padding(
+                            padding: EdgeInsets.all(size.width * .02),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
                                     children: [
-                                      Flexible(
-                                        child: ReadMoreText(
-                                          offerModel.description.toString(),
-                                          readMoreIconColor: AppColor.green,
-                                          numLines: 3,
-                                          readMoreAlign: Alignment.centerLeft,
+                                      CircleAvatar(
+                                        backgroundColor: AppColor.green,
+                                        radius: size.width * .055,
+                                        child: CircleAvatar(
+                                          radius: size.width * .049,
+                                          backgroundImage: NetworkImage(
+                                              offerModel.profilePic!),
+                                        ),
+                                      ),
+                                      AppConstant.kWidth(
+                                          width: size.width * .018),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            TextWidget(
+                                              data: offerModel.name ?? "",
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  color: AppColor.blackColor,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * .036),
+                                            ),
+                                            TextWidget(
+                                              data:
+                                                  "Posted: ${createdAt.day} ${DateFormat.MMM().format(createdAt)} ${createdAt.year}, ${DateFormat('hh:mm a').format(createdAt)}",
+                                              maxLines: 1,
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  AppConstant.kheight(height: size.width * .02),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding:
+                                            EdgeInsets.all(size.width * .02),
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                                size.width * .029),
+                                            color:
+                                                Color.fromARGB(255, 235, 212, 8)
+                                                    .withOpacity(.9)),
+                                        child: TextWidget(
+                                          data:
+                                              "Offer Price: \$ ${offerModel.discountPrice}",
                                           style: TextStyle(
-                                              fontSize: size.width * .033),
-                                          readMoreTextStyle: TextStyle(
-                                              fontSize: size.width * .033,
-                                              color: Colors.green),
-                                          readMoreText: 'Read More',
-                                          readLessText: 'Read Less',
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColor.whiteColor),
+                                        ),
+                                      ),
+                                      AppConstant.kWidth(
+                                          width: size.width * .02),
+                                      Container(
+                                        padding:
+                                            EdgeInsets.all(size.width * .02),
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                                size.width * .029),
+                                            color: Colors.green),
+                                        child: TextWidget(
+                                          data:
+                                              "Full Price: \$ ${offerModel.fullPrice}",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColor.whiteColor),
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                                const Divider(),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                        child: Container(
-                                      child: Row(
-                                        children: [
-                                          InkWell(
-                                            onTap: () {},
-                                            child: Container(
-                                                alignment: Alignment.center,
-                                                height: size.width * .07,
-                                                width: size.width * .1,
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        color: Colors.grey),
-                                                    boxShadow: const [
-                                                      BoxShadow(
-                                                          color: Colors.white,
-                                                          spreadRadius: 1)
-                                                    ],
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                child: const FaIcon(
-                                                  FontAwesomeIcons.thumbsUp,
-                                                  color: AppColor.primaryColor,
-                                                )),
+                                  AppConstant.kheight(
+                                      height: size.width * .018),
+                                  Container(
+                                    child: CarouselSlider.builder(
+                                        itemCount: offerModel
+                                            .traderofferimages!.length,
+                                        itemBuilder:
+                                            (context, carIndex, realIndex) {
+                                          return Container(
+                                            margin: EdgeInsets.all(5),
+                                            child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                child: CachedNetworkImage(
+                                                  fit: BoxFit.cover,
+                                                  imageUrl: offerModel
+                                                          .traderofferimages![
+                                                      carIndex],
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Center(
+                                                              child: const Icon(
+                                                                  Icons.error)),
+                                                )
+                                                //  Image.network(
+                                                // offerModel
+                                                //     .traderofferimages![carIndex],
+                                                //   fit: BoxFit.cover,
+                                                // ),
+                                                ),
+                                          );
+                                        },
+                                        options: CarouselOptions(
+                                          padEnds: false,
+                                          scrollPhysics:
+                                              BouncingScrollPhysics(),
+                                          clipBehavior: Clip.antiAlias,
+                                          enableInfiniteScroll: false,
+                                          viewportFraction: .6,
+                                          autoPlayAnimationDuration:
+                                              const Duration(milliseconds: 200),
+                                          // viewportFraction: 1,
+                                          height: size.width * .5,
+
+                                          autoPlay: false,
+                                          reverse: false,
+                                          autoPlayInterval:
+                                              const Duration(seconds: 5),
+                                        )),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        left: size.width * .02,
+                                        right: size.width * .02,
+                                        top: size.width * .02),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Flexible(
+                                          child: ReadMoreText(
+                                            offerModel.description.toString(),
+                                            readMoreIconColor: AppColor.green,
+                                            numLines: 3,
+                                            readMoreAlign: Alignment.centerLeft,
+                                            style: TextStyle(
+                                                fontSize: size.width * .033),
+                                            readMoreTextStyle: TextStyle(
+                                                fontSize: size.width * .033,
+                                                color: Colors.green),
+                                            readMoreText: 'Read More',
+                                            readLessText: 'Read Less',
                                           ),
-                                          AppConstant.kWidth(
-                                              width: size.width * .03),
-                                          InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  PageTransition(
-                                                      type: PageTransitionType
-                                                          .fade,
-                                                      child: CommentScreen(
-                                                        postId: offerModel.id
-                                                            .toString(),
-                                                        postImages: offerModel
-                                                                .traderofferimages ??
-                                                            [],
-                                                        profilePic: offerModel
-                                                                .profilePic ??
-                                                            "",
-                                                        description: offerModel
-                                                            .description
-                                                            .toString(),
-                                                        replyUrl: Url
-                                                            .postOfferReplyComment,
-                                                        postCommentUrl: Url
-                                                            .postOfferComment,
-                                                        endPoint:
-                                                            'traderoffercomments',
-                                                        traderId: offerModel
-                                                            .traderId
-                                                            .toString(),
-                                                      )));
-                                            },
-                                            child: Container(
-                                                alignment: Alignment.center,
-                                                height: size.width * .07,
-                                                width: size.width * .1,
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        color: Colors.grey),
-                                                    boxShadow: const [
-                                                      BoxShadow(
-                                                          color: Colors.white,
-                                                          spreadRadius: 1)
-                                                    ],
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                child: FaIcon(
-                                                  FontAwesomeIcons.commentDots,
-                                                  color: AppColor.primaryColor,
-                                                )),
-                                          ),
-                                        ],
-                                      ),
-                                    ))
-                                  ],
-                                ),
-                              ])),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Divider(),
+                                  offerModel.likes == null ||
+                                          offerModel.firstUser == null
+                                      ? SizedBox()
+                                      : offerModel.likes! == 0
+                                          ? SizedBox()
+                                          :
+                                          //  offerModel.likes! == 1 &&
+                                          //         offerModel.emoji != null &&
+                                          //         offerModel.emoji!.isNotEmpty
+                                          //     ? SizedBox()
+                                          //     :
+                                          Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 17,
+                                                  backgroundColor:
+                                                      AppColor.green,
+                                                  child: Icon(
+                                                    Icons.thumb_up,
+                                                    color: AppColor.whiteColor,
+                                                    size: 17,
+                                                  ),
+                                                ),
+                                                AppConstant.kWidth(width: 10),
+                                                offerModel.likes == 1
+                                                    ? TextWidget(
+                                                        data: offerModel.emoji ==
+                                                                    null ||
+                                                                offerModel
+                                                                    .emoji!
+                                                                    .isEmpty
+                                                            ? "${offerModel.firstUser}"
+                                                            : "You")
+                                                    : TextWidget(
+                                                        data: offerModel.emoji ==
+                                                                    null ||
+                                                                offerModel
+                                                                    .emoji!
+                                                                    .isEmpty
+                                                            ? "${offerModel.firstUser} and ${offerModel.likes! - 1} others"
+                                                            : "You and ${offerModel.likes! - 1} others"),
+                                                // offerModel.likes == 1
+                                                //     ? TextWidget(
+                                                //         data: offerModel
+                                                //                     .emoji ==
+                                                //                 null
+                                                //             ? offerModel.emoji!
+                                                //                     .isEmpty
+                                                //                 ? "${offerModel.firstUser}"
+                                                //                 : "${offerModel.firstUser}"
+                                                //             : "You")
+                                                //     : TextWidget(
+                                                //         data: offerModel
+                                                //                     .emoji ==
+                                                //                 null
+                                                //             ? offerModel.emoji!
+                                                //                     .isEmpty
+                                                //                 ? "${offerModel.firstUser}and ${offerModel.likes! - 1} others"
+                                                //                 : "${offerModel.firstUser}and ${offerModel.likes! - 1} others"
+                                                //             : "You and ${offerModel.likes! - 1} others"),
+                                              ],
+                                            ),
+                                  Center(
+                                    child: Stack(
+                                      children: [
+                                        Column(
+                                          children: [
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Row(
+                                              children: [
+                                                provider.currentOfferReactionIndex ==
+                                                            index &&
+                                                        offerModel
+                                                            .isReactionOpened!
+                                                    ? SizedBox(
+                                                        height: 40, width: 40)
+                                                    : InkWell(
+                                                        onTap: () {
+                                                          profileProvider
+                                                              .changeOfferReactionByIndex(
+                                                                  index);
+                                                        },
+                                                        child: Container(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            height: 40,
+                                                            width: 40,
+                                                            decoration: BoxDecoration(
+                                                                // border: Border.all(
+                                                                //     color: Colors
+                                                                //         .grey),
+                                                                // boxShadow: const [
+                                                                //   BoxShadow(
+                                                                //       color: Colors
+                                                                //           .white,
+                                                                //       spreadRadius:
+                                                                //           1)
+                                                                // ],
+                                                                // borderRadius:
+                                                                //     BorderRadius
+                                                                //         .circular(
+                                                                //             15)
+                                                                ),
+                                                            child: offerModel.emoji != null && offerModel.emoji!.isNotEmpty
+                                                                ? Padding(
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .all(5),
+                                                                    child: SvgPicture
+                                                                        .asset(
+                                                                      currentReaction(
+                                                                          offerModel
+                                                                              .emoji!),
+                                                                      height:
+                                                                          35,
+                                                                    ),
+                                                                  )
+                                                                : const FaIcon(
+                                                                    FontAwesomeIcons
+                                                                        .thumbsUp,
+                                                                    color: AppColor
+                                                                        .primaryColor,
+                                                                  )),
+                                                      ),
+                                                AppConstant.kWidth(width: 12),
+                                                provider.currentOfferReactionIndex ==
+                                                            index &&
+                                                        offerModel
+                                                            .isReactionOpened!
+                                                    ? SizedBox(
+                                                        height: 40, width: 40)
+                                                    : InkWell(
+                                                        onTap: () {
+                                                          Navigator.push(
+                                                              context,
+                                                              PageTransition(
+                                                                  type:
+                                                                      PageTransitionType
+                                                                          .fade,
+                                                                  child:
+                                                                      CommentScreen(
+                                                                    postId: offerModel
+                                                                        .id
+                                                                        .toString(),
+                                                                    postImages:
+                                                                        offerModel.traderofferimages ??
+                                                                            [],
+                                                                    profilePic:
+                                                                        offerModel.profilePic ??
+                                                                            "",
+                                                                    description:
+                                                                        offerModel
+                                                                            .description
+                                                                            .toString(),
+                                                                    replyUrl: Url
+                                                                        .postOfferReplyComment,
+                                                                    postCommentUrl:
+                                                                        Url.postOfferComment,
+                                                                    endPoint:
+                                                                        'traderoffercomments',
+                                                                    traderId: offerModel
+                                                                        .traderId
+                                                                        .toString(),
+                                                                  )));
+                                                        },
+                                                        child: Container(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            height: 40,
+                                                            width: 40,
+                                                            decoration: BoxDecoration(
+                                                                // border: Border.all(
+                                                                //     color: Colors
+                                                                //         .grey),
+                                                                // boxShadow: const [
+                                                                //   BoxShadow(
+                                                                //       color: Colors
+                                                                //           .white,
+                                                                //       spreadRadius:
+                                                                //           1)
+                                                                // ],
+                                                                // borderRadius:
+                                                                //     BorderRadius
+                                                                //         .circular(
+                                                                //             15)
+                                                                ),
+                                                            child: FaIcon(
+                                                              FontAwesomeIcons
+                                                                  .commentDots,
+                                                              color: AppColor
+                                                                  .primaryColor,
+                                                            )),
+                                                      ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                        Positioned(
+                                          top: 3,
+                                          child:
+                                              provider.currentOfferReactionIndex ==
+                                                          index &&
+                                                      offerModel
+                                                          .isReactionOpened!
+                                                  ? ShowUpAnimation(
+                                                      delayStart:
+                                                          Duration(seconds: 0),
+                                                      animationDuration:
+                                                          Duration(
+                                                              milliseconds: 1),
+                                                      curve: Curves.bounceIn,
+                                                      direction:
+                                                          Direction.vertical,
+                                                      offset: 0.5,
+                                                      child: Container(
+                                                        width: 220,
+                                                        height: 30,
+                                                        decoration:
+                                                            BoxDecoration(),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            InkWell(
+                                                              onTap: () {
+                                                                profileProvider.postOfferReaction(
+                                                                    postId:
+                                                                        offerModel.id ??
+                                                                            0,
+                                                                    reactionEmoji:
+                                                                        reactionKeyword[
+                                                                            0],
+                                                                    index:
+                                                                        index);
+                                                              },
+                                                              child: SvgPicture
+                                                                  .asset(
+                                                                'assets/image/like.svg',
+                                                                height: 35,
+                                                              ),
+                                                            ),
+                                                            InkWell(
+                                                              onTap: () {
+                                                                profileProvider.postOfferReaction(
+                                                                    postId:
+                                                                        offerModel.id ??
+                                                                            0,
+                                                                    reactionEmoji:
+                                                                        reactionKeyword[1]
+                                                                            .toString(),
+                                                                    index:
+                                                                        index);
+                                                              },
+                                                              child: SvgPicture
+                                                                  .asset(
+                                                                'assets/image/heart.svg',
+                                                                height: 35,
+                                                              ),
+                                                            ),
+                                                            InkWell(
+                                                              onTap: () {
+                                                                profileProvider.postOfferReaction(
+                                                                    postId:
+                                                                        offerModel.id ??
+                                                                            0,
+                                                                    reactionEmoji:
+                                                                        reactionKeyword[
+                                                                            2],
+                                                                    index:
+                                                                        index);
+                                                              },
+                                                              child: SvgPicture
+                                                                  .asset(
+                                                                'assets/image/laughing.svg',
+                                                                height: 35,
+                                                              ),
+                                                            ),
+                                                            InkWell(
+                                                              onTap: () {
+                                                                profileProvider.postOfferReaction(
+                                                                    postId:
+                                                                        offerModel.id ??
+                                                                            0,
+                                                                    reactionEmoji:
+                                                                        reactionKeyword[
+                                                                            3],
+                                                                    index:
+                                                                        index);
+                                                              },
+                                                              child: SvgPicture
+                                                                  .asset(
+                                                                'assets/image/angry.svg',
+                                                                height: 35,
+                                                              ),
+                                                            ),
+                                                            InkWell(
+                                                              onTap: () {
+                                                                profileProvider.postOfferReaction(
+                                                                    postId:
+                                                                        offerModel.id ??
+                                                                            0,
+                                                                    reactionEmoji:
+                                                                        reactionKeyword[
+                                                                            4],
+                                                                    index:
+                                                                        index);
+                                                              },
+                                                              child: SvgPicture
+                                                                  .asset(
+                                                                'assets/image/sad.svg',
+                                                                height: 35,
+                                                              ),
+                                                            ),
+                                                            InkWell(
+                                                              onTap: () {
+                                                                profileProvider.postOfferReaction(
+                                                                    postId:
+                                                                        offerModel.id ??
+                                                                            0,
+                                                                    reactionEmoji:
+                                                                        reactionKeyword[
+                                                                            5],
+                                                                    index:
+                                                                        index);
+                                                              },
+                                                              child: SvgPicture
+                                                                  .asset(
+                                                                'assets/image/wow.svg',
+                                                                height: 35,
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : const SizedBox(),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                  // Row(
+                                  //   children: [
+                                  //     Expanded(
+                                  //         child: Container(
+                                  //       child: Row(
+                                  //         children: [
+                                  //           InkWell(
+                                  //             onTap: () {},
+                                  //             child: Container(
+                                  //                 alignment: Alignment.center,
+                                  //                 height: size.width * .07,
+                                  //                 width: size.width * .1,
+                                  //                 decoration: BoxDecoration(
+                                  //                     border: Border.all(
+                                  //                         color: Colors.grey),
+                                  //                     boxShadow: const [
+                                  //                       BoxShadow(
+                                  //                           color: Colors.white,
+                                  //                           spreadRadius: 1)
+                                  //                     ],
+                                  //                     borderRadius:
+                                  //                         BorderRadius.circular(
+                                  //                             15)),
+                                  //                 child: const FaIcon(
+                                  //                   FontAwesomeIcons.thumbsUp,
+                                  //                   color:
+                                  //                       AppColor.primaryColor,
+                                  //                 )),
+                                  //           ),
+                                  //           AppConstant.kWidth(
+                                  //               width: size.width * .03),
+                                  //           InkWell(
+                                  //             onTap: () {
+                                  // Navigator.push(
+                                  //     context,
+                                  //     PageTransition(
+                                  //         type: PageTransitionType
+                                  //             .fade,
+                                  //         child: CommentScreen(
+                                  //           postId: offerModel.id
+                                  //               .toString(),
+                                  //           postImages: offerModel
+                                  //                   .traderofferimages ??
+                                  //               [],
+                                  //           profilePic: offerModel
+                                  //                   .profilePic ??
+                                  //               "",
+                                  //           description:
+                                  //               offerModel
+                                  //                   .description
+                                  //                   .toString(),
+                                  //           replyUrl: Url
+                                  //               .postOfferReplyComment,
+                                  //           postCommentUrl: Url
+                                  //               .postOfferComment,
+                                  //           endPoint:
+                                  //               'traderoffercomments',
+                                  //           traderId: offerModel
+                                  //               .traderId
+                                  //               .toString(),
+                                  //         )));
+                                  //             },
+                                  //             child: Container(
+                                  //                 alignment: Alignment.center,
+                                  //                 height: size.width * .07,
+                                  //                 width: size.width * .1,
+                                  //                 decoration: BoxDecoration(
+                                  //                     border: Border.all(
+                                  //                         color: Colors.grey),
+                                  //                     boxShadow: const [
+                                  //                       BoxShadow(
+                                  //                           color: Colors.white,
+                                  //                           spreadRadius: 1)
+                                  //                     ],
+                                  //                     borderRadius:
+                                  //                         BorderRadius.circular(
+                                  //                             15)),
+                                  //                 child: FaIcon(
+                                  //                   FontAwesomeIcons
+                                  //                       .commentDots,
+                                  //                   color:
+                                  //                       AppColor.primaryColor,
+                                  //                 )),
+                                  //           ),
+                                  //         ],
+                                  //       ),
+                                  //     ))
+                                  //   ],
+                                  // ),
+                                ])),
+                      ),
                     );
                   },
                 )

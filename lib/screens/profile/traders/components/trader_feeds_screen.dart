@@ -1,21 +1,13 @@
-import 'dart:io';
-
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:codecarrots_unotraders/model/add_post.dart';
 import 'package:codecarrots_unotraders/model/feed_reaction_model.dart';
 import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/provider/profile_provider.dart';
 import 'package:codecarrots_unotraders/screens/Profile/comment%20section/comment_screen.dart';
+import 'package:codecarrots_unotraders/screens/Profile/traders/components/trader_report_popup.dart';
 import 'package:codecarrots_unotraders/screens/Profile/traders/trader_post_popup.dart';
-import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
-import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/app_constant.dart';
-import 'package:custom_pointed_popup/custom_pointed_popup.dart';
-import 'package:custom_pointed_popup/utils/triangle_painter.dart';
-import 'package:el_tooltip2/el_tooltip2.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -24,15 +16,12 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:just_the_tooltip_fork/just_the_tooltip_fork.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:read_more_text/read_more_text.dart';
 import 'package:show_up_animation/show_up_animation.dart';
-import 'package:super_tooltip_ext/super_tooltip.dart';
 
 import '../../../../model/Feeds/trader_feed_model.dart';
-import 'package:flutter_reaction_button/flutter_reaction_button.dart';
 
 class TraderFeedScreen extends StatefulWidget {
   final bool isCustomer;
@@ -92,33 +81,33 @@ class _TraderFeedScreenState extends State<TraderFeedScreen> {
 
   final GlobalKey widgetKey = GlobalKey();
 
-  CustomPointedPopup getCustomPointedPopup(BuildContext context) {
-    return CustomPointedPopup(
-      backgroundColor: Colors.red,
-      context: context,
+  // CustomPointedPopup getCustomPointedPopup(BuildContext context) {
+  //   return CustomPointedPopup(
+  //     backgroundColor: Colors.red,
+  //     context: context,
 
-      widthFractionWithRespectToDeviceWidth: 3,
-      displayBelowWidget: true,
-      triangleDirection: TriangleDirection.FullLeft,
-      popupElevation: 10,
+  //     widthFractionWithRespectToDeviceWidth: 3,
+  //     displayBelowWidget: true,
+  //     triangleDirection: TriangleDirection.FullLeft,
+  //     popupElevation: 10,
 
-      ///you can also add border radius
-      ////popupBorderRadius:,
-      item: CustomPointedPopupItem(
-        title: '',
-        iconWidget: Icon(
-          Icons.add_moderator,
-          color: Theme.of(context).cardColor,
-        ),
-      ),
-      onClickWidget: (onClickMenu) {
-        print('popup item clicked');
-      },
-      onDismiss: () {
-        print('on dismissed called');
-      },
-    );
-  }
+  //     ///you can also add border radius
+  //     ////popupBorderRadius:,
+  //     item: CustomPointedPopupItem(
+  //       title: '',
+  //       iconWidget: Icon(
+  //         Icons.add_moderator,
+  //         color: Theme.of(context).cardColor,
+  //       ),
+  //     ),
+  //     onClickWidget: (onClickMenu) {
+  //       print('popup item clicked');
+  //     },
+  //     onDismiss: () {
+  //       print('on dismissed called');
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -227,19 +216,38 @@ class _TraderFeedScreenState extends State<TraderFeedScreen> {
                                           ),
                                         ),
                                         widget.isCustomer == true
-                                            ? Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 9, vertical: 5),
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                    color: AppColor.green),
-                                                child: TextWidget(
-                                                  data: "Report",
-                                                  style: TextStyle(
-                                                      color:
-                                                          AppColor.whiteColor),
+                                            ? InkWell(
+                                                onTap: () async {
+                                                  print(
+                                                      "traderPost.id.toString()");
+                                                  print(
+                                                      traderPost.id.toString());
+                                                  await showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        TraderReportPopup(
+                                                            postId: traderPost
+                                                                        .id !=
+                                                                    null
+                                                                ? traderPost.id!
+                                                                : 0),
+                                                  );
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 9,
+                                                      vertical: 5),
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
+                                                      color: AppColor.green),
+                                                  child: TextWidget(
+                                                    data: "Report",
+                                                    style: TextStyle(
+                                                        color: AppColor
+                                                            .whiteColor),
+                                                  ),
                                                 ),
                                               )
                                             : widget.isProfileVisit
@@ -263,8 +271,7 @@ class _TraderFeedScreenState extends State<TraderFeedScreen> {
                                                           size: 16,
                                                         ),
                                                         onPressed: () async {
-                                                          String? res =
-                                                              await showDialog(
+                                                          await showDialog(
                                                             context: context,
                                                             builder: (context) =>
                                                                 TraderPostPopUp(
@@ -433,7 +440,356 @@ class _TraderFeedScreenState extends State<TraderFeedScreen> {
                                 ],
                               ),
                               const Divider(),
-                              // Container(
+
+                              traderPost.likes == null ||
+                                      traderPost.firstUser == null
+                                  ? SizedBox()
+                                  : traderPost.likes! == 0
+                                      ? SizedBox()
+                                      :
+                                      //  traderPost.likes! == 1 &&
+                                      //         traderPost.emoji != null &&
+                                      //         traderPost.emoji!.isNotEmpty
+                                      //     ? SizedBox()
+                                      //     :
+                                      Row(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 17,
+                                              backgroundColor: AppColor.green,
+                                              child: Icon(
+                                                Icons.thumb_up,
+                                                color: AppColor.whiteColor,
+                                                size: 17,
+                                              ),
+                                            ),
+                                            AppConstant.kWidth(width: 10),
+                                            traderPost.likes == 1
+                                                ? TextWidget(
+                                                    data: traderPost.emoji ==
+                                                                null ||
+                                                            traderPost
+                                                                .emoji!.isEmpty
+                                                        ? "${traderPost.firstUser}"
+                                                        : "You")
+                                                : TextWidget(
+                                                    data: traderPost.emoji ==
+                                                                null ||
+                                                            traderPost
+                                                                .emoji!.isEmpty
+                                                        ? "${traderPost.firstUser} and ${traderPost.likes! - 1} others"
+                                                        : "You and ${traderPost.likes! - 1} others"),
+
+                                            // traderPost.likes == 1
+                                            //     ? TextWidget(
+                                            //         data: traderPost.emoji ==
+                                            //                 null
+                                            //             ? traderPost
+                                            //                     .emoji!.isEmpty
+                                            //                 ? "${traderPost.firstUser}"
+                                            //                 : "${traderPost.firstUser}"
+                                            //             : "You")
+                                            //     : TextWidget(
+                                            //         data: traderPost.emoji ==
+                                            //                 null
+                                            //             ? traderPost
+                                            //                     .emoji!.isEmpty
+                                            //                 ? "${traderPost.firstUser}and ${traderPost.likes! - 1} others"
+                                            //                 : "${traderPost.firstUser}and ${traderPost.likes! - 1} others"
+                                            //             : "You and ${traderPost.likes! - 1} others"),
+                                          ],
+                                        ),
+                              Center(
+                                child: Stack(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Row(
+                                          children: [
+                                            provider.currentFeedReactionIndex ==
+                                                        index &&
+                                                    traderPost.isReactionOpened!
+                                                ? SizedBox(
+                                                    height: 40, width: 40)
+                                                : InkWell(
+                                                    onTap: () {
+                                                      profileProvider
+                                                          .changeFeedReactionByIndex(
+                                                              index);
+                                                    },
+                                                    child: Container(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        height: 40,
+                                                        width: 40,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                                // border: Border.all(
+                                                                //     color: Colors
+                                                                //         .grey),
+                                                                // boxShadow: const [
+                                                                //   BoxShadow(
+                                                                //       color: Colors
+                                                                //           .white,
+                                                                //       spreadRadius:
+                                                                //           1)
+                                                                // ],
+                                                                // borderRadius:
+                                                                //     BorderRadius
+                                                                //         .circular(
+                                                                //             15)
+                                                                ),
+                                                        child: traderPost
+                                                                        .emoji !=
+                                                                    null &&
+                                                                traderPost
+                                                                    .emoji!
+                                                                    .isNotEmpty
+                                                            ? Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .all(5),
+                                                                child:
+                                                                    SvgPicture
+                                                                        .asset(
+                                                                  currentReaction(
+                                                                      traderPost
+                                                                          .emoji!),
+                                                                  height: 35,
+                                                                ),
+                                                              )
+                                                            : const FaIcon(
+                                                                FontAwesomeIcons
+                                                                    .thumbsUp,
+                                                                color: AppColor
+                                                                    .primaryColor,
+                                                              )),
+                                                  ),
+                                            AppConstant.kWidth(width: 12),
+                                            provider.currentFeedReactionIndex ==
+                                                        index &&
+                                                    traderPost.isReactionOpened!
+                                                ? SizedBox(
+                                                    height: 40, width: 40)
+                                                : InkWell(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          PageTransition(
+                                                              type:
+                                                                  PageTransitionType
+                                                                      .fade,
+                                                              child:
+                                                                  CommentScreen(
+                                                                postId: traderPost
+                                                                    .id
+                                                                    .toString(),
+                                                                postImages:
+                                                                    traderPost
+                                                                        .postImages!,
+                                                                profilePic:
+                                                                    traderPost
+                                                                            .profilePic ??
+                                                                        "",
+                                                                description: traderPost
+                                                                    .postContent
+                                                                    .toString(),
+                                                                replyUrl: Url
+                                                                    .postFeedReplyComment,
+                                                                postCommentUrl:
+                                                                    Url.postFeedComment,
+                                                                endPoint:
+                                                                    'traderpostcomments',
+                                                                traderId: traderPost
+                                                                    .traderId
+                                                                    .toString(),
+                                                              )));
+                                                    },
+                                                    child: Container(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        height: 40,
+                                                        width: 40,
+                                                        decoration: BoxDecoration(
+                                                            // border: Border.all(
+                                                            //     color: Colors
+                                                            //         .grey),
+                                                            // boxShadow: const [
+                                                            //   BoxShadow(
+                                                            //       color: Colors
+                                                            //           .white,
+                                                            //       spreadRadius:
+                                                            //           1)
+                                                            // ],
+                                                            // borderRadius:
+                                                            //     BorderRadius
+                                                            //         .circular(
+                                                            //             15)
+                                                            ),
+                                                        child: FaIcon(
+                                                          FontAwesomeIcons
+                                                              .commentDots,
+                                                          color: AppColor
+                                                              .primaryColor,
+                                                        )),
+                                                  ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    Positioned(
+                                      top: 3,
+                                      child:
+                                          provider.currentFeedReactionIndex ==
+                                                      index &&
+                                                  traderPost.isReactionOpened!
+                                              ? ShowUpAnimation(
+                                                  delayStart:
+                                                      Duration(seconds: 0),
+                                                  animationDuration:
+                                                      Duration(milliseconds: 1),
+                                                  curve: Curves.bounceIn,
+                                                  direction: Direction.vertical,
+                                                  offset: 0.5,
+                                                  child: Container(
+                                                    width: 220,
+                                                    height: 30,
+                                                    decoration: BoxDecoration(),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        InkWell(
+                                                          onTap: () {
+                                                            profileProvider.postFeedReaction(
+                                                                postId: traderPost
+                                                                        .id ??
+                                                                    0,
+                                                                reactionEmoji:
+                                                                    reactionKeyword[
+                                                                        0],
+                                                                index: index);
+                                                          },
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            'assets/image/like.svg',
+                                                            height: 35,
+                                                          ),
+                                                        ),
+                                                        InkWell(
+                                                          onTap: () {
+                                                            profileProvider.postFeedReaction(
+                                                                postId: traderPost
+                                                                        .id ??
+                                                                    0,
+                                                                reactionEmoji:
+                                                                    reactionKeyword[
+                                                                            1]
+                                                                        .toString(),
+                                                                index: index);
+                                                          },
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            'assets/image/heart.svg',
+                                                            height: 35,
+                                                          ),
+                                                        ),
+                                                        InkWell(
+                                                          onTap: () {
+                                                            profileProvider.postFeedReaction(
+                                                                postId: traderPost
+                                                                        .id ??
+                                                                    0,
+                                                                reactionEmoji:
+                                                                    reactionKeyword[
+                                                                        2],
+                                                                index: index);
+                                                          },
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            'assets/image/laughing.svg',
+                                                            height: 35,
+                                                          ),
+                                                        ),
+                                                        InkWell(
+                                                          onTap: () {
+                                                            profileProvider.postFeedReaction(
+                                                                postId: traderPost
+                                                                        .id ??
+                                                                    0,
+                                                                reactionEmoji:
+                                                                    reactionKeyword[
+                                                                        3],
+                                                                index: index);
+                                                          },
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            'assets/image/angry.svg',
+                                                            height: 35,
+                                                          ),
+                                                        ),
+                                                        InkWell(
+                                                          onTap: () {
+                                                            profileProvider.postFeedReaction(
+                                                                postId: traderPost
+                                                                        .id ??
+                                                                    0,
+                                                                reactionEmoji:
+                                                                    reactionKeyword[
+                                                                        4],
+                                                                index: index);
+                                                          },
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            'assets/image/sad.svg',
+                                                            height: 35,
+                                                          ),
+                                                        ),
+                                                        InkWell(
+                                                          onTap: () {
+                                                            profileProvider.postFeedReaction(
+                                                                postId: traderPost
+                                                                        .id ??
+                                                                    0,
+                                                                reactionEmoji:
+                                                                    reactionKeyword[
+                                                                        5],
+                                                                index: index);
+                                                          },
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            'assets/image/wow.svg',
+                                                            height: 35,
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox(),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+    });
+  }
+}
+
+
+ // Container(
                               //   width: 220,
                               //   height: 30,
                               //   decoration:
@@ -883,255 +1239,6 @@ class _TraderFeedScreenState extends State<TraderFeedScreen> {
                               //     ],
                               //   ),
                               // ),
-                              Center(
-                                child: Stack(
-                                  children: [
-                                    Column(
-                                      children: [
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        Row(
-                                          children: [
-                                            InkWell(
-                                              onTap: () {
-                                                profileProvider
-                                                    .changeFeedReactionByIndex(
-                                                        index);
-                                              },
-                                              child: Container(
-                                                  alignment: Alignment.center,
-                                                  height: 40,
-                                                  width: 40,
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors.grey),
-                                                      boxShadow: const [
-                                                        BoxShadow(
-                                                            color: Colors.white,
-                                                            spreadRadius: 1)
-                                                      ],
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15)),
-                                                  child: const FaIcon(
-                                                    FontAwesomeIcons.thumbsUp,
-                                                    color:
-                                                        AppColor.primaryColor,
-                                                  )),
-                                            ),
-                                            AppConstant.kWidth(width: 12),
-                                            InkWell(
-                                              onTap: () {
-                                                Navigator.push(
-                                                    context,
-                                                    PageTransition(
-                                                        type: PageTransitionType
-                                                            .fade,
-                                                        child: CommentScreen(
-                                                          postId: traderPost.id
-                                                              .toString(),
-                                                          postImages: traderPost
-                                                              .postImages!,
-                                                          profilePic: traderPost
-                                                                  .profilePic ??
-                                                              "",
-                                                          description:
-                                                              traderPost
-                                                                  .postContent
-                                                                  .toString(),
-                                                          replyUrl: Url
-                                                              .postFeedReplyComment,
-                                                          postCommentUrl: Url
-                                                              .postFeedComment,
-                                                          endPoint:
-                                                              'traderpostcomments',
-                                                          traderId: traderPost
-                                                              .traderId
-                                                              .toString(),
-                                                        )));
-                                              },
-                                              child: Container(
-                                                  alignment: Alignment.center,
-                                                  height: 40,
-                                                  width: 40,
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors.grey),
-                                                      boxShadow: const [
-                                                        BoxShadow(
-                                                            color: Colors.white,
-                                                            spreadRadius: 1)
-                                                      ],
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15)),
-                                                  child: FaIcon(
-                                                    FontAwesomeIcons
-                                                        .commentDots,
-                                                    color:
-                                                        AppColor.primaryColor,
-                                                  )),
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                    Positioned(
-                                      top: 3,
-                                      child:
-                                          provider.currentFeedReactionIndex ==
-                                                      index &&
-                                                  traderPost.isReactionOpened!
-                                              ? ShowUpAnimation(
-                                                  delayStart:
-                                                      Duration(seconds: 0),
-                                                  animationDuration:
-                                                      Duration(milliseconds: 1),
-                                                  curve: Curves.bounceIn,
-                                                  direction: Direction.vertical,
-                                                  offset: 0.5,
-                                                  child: Container(
-                                                    width: 220,
-                                                    height: 30,
-                                                    decoration: BoxDecoration(),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        InkWell(
-                                                          onTap: () {
-                                                            profileProvider.postReaction(
-                                                                postId: traderPost
-                                                                        .id ??
-                                                                    0,
-                                                                reactionEmoji:
-                                                                    ReactionKeyword
-                                                                            .Like
-                                                                        .toString(),
-                                                                index: index);
-                                                          },
-                                                          child:
-                                                              SvgPicture.asset(
-                                                            'assets/image/like.svg',
-                                                            height: 35,
-                                                          ),
-                                                        ),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            profileProvider.postReaction(
-                                                                postId: traderPost
-                                                                        .id ??
-                                                                    0,
-                                                                reactionEmoji:
-                                                                    ReactionKeyword
-                                                                            .Love
-                                                                        .toString(),
-                                                                index: index);
-                                                          },
-                                                          child:
-                                                              SvgPicture.asset(
-                                                            'assets/image/heart.svg',
-                                                            height: 35,
-                                                          ),
-                                                        ),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            profileProvider.postReaction(
-                                                                postId: traderPost
-                                                                        .id ??
-                                                                    0,
-                                                                reactionEmoji:
-                                                                    ReactionKeyword
-                                                                            .HaHa
-                                                                        .toString(),
-                                                                index: index);
-                                                          },
-                                                          child:
-                                                              SvgPicture.asset(
-                                                            'assets/image/laughing.svg',
-                                                            height: 35,
-                                                          ),
-                                                        ),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            profileProvider.postReaction(
-                                                                postId: traderPost
-                                                                        .id ??
-                                                                    0,
-                                                                reactionEmoji:
-                                                                    ReactionKeyword
-                                                                            .Angry
-                                                                        .toString(),
-                                                                index: index);
-                                                          },
-                                                          child:
-                                                              SvgPicture.asset(
-                                                            'assets/image/angry.svg',
-                                                            height: 35,
-                                                          ),
-                                                        ),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            profileProvider.postReaction(
-                                                                postId: traderPost
-                                                                        .id ??
-                                                                    0,
-                                                                reactionEmoji:
-                                                                    ReactionKeyword
-                                                                            .Sad
-                                                                        .toString(),
-                                                                index: index);
-                                                          },
-                                                          child:
-                                                              SvgPicture.asset(
-                                                            'assets/image/sad.svg',
-                                                            height: 35,
-                                                          ),
-                                                        ),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            profileProvider.postReaction(
-                                                                postId: traderPost
-                                                                        .id ??
-                                                                    0,
-                                                                reactionEmoji:
-                                                                    ReactionKeyword
-                                                                            .Wow
-                                                                        .toString(),
-                                                                index: index);
-                                                          },
-                                                          child:
-                                                              SvgPicture.asset(
-                                                            'assets/image/wow.svg',
-                                                            height: 35,
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                )
-                                              : const SizedBox(),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            );
-    });
-  }
-}
-
-
-
 
 // import 'dart:io';
 

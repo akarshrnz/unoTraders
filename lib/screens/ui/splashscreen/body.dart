@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:codecarrots_unotraders/screens/Location/location_permission_screen.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
 import 'package:codecarrots_unotraders/main.dart';
@@ -15,20 +16,19 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
-    if(sp!.getString('token') != null){
+    if (sp!.getString('token') != null) {
       Timer(
         const Duration(seconds: 4),
-            () => Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const Dashboard())),
+        () => Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const PermissionScreen())),
       );
-    }else{
+    } else {
       Timer(
         const Duration(seconds: 4),
-            () => Navigator.of(context).pushReplacement(
+        () => Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const LoginScreen())),
       );
     }
@@ -47,7 +47,10 @@ class _SplashScreenState extends State<SplashScreen> {
           child: CircleAvatar(
             backgroundColor: AppColor.whiteColor,
             radius: MediaQuery.of(context).size.width * 0.3,
-            child: Image.asset(PngImages.logo,width: MediaQuery.of(context).size.width * 0.4,),
+            child: Image.asset(
+              PngImages.logo,
+              width: MediaQuery.of(context).size.width * 0.4,
+            ),
           ),
         ),
       ),

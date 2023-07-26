@@ -2,6 +2,7 @@ import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
 import 'package:codecarrots_unotraders/provider/customer_job_actions_provider.dart';
 import 'package:codecarrots_unotraders/provider/dashbord_provider.dart';
+import 'package:codecarrots_unotraders/provider/help_provider.dart';
 import 'package:codecarrots_unotraders/provider/home_provider.dart';
 import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
@@ -11,14 +12,19 @@ import 'package:codecarrots_unotraders/provider/profile_insights_provider.dart';
 import 'package:codecarrots_unotraders/provider/profile_provider.dart';
 import 'package:codecarrots_unotraders/provider/trader_category_provider.dart';
 import 'package:codecarrots_unotraders/provider/trader_job_info_provider.dart';
+import 'package:codecarrots_unotraders/screens/Location/select_location_screen.dart';
 import 'package:codecarrots_unotraders/utils/router_class.dart';
 import 'package:codecarrots_unotraders/screens/auth/login.dart';
 import 'package:codecarrots_unotraders/screens/ui/splashscreen/body.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+
+import 'model/User Location/user_location_data.dart';
 
 SharedPreferences? sp;
 void main() async {
@@ -28,6 +34,9 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   sp = await SharedPreferences.getInstance();
+  await Hive.initFlutter();
+  Hive.registerAdapter(UserLocationDbAdapter());
+  await Hive.openBox<UserLocationDb>('location-box');
   runApp(const MyApp());
 }
 
@@ -104,10 +113,19 @@ class MyApp extends StatelessWidget {
             return ProfileInsightsProvider();
           },
         ),
+        ChangeNotifierProvider(
+          create: (_) {
+            return HelpProvider();
+          },
+        ),
       ],
       child: MaterialApp(
         useInheritedMediaQuery: false,
-        routes: {"login": (context) => LoginScreen()},
+        routes: {
+          "login": (context) => LoginScreen(),
+          SelectUserLocationScreen.routeName: (context) =>
+              SelectUserLocationScreen()
+        },
         debugShowCheckedModeBanner: false,
         title: 'UNO Traders',
         onGenerateRoute: RouterClass.generateRoute,

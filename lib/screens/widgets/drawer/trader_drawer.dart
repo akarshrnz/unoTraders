@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:codecarrots_unotraders/model/trader_profile_model.dart';
 import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
+import 'package:codecarrots_unotraders/screens/DIY%20Help/diy_help_screen.dart';
 import 'package:codecarrots_unotraders/screens/job/job%20type/trader%20job%20type/trader_job_quote_requests.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/router_class.dart';
@@ -8,24 +9,16 @@ import 'package:codecarrots_unotraders/screens/Profile/customer_blocked_screen.d
 import 'package:codecarrots_unotraders/screens/Profile%20insights/profile_insights_screen.dart';
 
 import 'package:codecarrots_unotraders/screens/receipt/receipt_screen.dart';
-import 'package:codecarrots_unotraders/services/profile_services.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
-import 'package:codecarrots_unotraders/main.dart';
-import 'package:codecarrots_unotraders/screens/auth/login.dart';
-import 'package:codecarrots_unotraders/screens/Bazaar/components/body.dart';
-import 'package:codecarrots_unotraders/screens/job/trader_job.dart';
-import 'package:codecarrots_unotraders/screens/ui/message/body.dart';
-import 'package:codecarrots_unotraders/screens/ui/receipt/body.dart';
-import 'package:codecarrots_unotraders/screens/Profile/traders/body.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:codecarrots_unotraders/screens/Message%20Section/message_listing_screen.dart';
-import '../../../services/helper/url.dart';
 
 class TraderDrawer extends StatelessWidget {
   const TraderDrawer({Key? key}) : super(key: key);
@@ -311,8 +304,13 @@ class TraderDrawer extends StatelessWidget {
           const SizedBox(height: 10),
           drawerTile(
             image: PngImages.drawerSupport,
-            text: "Support",
-            onPressed: () {},
+            text: "DIY Help",
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.fade, child: DiyHelpScreen()));
+            },
           ),
           const SizedBox(height: 10),
           drawerTile(
@@ -341,6 +339,7 @@ class TraderDrawer extends StatelessWidget {
                         ),
                         onPressed: () async {
                           await sharePref.clear();
+                          await Hive.deleteBoxFromDisk('location-box');
                           print(sharePref.get('id'));
                           Navigator.of(context).pushNamedAndRemoveUntil(
                               'login', (route) => false);

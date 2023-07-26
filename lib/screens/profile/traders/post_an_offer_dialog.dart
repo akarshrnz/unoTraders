@@ -473,31 +473,41 @@ class _BazaarPopUpState extends State<PostAnOfferDialog> {
                               // ignore: avoid_print
                               print("valid");
                               if (widget.traderOffer == null) {
-                                await profileProvider.postAnOffer(
+                                bool res = await profileProvider.postAnOffer(
                                     offerModel: postOfferModel);
+                                if (res == true) {
+                                  profileProvider.getTraderOffers(
+                                      urlUserType: 'trader', traderId: id);
+                                  clearField();
+                                } else {}
                               } else {
-                                await profileProvider.updateOffer(
+                                bool res = await profileProvider.updateOffer(
                                     offerModel: postOfferModel);
+                                if (res == true) {
+                                  profileProvider.getTraderOffers(
+                                      urlUserType: 'trader', traderId: id);
+                                  clearField();
+                                } else {}
                               }
-                              await profileProvider
-                                  .postAnOffer(offerModel: postOfferModel)
-                                  .then((value) {
-                                AppConstant.toastMsg(
-                                    msg: "Offer posted sucessfully",
-                                    backgroundColor: AppColor.green);
+                              // await profileProvider
+                              //     .postAnOffer(offerModel: postOfferModel)
+                              //     .then((value) {
+                              // AppConstant.toastMsg(
+                              //     msg: "Offer posted sucessfully",
+                              //     backgroundColor: AppColor.green);
 
-                                clearField();
+                              // clearField();
 
-                                return;
-                              }).onError((error, stackTrace) {
-                                print("errorr  message ");
-                                print(error.toString());
-                                AppConstant.toastMsg(
-                                    msg: error.toString(),
-                                    backgroundColor: AppColor.red);
+                              //   return;
+                              // }).onError((error, stackTrace) {
+                              //   print("errorr  message ");
+                              //   print(error.toString());
+                              // AppConstant.toastMsg(
+                              //     msg: error.toString(),
+                              //     backgroundColor: AppColor.red);
 
-                                return;
-                              });
+                              //   return;
+                              // });
                             } else {
                               AppConstant.toastMsg(
                                   msg: "Please fill all Fields",

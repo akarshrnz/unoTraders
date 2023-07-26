@@ -136,6 +136,13 @@ class _TraderProfileEditState extends State<TraderProfileEdit> {
     });
   }
 
+  List<String> titles = [
+    "Profile",
+    "Location",
+    "Document",
+    "Services",
+  ];
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;

@@ -316,8 +316,10 @@ class _BazaarPopUpState extends State<TraderPostPopUp> {
 
                           if (res == true) {
                             clearField();
+                            // profileProvider.getTraderFeeds(
+                            //     userType: 'trader', userId: widget.userid);
                             profileProvider.getTraderFeeds(
-                                userType: 'trader', userId: widget.userid);
+                                urlUserType: 'trader', traderId: widget.userid);
                           }
                         } else {
                           AppConstant.toastMsg(

@@ -1,10 +1,4 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:codecarrots_unotraders/model/Feeds/trader_feed_model.dart';
-import 'package:codecarrots_unotraders/model/add_post.dart';
-import 'package:codecarrots_unotraders/model/offer%20listing/trader_offer_listing.dart';
 import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
 import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/provider/profile_provider.dart';
@@ -13,14 +7,9 @@ import 'package:codecarrots_unotraders/screens/Profile/traders/components/review
 import 'package:codecarrots_unotraders/screens/Profile/traders/components/trader_feeds_screen.dart';
 import 'package:codecarrots_unotraders/screens/Profile/traders/components/trader_offer_screen.dart';
 import 'package:codecarrots_unotraders/screens/Profile/traders/components/view_review_screen.dart';
-import 'package:codecarrots_unotraders/screens/Profile/traders/post_an_offer_dialog.dart';
 import 'package:codecarrots_unotraders/screens/Profile/traders/profile/qr_code_popup.dart';
-import 'package:codecarrots_unotraders/screens/Profile/traders/profile/trader_profile_edit.dart';
-import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
-import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
+import 'package:codecarrots_unotraders/screens/Profile/traders/profile/Profile%20Edit/trader_profile_edit.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
-import 'package:codecarrots_unotraders/services/helper/url.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:page_transition/page_transition.dart';
@@ -30,20 +19,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../utils/color.dart';
 import '../../../../utils/png.dart';
 import 'package:codecarrots_unotraders/model/trader_profile_model.dart';
-import 'package:codecarrots_unotraders/services/profile_services.dart';
 import 'package:codecarrots_unotraders/utils/app_constant.dart';
-import 'package:codecarrots_unotraders/utils/img_fade.dart';
-import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
-import 'package:read_more_text/read_more_text.dart';
-
-import '../../../../utils/color.dart';
-import '../../../../utils/png.dart';
 
 class TraderProfile extends StatefulWidget {
   const TraderProfile({Key? key}) : super(key: key);
@@ -81,7 +61,8 @@ class _TraderProfileState extends State<TraderProfile> {
     String id = sharedPrefs.getString('id')!;
     String userType = sharedPrefs.getString('userType')!;
     profileProvider.getTraderProfile();
-    profileProvider.getFeeds(userType: 'trader', userId: id);
+    print("call trader profile");
+    profileProvider.getFeeds(urlUserType: 'trader', traderId: id);
   }
 
   initialize() {
@@ -677,11 +658,13 @@ class _TraderProfileState extends State<TraderProfile> {
                                 profileProvider.changeTab(index: index);
 
                                 if (index == 0) {
+                                  // profileProvider.getFeeds(
+                                  //     userType: 'trader', userId: id);
                                   profileProvider.getFeeds(
-                                      userType: 'trader', userId: id);
+                                      urlUserType: 'trader', traderId: id);
                                 } else if (index == 1) {
                                   profileProvider.getOffers(
-                                      userType: 'trader', userId: id);
+                                      urlUserType: 'trader', traderId: id);
                                 } else if (index == 2) {
                                   profileProvider.getReview(traderId: id);
                                 } else {}

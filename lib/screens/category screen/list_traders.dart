@@ -1,18 +1,20 @@
 import 'package:codecarrots_unotraders/model/provider_profile_model.dart';
 import 'package:codecarrots_unotraders/provider/trader_category_provider.dart';
 import 'package:codecarrots_unotraders/screens/Message%20Section/chat_screen.dart';
-import 'package:codecarrots_unotraders/screens/Profile/traders/profile/trader_profile.dart';
+
 import 'package:codecarrots_unotraders/screens/Profile/traders/trader_profile_visit.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
-import 'package:codecarrots_unotraders/services/profile_services.dart';
+
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ListTraders extends StatefulWidget {
@@ -38,6 +40,33 @@ class _ListTradersState extends State<ListTraders> {
     // TODO: implement initState
     super.initState();
   }
+
+  fetchApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getDouble("latitude") == null ||
+        prefs.getDouble("longitude") == null) {}
+  }
+
+  //  Future<void> _requestPermissionAndStoreLocation() async {
+  //   LocationPermission permission = await Geolocator.requestPermission();
+
+  //   if (permission == LocationPermission.denied) {
+  //     // Handle if permission is denied
+  //     print('Location permission denied');
+  //   } else if (permission == LocationPermission.deniedForever) {
+  //     // Handle if permission is permanently denied
+  //     print('Location permission permanently denied');
+  //     await _openAppSettings();
+  //   } else {
+  //     Position position = await Geolocator.getCurrentPosition(
+  //       desiredAccuracy: LocationAccuracy.high,
+  //     );
+
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     prefs.setDouble('latitude', position.latitude);
+  //     prefs.setDouble('longitude', position.longitude);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +129,7 @@ class _ListTradersState extends State<ListTraders> {
                             backgroundColor: AppColor.whiteColor,
                             radius: size.width * .06,
                             backgroundImage: NetworkImage(
-                              data.profilePic!,
+                              data.profilePic ?? "",
                             ),
                           ),
                         ),
@@ -113,13 +142,13 @@ class _ListTradersState extends State<ListTraders> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               title(
-                                  text: data.name!,
+                                  text: data.name ?? "",
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold),
                               Row(
                                 children: [
                                   title(
-                                      text: data.rating!,
+                                      text: data.rating ?? "",
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                       maxLines: 1),

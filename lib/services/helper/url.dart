@@ -39,7 +39,7 @@ class Url {
   static const String updatePostedJob = baseUrl + 'job/updatecustomerjob';
   static String jobStatus = baseUrl + 'job/status';
   // static String jobStatu = baseUrl + 'job/status/${id}/';
-  static const String customerSeekQuote = baseUrl + 'customer/seek-quote/';
+  static const String customerSeekQuote = baseUrl + 'customer/seek-quote';
   static const String customerGetQuote = baseUrl + 'job/getquote';
   static const String jobMoreDetails = baseUrl + 'job/details';
 
@@ -124,4 +124,22 @@ class Url {
   static const String getSearchhistory = baseUrl + "searchhistory";
   static const String getBlockedTraders = baseUrl + "customer/blocked-traders/";
   static const String blockUnBlockTraders = baseUrl + "blockuser";
+
+  //find trader
+  static const String findTraderByCategory = baseUrl + "subcategory";
+
+  //search trader
+  static const String searchTraders = baseUrl + "search_providers";
+  static const String filterTradersSearchResults =
+      baseUrl + "search_result_list";
+
+  //post
+  static const String reportFeed = baseUrl + "trader/addpostreport";
+
+  //help
+  static const String diyHelp = baseUrl + "diy/adddiyhelp";
+  static const String getDiyHelp = baseUrl + "diy/diyhelp/";
+  static const String addDiyReplyComment =
+      baseUrl + "diy/adddiyhelpcommentreply";
+  static const String addDiyMainComment = baseUrl + "diy/adddiyhelpcomment";
 }

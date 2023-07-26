@@ -7,10 +7,11 @@ class TraderFeedModel {
   String? postContent;
   int? status;
   String? emoji;
-  String? likes;
+  int? likes;
   String? reactions;
   String? createdAt;
   String? updatedAt;
+  String? firstUser;
   bool? isReactionOpened;
   List<String>? postImages;
 
@@ -21,6 +22,7 @@ class TraderFeedModel {
     this.traderId,
     this.isReactionOpened,
     this.title,
+    this.firstUser,
     this.postContent,
     this.status,
     this.emoji,
@@ -36,6 +38,7 @@ class TraderFeedModel {
 
   TraderFeedModel.fromJson(Map<String, dynamic> json) {
     name = json['name'];
+    firstUser = json['first_user'];
     profilePic = json['profile_pic'];
     id = json['id'];
     isReactionOpened = false;

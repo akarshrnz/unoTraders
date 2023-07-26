@@ -51,6 +51,7 @@ class JobProvider with ChangeNotifier {
   bool isSeekingQuote = false;
   String seekQuoteError = "";
   List<JobClarificationModel> jobClarificationList = [];
+
   disposeAll() {
     _categoryErrorMessage = "";
     _subCategoryErrorMessage = "";

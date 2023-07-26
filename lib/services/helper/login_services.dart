@@ -1,12 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:codecarrots_unotraders/model/login_model.dart';
-import 'package:codecarrots_unotraders/services/helper/failure.dart';
-import 'package:codecarrots_unotraders/services/helper/header.dart';
-import 'package:dio/dio.dart';
-
-import 'dio_client.dart';
 
 class LoginServices {
   // static Future<void> postJob1(
@@ -43,7 +37,6 @@ class LoginServices {
     LoginModel login = LoginModel(email: email, password: pass);
     // ignore: avoid_print
     print("inside login");
-    final body = jsonEncode(login.toJson());
     final param = {"email": "sod@mailinator.com", "password": "Akarsh@12345"};
 
     try {

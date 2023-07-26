@@ -70,9 +70,9 @@ class ProviderProfileModel {
       this.providercategories,
       this.providerreviews});
 
-      static List<ProviderProfileModel> snapshot(List snapshot){
+  static List<ProviderProfileModel> snapshot(List snapshot) {
     return snapshot.map((snap) => ProviderProfileModel.fromJson(snap)).toList();
-   }
+  }
 
   ProviderProfileModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -287,5 +287,4 @@ class Providerreviews {
     data['updated_at'] = updatedAt;
     return data;
   }
-   
 }

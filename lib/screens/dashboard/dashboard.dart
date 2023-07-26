@@ -1,50 +1,33 @@
-import 'dart:io';
-
-import 'package:blurry/blurry.dart';
 import 'package:codecarrots_unotraders/main.dart';
 import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
 import 'package:codecarrots_unotraders/provider/dashbord_provider.dart';
-import 'package:codecarrots_unotraders/screens/category%20screen/category_screen.dart';
-import 'package:codecarrots_unotraders/screens/homepage/hom.dart';
-import 'package:codecarrots_unotraders/screens/homepage/home_page.dart';
 import 'package:codecarrots_unotraders/screens/homepage/new_home.dart';
-import 'package:codecarrots_unotraders/screens/job/customer%20job%20screen/customer_seek_quote_result.dart';
-import 'package:codecarrots_unotraders/screens/job/job%20type/customer%20job%20%20type/review/customer_review.dart';
 import 'package:codecarrots_unotraders/screens/middele_screen.dart';
 
-import 'package:codecarrots_unotraders/screens/Profile/traders/trader_profile_visit.dart';
 import 'package:codecarrots_unotraders/screens/Profile/traders/trader_qrcode_screen.dart';
 import 'package:codecarrots_unotraders/screens/Profile/traders/url_profile_visit.dart';
 import 'package:codecarrots_unotraders/screens/receipt/receipt_popup.dart';
 import 'package:codecarrots_unotraders/screens/wishlist/wishlist_screen.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
-import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_screen.dart';
-
-import 'package:codecarrots_unotraders/screens/job/customer%20job%20screen/post_job.dart';
-import 'package:codecarrots_unotraders/screens/Profile/traders/body.dart';
-import 'package:dio/dio.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../category screen/new_category_screen.dart';
 import '../Profile/customer/customer_profile.dart';
 import '../Profile/traders/profile/trader_profile.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  const Dashboard({super.key});
 
   @override
-  _DashboardState createState() => _DashboardState();
+  State<Dashboard> createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {

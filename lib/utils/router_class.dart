@@ -1,6 +1,6 @@
 import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_screen.dart';
 import 'package:codecarrots_unotraders/screens/dashboard/dashboard.dart';
-import 'package:codecarrots_unotraders/screens/homepage/home_page.dart';
+
 import 'package:codecarrots_unotraders/screens/homepage/new_home.dart';
 
 import 'package:codecarrots_unotraders/screens/job/job%20type/trader%20job%20type/trader_accepted_job.dart';

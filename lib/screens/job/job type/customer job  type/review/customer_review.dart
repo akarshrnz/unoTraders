@@ -8,7 +8,7 @@ import 'package:codecarrots_unotraders/services/profile_services.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
-import 'package:flut_grouped_buttons/flut_grouped_buttons.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -183,8 +183,6 @@ class _CustomerReviewScreenState extends State<CustomerReviewScreen> {
                                         });
                                       }
                                     }
-
-                                   
                                   },
                                 )).toList(),
                       ),

@@ -4,28 +4,15 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:codecarrots_unotraders/model/add_wishlist_model.dart';
-import 'package:codecarrots_unotraders/model/bazaar_search_model.dart';
 import 'package:codecarrots_unotraders/model/message/bazaar_store_message_model.dart';
 import 'package:codecarrots_unotraders/model/message/message_list_model.dart';
 import 'package:codecarrots_unotraders/model/message/send_message_model.dart';
 import 'package:codecarrots_unotraders/model/notification%20model/notification_model.dart';
 
-import 'package:codecarrots_unotraders/model/wishlist_model.dart';
-import 'package:codecarrots_unotraders/services/api_sevices.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
-import 'package:codecarrots_unotraders/services/helper/dio_client.dart';
+
 import 'package:codecarrots_unotraders/services/helper/failure.dart';
 import 'package:codecarrots_unotraders/services/helper/header.dart';
-import 'package:codecarrots_unotraders/model/banner_model.dart';
-import 'package:codecarrots_unotraders/model/bazaar_categories.dart';
-import 'package:codecarrots_unotraders/model/bazaar_model.dart';
-import 'package:codecarrots_unotraders/model/sell_at_bazaar.dart';
-import 'package:codecarrots_unotraders/model/trader_subcategory.dart';
-import 'package:codecarrots_unotraders/model/traders_category_model.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,8 +25,9 @@ class MessageServices {
     if (userType.toLowerCase() == "provider") {
       userType = "trader";
     }
-    // ignore: avoid_print
+
     print("message getting........");
+    print(Url.messageList);
 
     final body = {"user_id": id, "user_type": userType};
 
@@ -57,7 +45,6 @@ class MessageServices {
           jsonDecode(response.body) as Map<String, dynamic>;
 
       if (response.statusCode == 200) {
-        // ignore: avoid_print
         print(response.body);
         List tempList = [];
         for (var v in data["data"] ?? []) {
@@ -89,7 +76,6 @@ class MessageServices {
 
       if (response.statusCode == 200) {
         return true;
-        // ignore: avoid_print
       } else {
         throw "Something Went Wrong";
       }
@@ -115,7 +101,6 @@ class MessageServices {
           jsonDecode(response.body) as Map<String, dynamic>;
 
       if (response.statusCode == 200) {
-        // ignore: avoid_print
         print(response.body);
         List tempList = [];
         for (var v in data["data"] ?? []) {
@@ -154,7 +139,6 @@ class MessageServices {
           jsonDecode(response.body) as Map<String, dynamic>;
 
       if (response.statusCode == 200) {
-        // ignore: avoid_print
         print(response.body);
         List tempList = [];
         for (var v in data["data"] ?? []) {
@@ -205,7 +189,6 @@ class MessageServices {
         // } else {
         //   return false;
         // }
-        // ignore: avoid_print
       } else {
         throw "Something Went Wrong";
       }

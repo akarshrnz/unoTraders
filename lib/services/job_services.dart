@@ -4,9 +4,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:codecarrots_unotraders/model/add_diy_help.dart';
 import 'package:codecarrots_unotraders/model/current_job_model.dart';
 import 'package:codecarrots_unotraders/model/customer_quote_action_model.dart';
 import 'package:codecarrots_unotraders/model/customer_seek_quote_model.dart';
+import 'package:codecarrots_unotraders/model/diy_help_listing_model.dart';
+import 'package:codecarrots_unotraders/model/diy_help_post_reply_model.dart';
 import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
 import 'package:codecarrots_unotraders/model/get_accept_reject_model.dart';
 import 'package:codecarrots_unotraders/model/job_clarification_model.dart';
@@ -21,7 +24,7 @@ import 'package:codecarrots_unotraders/model/trader_quote_request_model.dart';
 import 'package:codecarrots_unotraders/model/trader_req_info_model.dart';
 import 'package:codecarrots_unotraders/model/trader_request_more_details_model.dart';
 import 'package:codecarrots_unotraders/model/update_job_model.dart';
-import 'package:codecarrots_unotraders/provider/job_provider.dart';
+
 import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/services/helper/dio_client.dart';
 import 'package:codecarrots_unotraders/services/helper/exception_handler.dart';
@@ -32,18 +35,33 @@ import 'package:codecarrots_unotraders/utils/app_constant.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class JobServices {
   // get live job
 
   static Future<List<FetchJobModel>> fetchAllJob() async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    String id = sharedPrefs.getString('id')!;
+    String userType = sharedPrefs.getString('userType')!;
+
+    String currentUserLatitude = sharedPrefs.getDouble("latitude").toString();
+    String currentUserLongitude = sharedPrefs.getDouble("longitude").toString();
+
+    print(">>>> all job>>>>>>>>>");
+    print(currentUserLatitude);
+    print(currentUserLongitude);
+    Map<String, dynamic> postBody = {
+      "trader_id": id,
+      "location_latitude": currentUserLatitude,
+      "location_longitude": currentUserLongitude
+    };
     try {
-      var response = await http.get(
-        Uri.parse('https://demo.unotraders.com/api/v1/jobs'),
-        headers: Header.header,
-      );
+      var response = await http.post(
+          Uri.parse('https://demo.unotraders.com/api/v1/job/jobs'),
+          headers: Header.header,
+          body: jsonEncode(postBody));
       print("job fetched successfully");
 
       print(response.body);
@@ -286,13 +304,25 @@ class JobServices {
   //customer seek quote
   static Future<List<CustomerSeekQuoteModel>> getQuote(
       {required String jobId}) async {
-    print('${Url.customerSeekQuote}$jobId');
+    print('${Url.customerSeekQuote}');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String currentUserLatitude = prefs.getDouble("latitude").toString();
+    String currentUserLongitude = prefs.getDouble("longitude").toString();
+
+    Map<String, dynamic> postBody = {
+      "job_id": jobId,
+      "location_latitude": currentUserLatitude,
+      "location_longitude": currentUserLongitude
+    };
+    print(postBody);
+    print(Url.customerSeekQuote);
+
     try {
-      var response = await http.get(
-        Uri.parse('${Url.customerSeekQuote}$jobId'),
-        headers: Header.header,
-      );
+      var response = await http.post(Uri.parse('${Url.customerSeekQuote}'),
+          headers: Header.header, body: jsonEncode(postBody));
+      print(response.statusCode);
       Map body = jsonDecode(response.body);
+      print(body);
       if (response.statusCode == 200) {
         print("sucess");
         List tempList = [];
@@ -903,6 +933,216 @@ class JobServices {
       throw Failure('Bad response format');
     } catch (e) {
       print("service errpr");
+      throw Failure(e.toString());
+    }
+  }
+
+//diy help
+  static Future<bool> diyHelp({
+    required AddDiyHelp helpModel,
+  }) async {
+    // var formData = FormData.fromMap({
+    // "title": helpModel.title,
+    // "diy_help": helpModel.diyHelp,
+    // "user_id": helpModel.userId,
+    // "user_type": helpModel.userType,
+    //   "diy_help_images": []
+    // });
+    // print("length of images ${helpModel.images!.length}");
+
+    // for (var file in helpModel.images ?? []) {
+    //   formData.files.addAll([
+    //     MapEntry("diy_help_images", await MultipartFile.fromFile(file.path)),
+    //   ]);
+    // }
+    List<MultipartFile> files = [];
+    for (int i = 0; i < helpModel.images!.length; i++) {
+      File imageFile = helpModel.images![i];
+      String fileName = imageFile.path.split('/').last;
+      files.add(
+          await MultipartFile.fromFile(imageFile.path, filename: fileName));
+    }
+
+    FormData formData = FormData.fromMap({
+      "title": helpModel.title,
+      "diy_help": helpModel.diyHelp,
+      "user_id": helpModel.userId,
+      "user_type": helpModel.userType,
+      'diy_help_images[]': files,
+    });
+
+    // Print FormData fields and contents
+    print('FormData: values ');
+    formData.fields.forEach((field) {
+      print('${field.key}: ${field.value}');
+    });
+
+    // Print image file paths
+    // Print image file paths
+    print('Image files:');
+    formData.files.forEach((file) {
+      print(file.value.filename);
+    });
+
+    try {
+      var response;
+      response = await DioClient.dio.post(Url.diyHelp,
+          data: formData,
+          options: Options(
+            headers: Header.header,
+            sendTimeout: 10000,
+            receiveTimeout: 10000,
+          ));
+      print(response.statusCode);
+      print(response.data);
+
+      if (response.statusCode.toString() == "200") {
+        print("success");
+        return true;
+      } else {
+        throw ExceptionHandler(
+            statusCode: response.statusCode,
+            message: response.data['message'] ?? "");
+      }
+    } on SocketException {
+      throw Failure('No Internet connection');
+    } on TimeoutException {
+      throw Failure("Request timed out");
+    } on DioError catch (e) {
+      if (e.type == DioErrorType.connectTimeout) {
+        throw Failure("Request timed out");
+      } else if (e.type == DioErrorType.receiveTimeout) {
+        throw Failure("Request timed out");
+      } else if (e.type == DioErrorType.response) {
+        throw ExceptionHandler(
+            statusCode: e.response?.statusCode ?? 22,
+            message: "${e.response?.statusCode} ${e.response?.statusMessage}");
+      } else if (e.type == DioErrorType.cancel) {
+        throw Failure("Request Cancelled");
+      } else {
+        throw Failure("Something Went Wrong");
+      }
+    } on FormatException {
+      throw Failure("Bad response format");
+    } catch (e) {
+      print(e.toString());
+      throw Failure(e.toString());
+    }
+  }
+
+  static Future<List<DiyHelpListingModel>> getDiyHelp(
+      {required int offset}) async {
+    print("getDiyHelp");
+    print('${Url.getDiyHelp}$offset');
+
+    try {
+      var response = await http.get(
+        Uri.parse('${Url.getDiyHelp}$offset'),
+        headers: Header.header,
+      );
+      print(response.statusCode);
+      Map body = jsonDecode(response.body);
+      print(body);
+      if (response.statusCode == 200) {
+        print("sucess");
+        List tempList = [];
+        for (var data in body["data"] ?? []) {
+          tempList.add(data);
+        }
+        return DiyHelpListingModel.fromSnapshot(tempList);
+      } else {
+        throw body['message'] ?? "Something Went Wrong";
+      }
+    } on http.ClientException {
+      throw Failure('Failed to establish connection');
+    } on RedirectException {
+      throw Failure('Failed to redirect');
+    } on TimeoutException {
+      throw Failure('Request timed out');
+    } on SocketException {
+      throw Failure('No Internet connection 😑');
+    } on HttpException {
+      throw Failure("404 The requested resource could not be found");
+    } on FormatException {
+      throw Failure('Bad response format');
+    } catch (e) {
+      print(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<Comments> addMainReply(
+      {required DiyHelpPostReplyModel diyHelpPostReplyModel}) async {
+    print(Url.addDiyMainComment);
+    print(jsonEncode(diyHelpPostReplyModel.toJson()));
+    try {
+      var response = await http.post(Uri.parse(Url.addDiyMainComment),
+          headers: Header.header,
+          body: jsonEncode(diyHelpPostReplyModel.toJson()));
+      print(response.statusCode);
+      Map<String, dynamic> body = jsonDecode(response.body);
+
+      print(body);
+
+      if (response.statusCode == 200) {
+        print("sucess");
+
+        return Comments.fromJson(body['data']);
+      } else {
+        throw Failure(body['message'] ?? "Something went wrong ");
+      }
+    } on http.ClientException {
+      throw Failure('Failed to establish connection');
+    } on RedirectException {
+      throw Failure('Failed to redirect');
+    } on TimeoutException {
+      throw Failure('Request timed out');
+    } on SocketException {
+      throw Failure('No Internet connection 😑');
+    } on HttpException {
+      throw Failure("404 The requested resource could not be found");
+    } on FormatException {
+      throw Failure('Bad response format');
+    } catch (e) {
+      print(e.toString());
+      throw Failure(e.toString());
+    }
+  }
+
+  static Future<Replies> addSubReply(
+      {required DiyHelpPostReplyModel diyHelpPostReplyModel}) async {
+    print(Url.addDiyReplyComment);
+    print(jsonEncode(diyHelpPostReplyModel.toJson()));
+    try {
+      var response = await http.post(Uri.parse(Url.addDiyReplyComment),
+          headers: Header.header,
+          body: jsonEncode(diyHelpPostReplyModel.toJson()));
+      Map<String, dynamic> body = jsonDecode(response.body);
+      print(response.statusCode);
+      print(body);
+
+      if (response.statusCode == 200) {
+        Replies replies = Replies.fromJson(body['data']);
+
+        print("sucess");
+        return replies;
+      } else {
+        throw Failure(body['message'] ?? "Something went wrong ");
+      }
+    } on http.ClientException {
+      throw Failure('Failed to establish connection');
+    } on RedirectException {
+      throw Failure('Failed to redirect');
+    } on TimeoutException {
+      throw Failure('Request timed out');
+    } on SocketException {
+      throw Failure('No Internet connection 😑');
+    } on HttpException {
+      throw Failure("404 The requested resource could not be found");
+    } on FormatException {
+      throw Failure('Bad response format');
+    } catch (e) {
+      print(e.toString());
       throw Failure(e.toString());
     }
   }

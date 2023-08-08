@@ -1,19 +1,19 @@
-import 'dart:io';
-
 import 'package:codecarrots_unotraders/model/trader_profile_model.dart';
 import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/provider/location_provider.dart';
 import 'package:codecarrots_unotraders/provider/profile_provider.dart';
-import 'package:codecarrots_unotraders/screens/Profile/traders/profile/Profile%20Edit/profile_document.dart';
-import 'package:codecarrots_unotraders/screens/Profile/traders/profile/Profile%20Edit/profile_location.dart';
-import 'package:codecarrots_unotraders/screens/Profile/traders/profile/Profile%20Edit/profile_service.dart';
+
+import 'package:codecarrots_unotraders/provider/trader_update_profile_provider.dart';
+import 'package:codecarrots_unotraders/screens/Profile/traders/profile/Trader%20Profile%20Edit/profile_completed_work.dart';
+import 'package:codecarrots_unotraders/screens/Profile/traders/profile/Trader%20Profile%20Edit/profile_document.dart';
+import 'package:codecarrots_unotraders/screens/Profile/traders/profile/Trader%20Profile%20Edit/profile_location.dart';
+import 'package:codecarrots_unotraders/screens/Profile/traders/profile/Trader%20Profile%20Edit/profile_service.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
-import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
-import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
+
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/png.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,25 +31,35 @@ class TraderProfileEdit extends StatefulWidget {
 
 class _TraderProfileEditState extends State<TraderProfileEdit> {
   late ProfileProvider profileProvider;
+  late TraderUpdateProfileProvider updateProfileProvider;
   late LocationProvider locationProvider;
   late ImagePickProvider imageProvider;
   int selectedIndex = 0;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     locationProvider = Provider.of<LocationProvider>(context, listen: false);
     imageProvider = Provider.of<ImagePickProvider>(context, listen: false);
     profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    updateProfileProvider =
+        Provider.of<TraderUpdateProfileProvider>(context, listen: false);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       imageProvider.initialValues();
       locationProvider.initializeLocation();
       locationProvider.clearData();
-      locationProvider.assignLocation(
-          lat: widget.profileModel.locLongitude!,
-          long: widget.profileModel.locLongitude!);
+      updateProfileProvider.clearAll();
+      updateProfileProvider.getAllTraderCategory();
+      updateProfileProvider.traderEditProfileCurrentData();
+      if (widget.profileModel.landLatitude != null &&
+          widget.profileModel.locLongitude != null &&
+          widget.profileModel.landLatitude!.isNotEmpty &&
+          widget.profileModel.locLongitude!.isNotEmpty) {
+        locationProvider.assignLocation(
+            lat: widget.profileModel.landLatitude!,
+            long: widget.profileModel.locLongitude!);
+      }
     });
   }
 
@@ -58,6 +68,7 @@ class _TraderProfileEditState extends State<TraderProfileEdit> {
     "Location",
     "Document",
     "Services",
+    "Completed",
   ];
 
   Widget screen(int index) {
@@ -72,9 +83,11 @@ class _TraderProfileEditState extends State<TraderProfileEdit> {
         traderId: widget.traderId,
       );
     } else if (index == 2) {
-      return ProfileDocument();
+      return const ProfileDocument();
+    } else if (index == 3) {
+      return const ProfileService();
     } else {
-      return ProfileService();
+      return const CompletedWork();
     }
   }
 
@@ -84,20 +97,27 @@ class _TraderProfileEditState extends State<TraderProfileEdit> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBarWidget(appBarTitle: "Edit Profile"),
-      body: Column(
-        children: [
-          AppConstant.kheight(height: 7),
-          header(size),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-              ),
-              child: screen(selectedIndex),
-            ),
-          )
-        ],
-      ),
+      body: Consumer<TraderUpdateProfileProvider>(
+          builder: (context, updateProvider, _) {
+        return updateProvider.editProfileLoading
+            ? Center(child: AppConstant.circularProgressIndicator())
+            : updateProvider.editProfileError.isNotEmpty
+                ? Center(child: TextWidget(data: "Something Went Wrong"))
+                : Column(
+                    children: [
+                      AppConstant.kheight(height: 7),
+                      header(size),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                          ),
+                          child: screen(selectedIndex),
+                        ),
+                      )
+                    ],
+                  );
+      }),
     );
   }
 
@@ -107,7 +127,7 @@ class _TraderProfileEditState extends State<TraderProfileEdit> {
       height: 50,
       // color: Colors.red,
       child: ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         itemCount: titles.length,
@@ -126,7 +146,7 @@ class _TraderProfileEditState extends State<TraderProfileEdit> {
                 child: Container(
                   alignment: Alignment.center,
                   width: 140,
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                       border: Border.all(color: AppColor.green),
                       borderRadius: BorderRadius.circular(20),

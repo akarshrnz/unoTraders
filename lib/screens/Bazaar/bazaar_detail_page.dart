@@ -5,7 +5,7 @@ import 'package:codecarrots_unotraders/model/bazaar_detail_post_model.dart';
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/circular_progress.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/img_fade.dart';

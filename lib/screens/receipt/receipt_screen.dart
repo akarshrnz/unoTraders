@@ -7,7 +7,7 @@ import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';

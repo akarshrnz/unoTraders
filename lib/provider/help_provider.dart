@@ -2,7 +2,7 @@ import 'package:codecarrots_unotraders/model/add_diy_help.dart';
 import 'package:codecarrots_unotraders/model/diy_help_listing_model.dart';
 import 'package:codecarrots_unotraders/model/diy_help_post_reply_model.dart';
 import 'package:codecarrots_unotraders/services/job_services.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';

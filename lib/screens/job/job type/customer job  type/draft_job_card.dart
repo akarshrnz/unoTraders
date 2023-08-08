@@ -1,14 +1,14 @@
 import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
 import 'package:codecarrots_unotraders/screens/job/customer%20job%20screen/post_job.dart';
-import 'package:codecarrots_unotraders/screens/job/customer%20job%20screen/customer_seek_quote_result.dart';
+import 'package:codecarrots_unotraders/screens/job/job%20type/customer%20job%20%20type/seek%20quote/customer_seek_quote_result.dart';
 import 'package:codecarrots_unotraders/screens/job/job%20type/customer%20job%20%20type/customer_job_more_details.dart';
 import 'package:codecarrots_unotraders/screens/job/job_detail.dart';
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
 import 'package:flutter/material.dart';

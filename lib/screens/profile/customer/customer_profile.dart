@@ -16,7 +16,7 @@ import 'package:codecarrots_unotraders/screens/Profile/traders/components/trader
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/circular_progress.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

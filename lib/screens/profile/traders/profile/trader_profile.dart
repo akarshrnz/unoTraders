@@ -8,7 +8,7 @@ import 'package:codecarrots_unotraders/screens/Profile/traders/components/trader
 import 'package:codecarrots_unotraders/screens/Profile/traders/components/trader_offer_screen.dart';
 import 'package:codecarrots_unotraders/screens/Profile/traders/components/view_review_screen.dart';
 import 'package:codecarrots_unotraders/screens/Profile/traders/profile/qr_code_popup.dart';
-import 'package:codecarrots_unotraders/screens/Profile/traders/profile/Profile%20Edit/trader_profile_edit.dart';
+import 'package:codecarrots_unotraders/screens/Profile/traders/profile/Trader%20Profile%20Edit/trader_profile_edit_main_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -19,7 +19,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../utils/color.dart';
 import '../../../../utils/png.dart';
 import 'package:codecarrots_unotraders/model/trader_profile_model.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

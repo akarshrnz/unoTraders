@@ -21,6 +21,7 @@ class CategoryAndSubListModel {
       this.createdAt,
       this.updatedAt,
       this.subcategories});
+
   static List<CategoryAndSubListModel> snapshot(List snapshot) {
     return snapshot
         .map((snap) => CategoryAndSubListModel.fromJson(snap))
@@ -111,4 +112,12 @@ class Subcategories {
     data['updated_at'] = this.updatedAt;
     return data;
   }
+
+  @override
+  bool operator ==(other) {
+    return (other is Subcategories) && id == other.id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }

@@ -4,7 +4,7 @@ import 'package:codecarrots_unotraders/provider/home_provider.dart';
 import 'package:codecarrots_unotraders/screens/Message%20Section/chat_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:codecarrots_unotraders/model/trader_profile_model.dart';
 import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
 import 'package:codecarrots_unotraders/screens/DIY%20Help/diy_help_screen.dart';
+import 'package:codecarrots_unotraders/screens/auth/reset_password.dart';
 import 'package:codecarrots_unotraders/screens/job/job%20type/trader%20job%20type/trader_job_quote_requests.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/router_class.dart';
@@ -285,6 +286,19 @@ class TraderDrawer extends StatelessWidget {
           const SizedBox(height: 10),
 
           drawerTile(
+            image: PngImages.drawerBazaar,
+            text: "Reset Password",
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.fade,
+                      child: ResetPasswordScreen()));
+            },
+          ),
+          const SizedBox(height: 10),
+
+          drawerTile(
             image: PngImages.drawerCondition,
             text: "Terms & Conditions",
             onPressed: () {},
@@ -339,7 +353,7 @@ class TraderDrawer extends StatelessWidget {
                         ),
                         onPressed: () async {
                           await sharePref.clear();
-                          await Hive.deleteBoxFromDisk('location-box');
+                          //  await Hive.deleteBoxFromDisk('location-box');
                           print(sharePref.get('id'));
                           Navigator.of(context).pushNamedAndRemoveUntil(
                               'login', (route) => false);

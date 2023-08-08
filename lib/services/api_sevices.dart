@@ -11,9 +11,15 @@ import 'package:codecarrots_unotraders/model/bazaar_detail_post_model.dart';
 import 'package:codecarrots_unotraders/model/bazaar_detal_get_model.dart';
 import 'package:codecarrots_unotraders/model/bazaar_search_model.dart';
 import 'package:codecarrots_unotraders/model/home_category.dart';
+
+import 'package:codecarrots_unotraders/model/profile/trader_edit_profile_existing.dart';
+import 'package:codecarrots_unotraders/model/profile/trader_update_profile.dart';
 import 'package:codecarrots_unotraders/model/provider_profile_model.dart';
+import 'package:codecarrots_unotraders/model/trader_profile_model.dart';
+import 'package:codecarrots_unotraders/model/trader_services.dart';
 
 import 'package:codecarrots_unotraders/model/wishlist_model.dart';
+import 'package:codecarrots_unotraders/services/helper/exception_handler.dart';
 
 import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/services/helper/dio_client.dart';
@@ -268,10 +274,273 @@ class ApiServices {
       throw Exception('Failed to load');
     }
   }
+  //get trdser existing data for edit profile
+
+  static Future<TraderEditProfileExistingdata>
+      getTraderEditProfileCurrentDetails() async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    String id = sharedPrefs.getString('id')!;
+
+    print("trader edit data");
+    print("${Url.traderEditProfileExistingData}$id");
+    var url = Uri.parse("${Url.traderEditProfileExistingData}$id");
+
+    try {
+      var response = await http.get(
+        url,
+        headers: Header.header,
+      );
+      Map<String, dynamic> data = jsonDecode(response.body);
+      print(response.statusCode);
+      print(data);
+
+      if (response.statusCode == 200) {
+        if (data['data'] != null) {
+          print("trader edit data Sucess");
+          return TraderEditProfileExistingdata.fromJson(data);
+        } else {
+          throw Exception('Something Went Wrong');
+        }
+      } else {
+        throw Exception('Something Went Wrong');
+      }
+    } catch (e) {
+      throw Exception('Something Went Wrong');
+    }
+  }
+
+  //update trader profile page one
+  // static Future<TraderProfileModel?> updateTraderProfilePageOne(
+  //     {required TraderUpdateProfile updateProfile}) async {
+  //   try {
+  //     print(jsonEncode(updateProfile.toJson()));
+  //     print(Url.updateTraderProfilePageOne);
+  //     Map<String, dynamic> body = {};
+  //     var url = Uri.parse(Url.updateTraderProfilePageOne);
+  //     var response = await http.post(url,
+  //         headers: Header.header, body: jsonEncode(updateProfile.toJson()));
+  //     print(response.statusCode);
+  //     print(response.body);
+  //     body = jsonDecode(response.body);
+
+  //     if (response.statusCode == 200) {
+  //       print("sucess");
+  //       if (body["data"] != null) {
+  //         return TraderProfileModel.fromJson(body["data"]);
+  //       } else {
+  //         return null;
+  //       }
+  //     } else {
+  //       throw body["message"] ?? "Something Went Wrong";
+  //     }
+  //   } catch (e) {
+  //     print("error message");
+  //     print(e.toString());
+  //     throw Exception(e.toString());
+  //   }
+  // }
+
+  static Future<TraderProfileModel?> updateTraderProfilePageOne(
+      {required TraderUpdateProfile updateProfile}) async {
+    print("sell at bazaar");
+    var formData = FormData.fromMap({
+      'main_category': updateProfile.mainCategory,
+      'type': updateProfile.type,
+      'name': updateProfile.name,
+      'country_code': updateProfile.countryCode,
+      'service_location_radius': updateProfile.serviceLocationRadius,
+      'available_time_from': updateProfile.availableTimeFrom,
+      'available_time_to': updateProfile.availableTimeTo,
+      'handyman': updateProfile.handyman,
+      'web_url': updateProfile.webUrl,
+      'address': updateProfile.address,
+      'mobile': updateProfile.mobile,
+      'email': updateProfile.email,
+      ' is_available': updateProfile.isAvailable,
+      'appointment': updateProfile.appointment,
+      'reference': updateProfile.reference,
+      'user_type': updateProfile.userType,
+      'trader_id': updateProfile.traderId,
+      'profile_image': updateProfile.profilePic == null
+          ? null
+          : await MultipartFile.fromFile(updateProfile.profilePic!.path)
+    });
+
+    try {
+      print("1");
+      var response = await DioClient.dio.post(Url.updateTraderProfilePageOne,
+          data: formData, options: Options(headers: Header.header));
+      print("2");
+
+      if (response.statusCode == 200) {
+        if (response.data["data"] != null) {
+          return TraderProfileModel.fromJson(response.data["data"]);
+        } else {
+          return null;
+        }
+      } else {
+        print("4");
+        throw Failure(response.data['message'] ?? "Something went wrong");
+      }
+    } on SocketException {
+      throw Failure('No Internet connection');
+    } on HttpException {
+      throw Failure("Couldn't find the post");
+    } on FormatException {
+      throw Failure("Bad response format");
+    } catch (e) {
+      print("5");
+
+      throw Failure("Something Went Wrong");
+    }
+  }
+
+  //update trader profile location page
+  static Future<bool> updateTraderProfileLocationPage(
+      {required TraderUpdateProfile updateProfile}) async {
+    try {
+      print(jsonEncode(updateProfile.toJson()));
+      print(Url.updateTraderProfileLocationPage);
+      Map<String, dynamic> body = {};
+      var url = Uri.parse(Url.updateTraderProfileLocationPage);
+      var response = await http.post(url,
+          headers: Header.header, body: jsonEncode(updateProfile.toJson()));
+      print(response.statusCode);
+      print(response.body);
+      body = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        print("sucess");
+
+        return true;
+      } else {
+        throw body["message"] ?? "Something Went Wrong";
+      }
+    } catch (e) {
+      print("error message");
+      print(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<bool> updateTraderProfileServicePage(
+      {required List<int> subCategoryId,
+      required List<int> serviceId,
+      required int traderId}) async {
+    try {
+      print(Url.updateTraderProfileServicePage);
+
+      Map<String, dynamic> postBody = {
+        "trader_id": traderId,
+        "category": subCategoryId,
+        "services": serviceId
+      };
+      print(jsonEncode(postBody));
+      Map<String, dynamic> body = {};
+      var url = Uri.parse(Url.updateTraderProfileServicePage);
+      var response = await http.post(url,
+          headers: Header.header, body: jsonEncode(postBody));
+      print(response.statusCode);
+
+      body = jsonDecode(response.body);
+      print(body);
+
+      if (response.statusCode == 200) {
+        print("sucess");
+
+        return true;
+      } else {
+        throw body["message"] ?? "Something Went Wrong";
+      }
+    } catch (e) {
+      print("error message");
+      print(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<bool> updateTraderProfileCompletedPage(
+      {required List<File> selectedImage,
+      required List<int> removedImages,
+      required int traderId}) async {
+    List<MultipartFile> files = [];
+    for (int i = 0; i < selectedImage.length; i++) {
+      File imageFile = selectedImage[i];
+      String fileName = imageFile.path.split('/').last;
+      files.add(
+          await MultipartFile.fromFile(imageFile.path, filename: fileName));
+    }
+
+    FormData formData = FormData.fromMap({
+      "trader_id": traderId,
+      "removeImg[]": removedImages,
+      'completed_images[]': files,
+    });
+    print(Url.updateTraderProfileCompletedPage);
+    // Print FormData fields and contents
+    print('FormData: values ');
+    formData.fields.forEach((field) {
+      print('${field.key}:');
+    });
+    print(formData);
+
+    // Print image file paths
+    // Print image file paths
+    print(formData);
+    formData.files.forEach((file) {
+      print(file.value.filename);
+    });
+
+    try {
+      var response;
+      response = await DioClient.dio.post(Url.updateTraderProfileCompletedPage,
+          data: formData,
+          options: Options(
+            headers: Header.header,
+            sendTimeout: 10000,
+            receiveTimeout: 10000,
+          ));
+      print(response.statusCode);
+      print(response.data);
+
+      if (response.statusCode.toString() == "200") {
+        print("success");
+        return true;
+      } else {
+        throw ExceptionHandler(
+            statusCode: response.statusCode,
+            message: response.data['message'] ?? "");
+      }
+    } on SocketException {
+      throw Failure('No Internet connection');
+    } on TimeoutException {
+      throw Failure("Request timed out");
+    } on DioError catch (e) {
+      if (e.type == DioErrorType.connectTimeout) {
+        throw Failure("Request timed out");
+      } else if (e.type == DioErrorType.receiveTimeout) {
+        throw Failure("Request timed out");
+      } else if (e.type == DioErrorType.response) {
+        throw ExceptionHandler(
+            statusCode: e.response?.statusCode ?? 22,
+            message: "${e.response?.statusCode} ${e.response?.statusMessage}");
+      } else if (e.type == DioErrorType.cancel) {
+        throw Failure("Request Cancelled");
+      } else {
+        throw Failure("Something Went Wrong");
+      }
+    } on FormatException {
+      throw Failure("Bad response format");
+    } catch (e) {
+      print(e.toString());
+      throw Failure(e.toString());
+    }
+  }
 
 //home cat and sub
   static Future<List<CategoryAndSubListModel>> getHomeCatSub() async {
-    var url = Uri.parse('https://demo.unotraders.com/api/v1/categorylist');
+    //'https://demo.unotraders.com/api/v1/categorylist'
+    var url = Uri.parse(Url.homerCategoriesSubCategories);
     var response = await http.get(
       url,
       headers: Header.header,
@@ -289,11 +558,59 @@ class ApiServices {
     }
   }
 
+  //trader profile edit category and sub category
+  static Future<List<CategoryAndSubListModel>> getTraderCatSub() async {
+    var url = Uri.parse(Url.traderCategories);
+    var response = await http.get(
+      url,
+      headers: Header.header,
+    );
+    Map data = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      List tempList = [];
+      for (var v in data["data"]) {
+        tempList.add(v);
+      }
+      return CategoryAndSubListModel.snapshot(tempList);
+    } else {
+      throw Exception('Failed to load');
+    }
+  }
+
+  static Future<List<TraderServices>> getServicesFromSubCategory(
+      {required List<int> subCategoryId}) async {
+    try {
+      Map<String, List<int>> postBody = {"sub_categories": subCategoryId};
+      print(jsonEncode(postBody));
+      print(Url.getServicesFromSubCategory);
+      Map<String, dynamic> body = {};
+      var url = Uri.parse(Url.getServicesFromSubCategory);
+      var response = await http.post(url,
+          headers: Header.header, body: jsonEncode(postBody));
+      print(response.statusCode);
+      print(response.body);
+      body = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        print("sucess");
+        List tempList = [];
+        for (var data in body["data"] ?? []) {
+          tempList.add(data);
+        }
+        return TraderServices.snapshot(tempList);
+      } else {
+        throw body["message"] ?? "Something Went Wrong";
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
 //remove
   static Future getProfile() async {
     final sharedPrefs = await SharedPreferences.getInstance();
     String id = sharedPrefs.getString('id')!;
-    String userType = sharedPrefs.getString('userType')!;
 
     print("inside future");
 
@@ -503,11 +820,16 @@ class ApiServices {
     final body = jsonEncode(wishlist.toJson());
 
     try {
-      await http.post(
+      var res = await http.post(
           Uri.parse(
               'https://demo.unotraders.com/api/v1/bazaar/shortlist-product'),
           headers: Header.header,
           body: body);
+      if (res.statusCode == 200) {
+        print("Product added");
+      } else {
+        throw "Something Went Wrong";
+      }
     } catch (e) {
       print(e.toString());
       throw e.toString();
@@ -526,8 +848,11 @@ class ApiServices {
               'https://demo.unotraders.com/api/v1/bazaar/shortlist-remove'),
           headers: Header.header,
           body: body);
-
-      print("Product removed sucess");
+      if (res.statusCode == 200) {
+        print("Product removed sucess");
+      } else {
+        throw "Something Went Wrong";
+      }
     } catch (e) {
       print(e.toString());
       throw e.toString();

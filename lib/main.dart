@@ -12,6 +12,7 @@ import 'package:codecarrots_unotraders/provider/profile_insights_provider.dart';
 import 'package:codecarrots_unotraders/provider/profile_provider.dart';
 import 'package:codecarrots_unotraders/provider/trader_category_provider.dart';
 import 'package:codecarrots_unotraders/provider/trader_job_info_provider.dart';
+import 'package:codecarrots_unotraders/provider/trader_update_profile_provider.dart';
 import 'package:codecarrots_unotraders/screens/Location/select_location_screen.dart';
 import 'package:codecarrots_unotraders/utils/router_class.dart';
 import 'package:codecarrots_unotraders/screens/auth/login.dart';
@@ -116,6 +117,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) {
             return HelpProvider();
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (_) {
+            return TraderUpdateProfileProvider();
           },
         ),
       ],

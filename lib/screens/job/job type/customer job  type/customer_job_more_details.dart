@@ -6,7 +6,7 @@ import 'package:codecarrots_unotraders/screens/Message%20Section/chat_screen.dar
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
 
@@ -339,7 +339,8 @@ class _CustomerJobMoreDetailsState extends State<CustomerJobMoreDetails> {
                                                 titleTwo: quote.status ?? "",
                                                 isButton:
                                                     status.toLowerCase() ==
-                                                            "requested"
+                                                                "requested" &&
+                                                            quote.giveQuote == 1
                                                         ? true
                                                         : false,
                                                 jobQuoteID: quote.id == null

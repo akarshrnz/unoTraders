@@ -5,14 +5,14 @@ import 'package:codecarrots_unotraders/model/bazaar_detal_get_model.dart';
 import 'package:codecarrots_unotraders/model/bazaar_search_model.dart';
 
 import 'package:codecarrots_unotraders/model/wishlist_model.dart';
-import 'package:codecarrots_unotraders/services/helper/url.dart';
+
 import 'package:codecarrots_unotraders/model/sell_at_bazaar.dart';
 import 'package:codecarrots_unotraders/model/bazaar_categories.dart';
 import 'package:codecarrots_unotraders/model/bazaar_model.dart';
-import 'package:codecarrots_unotraders/model/traders_category_model.dart';
+
 import 'package:codecarrots_unotraders/services/api_sevices.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

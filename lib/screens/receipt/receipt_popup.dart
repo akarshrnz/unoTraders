@@ -7,19 +7,14 @@ import 'package:flutter/src/widgets/framework.dart';
 
 import 'dart:io';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/main.dart';
-import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
-import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
-import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../provider/location_provider.dart';
 
 class ReceiptPopUp extends StatefulWidget {
   final bool? fromHome;
@@ -38,12 +33,11 @@ class _ReceiptPopUpState extends State<ReceiptPopUp> {
   TextEditingController titleController = TextEditingController();
   TextEditingController priceController = TextEditingController();
   TextEditingController remarksController = TextEditingController();
-  TextEditingController locationController = TextEditingController();
+  //TextEditingController locationController = TextEditingController();
 
   FocusNode titleFocus = FocusNode();
   FocusNode priceFocus = FocusNode();
   FocusNode remarksFocus = FocusNode();
-  FocusNode locationFocus = FocusNode();
 
   bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
@@ -88,8 +82,7 @@ class _ReceiptPopUpState extends State<ReceiptPopUp> {
     priceController.dispose();
     titleController.dispose();
     remarksController.dispose();
-    locationController.dispose();
-    locationFocus.dispose();
+    // locationController.dispose();
 
     titleFocus.dispose();
     priceFocus.dispose();
@@ -103,8 +96,6 @@ class _ReceiptPopUpState extends State<ReceiptPopUp> {
     priceController.clear();
     titleController.clear();
     remarksController.clear();
-    locationController.clear();
-    locationFocus.unfocus();
 
     titleFocus.unfocus();
     priceFocus.unfocus();
@@ -114,9 +105,9 @@ class _ReceiptPopUpState extends State<ReceiptPopUp> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final bazaarProvider = Provider.of<BazaarProvider>(context, listen: false);
-    final imagePickProvider =
-        Provider.of<ImagePickProvider>(context, listen: false);
+    // final bazaarProvider = Provider.of<BazaarProvider>(context, listen: false);
+    // final imagePickProvider =
+    //     Provider.of<ImagePickProvider>(context, listen: false);
 
     return AlertDialog(
         content: Form(
@@ -136,7 +127,7 @@ class _ReceiptPopUpState extends State<ReceiptPopUp> {
                     const SizedBox(),
                     TextWidget(
                       data: "Add Receipt",
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 20,
                           color: AppColor.blackColor,
                           fontWeight: FontWeight.bold),
@@ -185,6 +176,7 @@ class _ReceiptPopUpState extends State<ReceiptPopUp> {
                     focusNode: priceFocus,
                     controller: priceController,
                     hintText: "Price",
+                    keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: (p0) {
                       priceFocus.unfocus();
@@ -207,7 +199,7 @@ class _ReceiptPopUpState extends State<ReceiptPopUp> {
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: (p0) {
                       remarksFocus.unfocus();
-                      FocusScope.of(context).requestFocus(locationFocus);
+                      FocusScope.of(context).unfocus();
                     },
                     onEditingComplete: () => FocusScope.of(context).nextFocus(),
                     validate: (value) {
@@ -294,7 +286,7 @@ class _ReceiptPopUpState extends State<ReceiptPopUp> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.qr_code_scanner,
                                   color: AppColor.green,
                                 ),
@@ -314,6 +306,7 @@ class _ReceiptPopUpState extends State<ReceiptPopUp> {
                         height: 50,
                         text: "Submit",
                         onPress: () async {
+                          FocusScope.of(context).unfocus();
                           setState(() {
                             isLoading = true;
                           });
@@ -345,11 +338,12 @@ class _ReceiptPopUpState extends State<ReceiptPopUp> {
                                 clearField();
 
                                 if (widget.fromHome != null) {
+                                  if (!mounted) return;
                                   await Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              ReceiptScreen()));
+                                              const ReceiptScreen()));
                                 }
                               }
                             }
@@ -357,9 +351,11 @@ class _ReceiptPopUpState extends State<ReceiptPopUp> {
                             // ignore: avoid_print
                             print("in valid");
                           }
-                          setState(() {
-                            isLoading = false;
-                          });
+                          if (mounted) {
+                            setState(() {
+                              isLoading = false;
+                            });
+                          }
                         },
                         radius: 5,
                         backgroundColor: Colors.green,

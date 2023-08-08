@@ -8,7 +8,7 @@ import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -257,6 +257,8 @@ class _DiyPopUpState extends State<DiyPopUp> {
                             height: 50,
                             text: "Submit",
                             onPress: () async {
+                              titleFocus.unfocus();
+                              commentFocus.unfocus();
                               // setState(() {
                               //   isLoading = true;
                               // });

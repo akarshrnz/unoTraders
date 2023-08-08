@@ -31,6 +31,16 @@ class LocationProvider with ChangeNotifier {
   bool retryButton = false;
   bool isLoading = false;
 
+  @override
+  void dispose() {
+    closeBox(); // Close the box when the provider is disposed
+    super.dispose();
+  }
+
+  Future<void> closeBox() async {
+    await box.close();
+  }
+
 //get user current location
   Future<void> requestPermissionAndStoreLocation() async {
     print("Location fetch");
@@ -38,49 +48,54 @@ class LocationProvider with ChangeNotifier {
     notifyListeners();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.getDouble("latitude") == null ||
-        prefs.getDouble("longitude") == null) {
-      isLoading = true;
-      notifyListeners();
-      LocationPermission permission = await Geolocator.requestPermission();
-      print("location  null");
-      if (permission == LocationPermission.denied) {
-        // Handle if permission is denied
-        print('Location permission denied');
-        retryButton = true;
+    try {
+      if (prefs.getDouble("latitude") == null ||
+          prefs.getDouble("longitude") == null) {
+        isLoading = true;
         notifyListeners();
-      } else if (permission == LocationPermission.deniedForever) {
-        // Handle if permission is permanently denied
-        print('Location permission permanently denied');
-        await _openAppSettings();
-        retryButton = true;
-        openSetting = true;
-        notifyListeners();
-      } else {
-        print("getCurrentPosition");
-        Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
-        );
+        LocationPermission permission = await Geolocator.requestPermission();
+        print("location  null");
+        if (permission == LocationPermission.denied) {
+          // Handle if permission is denied
+          print('Location permission denied');
+          retryButton = true;
+          notifyListeners();
+        } else if (permission == LocationPermission.deniedForever) {
+          // Handle if permission is permanently denied
+          print('Location permission permanently denied');
+          await _openAppSettings();
+          retryButton = true;
+          openSetting = true;
+          notifyListeners();
+        } else {
+          print("getCurrentPosition");
+          Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high,
+          );
 
-        prefs.setDouble('latitude', position.latitude);
-        prefs.setDouble('longitude', position.longitude);
-        currentUserLatitude = position.latitude;
-        currentUserLongitude = position.longitude;
-        print("latitude $currentUserLatitude");
-        print("longitude $currentUserLongitude");
+          prefs.setDouble('latitude', position.latitude);
+          prefs.setDouble('longitude', position.longitude);
+          currentUserLatitude = position.latitude;
+          currentUserLongitude = position.longitude;
+          print("latitude $currentUserLatitude");
+          print("longitude $currentUserLongitude");
+          getLocationName(currentUserLatitude!, currentUserLongitude!);
+          permissionAllowed = true;
+          notifyListeners();
+        }
+      } else {
+        print("not null");
+        currentUserLatitude = prefs.getDouble("latitude");
+        currentUserLongitude = prefs.getDouble("longitude");
+        print(prefs.getDouble("latitude"));
+        print(prefs.getDouble("longitude"));
         getLocationName(currentUserLatitude!, currentUserLongitude!);
         permissionAllowed = true;
         notifyListeners();
       }
-    } else {
-      print("not null");
-      currentUserLatitude = prefs.getDouble("latitude");
-      currentUserLongitude = prefs.getDouble("longitude");
-      print(prefs.getDouble("latitude"));
-      print(prefs.getDouble("longitude"));
-      getLocationName(currentUserLatitude!, currentUserLongitude!);
-      permissionAllowed = true;
-      notifyListeners();
+    } catch (e) {
+      retryButton = true;
+      openSetting = true;
     }
     isLoading = false;
     notifyListeners();

@@ -5,7 +5,7 @@ import 'package:codecarrots_unotraders/provider/job_provider.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';

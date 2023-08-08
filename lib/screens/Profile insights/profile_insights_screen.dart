@@ -2,7 +2,7 @@ import 'package:codecarrots_unotraders/model/profile%20insights/profile_insights
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/services/profile_services.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';

@@ -1,3 +1,6 @@
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
+import 'package:codecarrots_unotraders/utils/color.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
@@ -5,20 +8,92 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:permission_handler/permission_handler.dart';
+
 class ImagePickProvider with ChangeNotifier {
   final imagePicker = ImagePicker();
   List<XFile> images = [];
   List<File> imageFile = [];
 
   pickImage() async {
-    final pickImage = await imagePicker.pickImage(source: ImageSource.gallery);
-    if (pickImage != null) {
-      images.add(pickImage);
-      imageFile.add(File(pickImage.path));
-      notifyListeners();
-      // ignore: avoid_print
-      print(images.length.toString());
-    } else {}
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    if (androidInfo.version.sdkInt >= 33) {
+      PermissionStatus galleryPermissionStatus =
+          await Permission.photos.request();
+      if (galleryPermissionStatus.isGranted) {
+        final pickImage =
+            await imagePicker.pickImage(source: ImageSource.gallery);
+        if (pickImage != null) {
+          images.add(pickImage);
+          imageFile.add(File(pickImage.path));
+          notifyListeners();
+          // ignore: avoid_print
+          print(images.length.toString());
+        } else {}
+      } else if (galleryPermissionStatus.isDenied) {
+        galleryPermissionStatus = await Permission.photos.request();
+      } else {
+        openAppSettings();
+      }
+    } else {
+      var cameraPermissionStatus = await Permission.storage.request();
+      if (cameraPermissionStatus.isGranted) {
+        final pickImage =
+            await imagePicker.pickImage(source: ImageSource.gallery);
+        if (pickImage != null) {
+          images.add(pickImage);
+          imageFile.add(File(pickImage.path));
+          notifyListeners();
+          // ignore: avoid_print
+          print(images.length.toString());
+        } else {}
+      } else if (cameraPermissionStatus.isDenied) {
+        cameraPermissionStatus = await Permission.storage.request();
+      } else {
+        openAppSettings();
+      }
+    }
+    // final pickImage = await imagePicker.pickImage(source: ImageSource.gallery);
+    // if (pickImage != null) {
+    //   images.add(pickImage);
+    //   imageFile.add(File(pickImage.path));
+    //   notifyListeners();
+    //   // ignore: avoid_print
+    //   print(images.length.toString());
+    // } else {
+    // AppConstant.toastMsg(
+    //     msg: "Something Went Wrong", backgroundColor: AppColor.red);
+    // }
+
+    notifyListeners();
+  }
+
+  pickImageFromCamera() async {
+    var cameraPermissionStatus = await Permission.camera.request();
+    if (cameraPermissionStatus.isGranted) {
+      final pickImage = await imagePicker.pickImage(source: ImageSource.camera);
+      if (pickImage != null) {
+        images.add(pickImage);
+        imageFile.add(File(pickImage.path));
+        notifyListeners();
+        // ignore: avoid_print
+        print(images.length.toString());
+      } else {}
+    } else if (cameraPermissionStatus.isDenied) {
+      cameraPermissionStatus = await Permission.camera.request();
+    } else {
+      openAppSettings();
+    }
+
+    // final pickImage = await imagePicker.pickImage(source: ImageSource.camera);
+    // if (pickImage != null) {
+    //   images.add(pickImage);
+    //   imageFile.add(File(pickImage.path));
+    //   notifyListeners();
+    //   // ignore: avoid_print
+    //   print(images.length.toString());
+    // } else {}
 
     notifyListeners();
   }

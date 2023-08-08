@@ -6,7 +6,7 @@ import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,7 +23,7 @@ class BazaarPopUp extends StatefulWidget {
 }
 
 class _BazaarPopUpState extends State<BazaarPopUp> {
-  final _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  late ImagePickProvider imagePickProvider;
   TextEditingController textEditingController = TextEditingController();
   TextEditingController productController = TextEditingController();
   TextEditingController priceController = TextEditingController();
@@ -44,22 +44,65 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
   List<File> imageFile = [];
   static final _formKey = GlobalKey<FormState>();
 
-  // pickImage() async {
-  //   final List<XFile>? pickImage = await imagePicker.pickMultiImage();
-  //   if (pickImage != null) {
-  //     setState(() {
-  //       images.addAll(pickImage);
-  //       for (var element in pickImage) {
-  //         imageFile.add(File(element.path));
-  //       }
-  //     });
-  //   } else {}
-  // }
+  Widget _buildButton(BuildContext context, String text, IconData icon,
+      VoidCallback onPressed) {
+    return InkWell(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
+          color: Colors.grey[200],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              icon,
+            ),
+            const SizedBox(width: 8.0),
+            Text(text),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showImagePicker(
+      BuildContext context, ImagePickProvider imagePickProvider) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              SizedBox(height: 16.0),
+              _buildButton(context, 'Capture with Camera', Icons.camera_alt,
+                  () {
+                imagePickProvider.pickImageFromCamera();
+                Navigator.pop(context);
+              }),
+              SizedBox(height: 16.0),
+              _buildButton(context, 'Pick from Gallery', Icons.photo_library,
+                  () {
+                imagePickProvider.pickImage();
+                Navigator.pop(context);
+              }),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
+    imagePickProvider = Provider.of<ImagePickProvider>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       locationProvider = Provider.of<LocationProvider>(context, listen: false);
+      imagePickProvider.clearImage();
       locationProvider.initializeLocation();
       locationProvider.clearAll();
     });
@@ -105,8 +148,6 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final bazaarProvider = Provider.of<BazaarProvider>(context, listen: false);
-    final imagePickProvider =
-        Provider.of<ImagePickProvider>(context, listen: false);
 
     return AlertDialog(
         content: Form(
@@ -414,7 +455,9 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
                       style: TextStyle(color: Colors.grey[700]),
                     ),
                     onPressed: () {
-                      imagePickProvider.pickImage();
+                      AppConstant.showImagePicker(context, imagePickProvider);
+                      // _showImagePicker(context, imagePickProvider);
+                      // imagePickProvider.pickImage();
                     },
                     style: ElevatedButton.styleFrom(
                         elevation: 0,

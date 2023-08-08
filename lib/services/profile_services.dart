@@ -30,6 +30,7 @@ import 'package:codecarrots_unotraders/model/receipt%20model/add_receipt_model.d
 import 'package:codecarrots_unotraders/model/receipt%20model/receipt_model.dart';
 import 'package:codecarrots_unotraders/model/receipt%20model/remove_receipt.dart';
 import 'package:codecarrots_unotraders/model/report_feed-model.dart';
+import 'package:codecarrots_unotraders/model/reset%20password/reset_password_model.dart';
 import 'package:codecarrots_unotraders/model/trader_profile_model.dart';
 
 import 'package:codecarrots_unotraders/model/update_profile.dart';
@@ -41,7 +42,7 @@ import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/services/helper/dio_client.dart';
 import 'package:codecarrots_unotraders/services/helper/header.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -52,6 +53,39 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../model/appointments/get_trader_appointmenys-modl.dart';
 
 class ProfileServices {
+  static Future<bool> resetPassword({required ResetPasswordModel reset}) async {
+    print(reset.toJson());
+
+    try {
+      var response = await http.post(Uri.parse(Url.resetPassword),
+          headers: Header.header, body: jsonEncode(reset.toJson()));
+      Map body = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        print("sucess");
+        print(body.toString());
+
+        return true;
+      } else {
+        throw body["message"] ?? "Something Went Wrong";
+      }
+    } on http.ClientException {
+      throw Failure('Failed to establish connection');
+    } on RedirectException {
+      throw Failure('Failed to redirect');
+    } on TimeoutException {
+      throw Failure('Request timed out');
+    } on SocketException {
+      throw Failure('No Internet connection');
+    } on HttpException {
+      throw Failure("404 The requested resource could not be found");
+    } on FormatException {
+      throw Failure('Bad response format');
+    } catch (e) {
+      print(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
   static Future<CustomerProfileModel> getCustomerProfile(
       {required String id}) async {
     print('${Url.customerProfile}$id');
@@ -448,7 +482,7 @@ class ProfileServices {
   static Future<bool> updateoffer({required PostOfferModel postOffer}) async {
     var dio = Dio();
 
-    print("add post");
+    print("add offer");
     var formData = FormData.fromMap({
       "traderId": postOffer.traderId,
       "offerTitle": postOffer.offerTitle,

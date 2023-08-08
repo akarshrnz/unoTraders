@@ -8,7 +8,7 @@ import 'package:codecarrots_unotraders/provider/message_provider.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_detail_page.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';

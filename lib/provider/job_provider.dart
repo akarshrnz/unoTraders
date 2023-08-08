@@ -18,7 +18,7 @@ import 'package:codecarrots_unotraders/services/api_sevices.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/services/job_services.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:page_transition/page_transition.dart';

@@ -1,6 +1,6 @@
 import 'package:codecarrots_unotraders/screens/category%20screen/list_traders.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:flutter/material.dart';
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:codecarrots_unotraders/model/Feeds/trader_feed_model.dart';
 import 'package:codecarrots_unotraders/model/add_post.dart';
 import 'package:codecarrots_unotraders/model/add_review_comment_model.dart';
@@ -9,16 +11,19 @@ import 'package:codecarrots_unotraders/model/customer_profile.dart';
 import 'package:codecarrots_unotraders/model/feed_reaction_model.dart';
 import 'package:codecarrots_unotraders/model/offer%20listing/trader_offer_listing.dart';
 import 'package:codecarrots_unotraders/model/post_offer_model.dart';
+
 import 'package:codecarrots_unotraders/model/receipt%20model/add_receipt_model.dart';
 import 'package:codecarrots_unotraders/model/receipt%20model/receipt_model.dart';
+import 'package:codecarrots_unotraders/model/reset%20password/reset_password_model.dart';
 import 'package:codecarrots_unotraders/model/trader_profile_model.dart';
 import 'package:codecarrots_unotraders/model/update_profile.dart';
 import 'package:codecarrots_unotraders/model/view_customer_review_model.dart';
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
+import 'package:codecarrots_unotraders/services/api_sevices.dart';
 import 'package:codecarrots_unotraders/services/helper/failure.dart';
 import 'package:codecarrots_unotraders/services/profile_services.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -62,6 +67,7 @@ class ProfileProvider with ChangeNotifier {
   String qrCodeUserId = "";
   bool qrLoading = false;
   String qrError = "";
+
   // bool isBadReviewLoading = false;
   // String badReviewFetchingError = "";
   // List<ViewCustomerReviewModel> badReviewList = [];
@@ -80,7 +86,7 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  dispose() {
+  disposeAll() {
     isLoading = false;
     errorMessage = "";
     notifyListeners();
@@ -649,7 +655,6 @@ class ProfileProvider with ChangeNotifier {
       notifyListeners();
       return false;
     }
-    ;
   }
 
   //traderprofile
@@ -672,6 +677,38 @@ class ProfileProvider with ChangeNotifier {
     isLoading = false;
 
     notifyListeners();
+  }
+
+  //
+  // update traderProfile
+  updateTraderProfile(TraderProfileModel? data) async {
+    if (data != null) {
+      traderProfile!.profilePic = data.profilePic;
+      traderProfile!.type = data.type;
+      traderProfile!.mainCategory = data.mainCategory;
+      traderProfile!.name = data.name;
+      traderProfile!.countryCode = data.countryCode;
+      traderProfile!.mobile = data.mobile;
+      traderProfile!.webUrl = data.webUrl;
+      traderProfile!.address = data.address;
+      traderProfile!.serviceLocationRadius = data.serviceLocationRadius;
+
+      traderProfile!.handyman = data.handyman;
+      traderProfile!.isAvailable = data.isAvailable;
+      traderProfile!.appointment = data.appointment;
+      traderProfile!.reference = data.reference!;
+      traderProfile!.availableTimeFrom = data.availableTimeFrom;
+      traderProfile!.availableTimeTo = data.availableTimeTo!;
+
+      traderProfile!.location = data.location;
+      traderProfile!.locLatitude = data.locLatitude;
+      traderProfile!.landLongitude = data.landLongitude;
+      traderProfile!.landmark = data.landmark;
+      traderProfile!.landmarkData = data.landmarkData;
+      traderProfile!.landLongitude = data.landLongitude;
+      traderProfile!.landLatitude = data.landLatitude;
+      notifyListeners();
+    }
   }
 
   //url profile visit
@@ -991,4 +1028,35 @@ class ProfileProvider with ChangeNotifier {
       throw Failure(e.toString());
     }
   }
+
+  Future<bool> resetPassword({required ResetPasswordModel reset}) async {
+    try {
+      bool res = await ProfileServices.resetPassword(reset: reset);
+      if (res == true) {
+        AppConstant.toastMsg(
+            msg: "Success! Your password has been updated. Keep it safe!",
+            backgroundColor: AppColor.green);
+        return true;
+      } else {
+        AppConstant.toastMsg(
+            msg: "Something went wrong", backgroundColor: AppColor.red);
+        return false;
+      }
+    } catch (e) {
+      AppConstant.toastMsg(msg: e.toString(), backgroundColor: AppColor.red);
+      return false;
+    }
+  }
+
+  // addCompletedWorkImages({required File fileImage}) {
+  //   Providerworks value =
+  //       Providerworks(fileImage: fileImage, isNetworkImage: false);
+  //   traderEditProfileExistingData!.data!.providerworks!.add(value);
+  //   notifyListeners();
+  // }
+
+  // removeCompletedWorkImages({required int id}) {
+  //   traderEditProfileExistingData!.data!.providerworks!.removeAt(id);
+  //   notifyListeners();
+  // }
 }

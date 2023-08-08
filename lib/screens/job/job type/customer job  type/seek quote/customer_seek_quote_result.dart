@@ -3,15 +3,12 @@ import 'package:codecarrots_unotraders/model/quote/get_quote_model.dart';
 import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
-import 'package:codecarrots_unotraders/utils/router_class.dart';
 import 'package:codecarrots_unotraders/screens/Message%20Section/chat_screen.dart';
 import 'package:codecarrots_unotraders/screens/Profile/traders/trader_profile_visit.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
-import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/services/job_services.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
-import 'package:codecarrots_unotraders/utils/png.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -244,6 +241,7 @@ class _QuoteResultsState extends State<QuoteResults> {
                                 builder: (context, currentUserProvider, _) {
                               return InkWell(
                                 onTap: () async {
+                                  AppConstant.overlayLoaderShow(context);
                                   final sharedPrefs =
                                       await SharedPreferences.getInstance();
                                   String id = sharedPrefs.getString('id')!;
@@ -262,6 +260,8 @@ class _QuoteResultsState extends State<QuoteResults> {
                                   print(getQuote.toJson());
                                   await JobServices.customerGetQuote(
                                       getQuote: getQuote);
+                                  if (!mounted) return;
+                                  AppConstant.overlayLoaderHide(context);
                                 },
                                 child: Container(
                                   alignment: Alignment.center,

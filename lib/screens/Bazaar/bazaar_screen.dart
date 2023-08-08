@@ -13,7 +13,7 @@ import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/components/bazaar_pop_up.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
 
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:flutter/material.dart';
 import '../../../provider/location_provider.dart';

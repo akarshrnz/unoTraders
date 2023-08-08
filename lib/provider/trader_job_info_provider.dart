@@ -7,7 +7,7 @@ import 'package:codecarrots_unotraders/model/trader_req_info_model.dart';
 import 'package:codecarrots_unotraders/model/trader_request_more_details_model.dart';
 import 'package:codecarrots_unotraders/services/job_services.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

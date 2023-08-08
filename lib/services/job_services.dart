@@ -31,7 +31,7 @@ import 'package:codecarrots_unotraders/services/helper/exception_handler.dart';
 import 'package:codecarrots_unotraders/services/helper/failure.dart';
 import 'package:codecarrots_unotraders/services/helper/header.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -833,6 +833,8 @@ class JobServices {
 
   static Future<void> customerGetQuote(
       {required GetQuoteModel getQuote}) async {
+    print(Url.customerGetQuote);
+    print(jsonEncode(getQuote.toJson()));
     try {
       var response = await http.post(Uri.parse(Url.customerGetQuote),
           headers: Header.header, body: jsonEncode(getQuote.toJson()));
@@ -867,6 +869,8 @@ class JobServices {
   //get job more details
   static Future<JobMoreDetailsModel> getJobMoreDetails(
       {required PostJobMoreDetailsModel jobDetailsModel}) async {
+    print(Url.jobMoreDetails);
+    print(jsonEncode(jobDetailsModel.toJson()));
     try {
       var response = await http.post(Uri.parse(Url.jobMoreDetails),
           headers: Header.header, body: jsonEncode(jobDetailsModel.toJson()));

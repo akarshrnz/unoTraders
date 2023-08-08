@@ -15,13 +15,21 @@ class Url {
   static const String login = baseUrl + 'login';
   static const String otpLogin = baseUrl + 'login-with-otp';
   static const String validateOtp = baseUrl + 'validate-otp';
+  static const String resendOtp = baseUrl + 'resend-otp';
   static const String forgotPassword = baseUrl + 'reset_password';
 
   //Dashboard
   static const String banners = baseUrl + 'banners';
   static String profile = '${baseUrl}customer/profile/';
+  //categories
   static const String categories = baseUrl + 'categories';
   static const String subCategories = baseUrl + 'subcategories/';
+
+  static const String homerCategoriesSubCategories = baseUrl + 'categorylist';
+
+  static const String traderCategories = baseUrl + 'traderprofile_edit_catlist';
+  static const String getServicesFromSubCategory =
+      baseUrl + 'traderprofile_edit_services';
 
   //trader
   static const String traderDetails = baseUrl + 'register';
@@ -82,6 +90,17 @@ class Url {
   //profile
   static const String traderProfile = '${baseUrl}trader/profile';
   static const String providerProfile = '${baseUrl}/subcategory/';
+  static const String traderEditProfileExistingData =
+      '${baseUrl}traderprofile_data/';
+  static const String updateTraderProfilePageOne =
+      '${baseUrl}traderprofileupdate1';
+  static const String updateTraderProfileLocationPage =
+      '${baseUrl}traderprofileupdate2';
+  static const String updateTraderProfileCompletedPage =
+      '${baseUrl}traderprofileupdate4';
+  static const String updateTraderProfileServicePage =
+      '${baseUrl}traderprofileupdate5';
+  static const String resetPassword = '${baseUrl}change_password';
 
   //comment
   static const String getPostedComment =

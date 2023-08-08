@@ -2,7 +2,7 @@ import 'package:codecarrots_unotraders/model/block_unblock_trader.dart';
 import 'package:codecarrots_unotraders/model/blocked_trader_model.dart';
 import 'package:codecarrots_unotraders/model/profile%20insights/profile_visitors_model.dart';
 import 'package:codecarrots_unotraders/services/profile_services.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';

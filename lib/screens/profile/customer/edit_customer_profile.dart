@@ -8,7 +8,7 @@ import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -16,7 +16,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 
 import '../../../provider/image_pick_provider.dart';
-import '../../../provider/job_provider.dart';
+
 import '../../../provider/location_provider.dart';
 
 class EditCustomerProfile extends StatefulWidget {

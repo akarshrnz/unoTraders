@@ -11,7 +11,7 @@ import 'package:codecarrots_unotraders/screens/Profile/traders/profile/qr_code_p
 import 'package:codecarrots_unotraders/screens/receipt/image_view.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/services/profile_services.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:flutter/foundation.dart';

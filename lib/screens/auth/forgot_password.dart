@@ -24,7 +24,7 @@ class _OtpLoginState extends State<ForgotPassword> {
   @override
   void dispose() {
     emailFocus.dispose();
-    emailFocus.dispose();
+
     super.dispose();
   }
 

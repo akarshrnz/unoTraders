@@ -1,18 +1,10 @@
-import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
 import 'package:codecarrots_unotraders/screens/job/job%20type/customer%20job%20%20type/customer_live_job_card.dart';
-import 'package:codecarrots_unotraders/screens/job/job%20type/components/job_card.dart';
-import 'package:codecarrots_unotraders/screens/job/job_detail.dart';
-import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
-import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:flutter/material.dart';
 
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:searchbar_animation/searchbar_animation.dart';
 
 import '../../../../utils/color.dart';
 import '../../../../utils/png.dart';
@@ -26,7 +18,7 @@ class CustomerLiveJob extends StatefulWidget {
 
 class _LiveJobState extends State<CustomerLiveJob> {
   TextEditingController serachcontroller = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+
   late JobProvider jobProvider;
   @override
   void initState() {

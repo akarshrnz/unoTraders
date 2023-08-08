@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:codecarrots_unotraders/screens/dashboard/dashboard.dart';
@@ -14,15 +15,40 @@ import '../widgets/dialog/loader_dialog.dart';
 import 'package:http/http.dart' as http;
 
 class EnterOtp extends StatefulWidget {
-  final String? mobile;
-  const EnterOtp({Key? key, this.mobile}) : super(key: key);
+  final String mobile;
+  const EnterOtp({Key? key, required this.mobile}) : super(key: key);
 
   @override
   State<EnterOtp> createState() => _EnterOtpState();
 }
 
 class _EnterOtpState extends State<EnterOtp> {
-  TextEditingController _otp = TextEditingController();
+  TextEditingController otpTextFieldController = TextEditingController();
+  late Timer timer;
+  int counter = 30;
+  bool resendButtonEnabled = false;
+  bool buttonClicked = false;
+  @override
+  void initState() {
+    startTimer();
+    super.initState();
+  }
+
+  startTimer() {
+    const oneSec = Duration(seconds: 1);
+    timer = Timer.periodic(oneSec, (timer) {
+      if (counter == 0) {
+        setState(() {
+          resendButtonEnabled = true;
+          timer.cancel();
+        });
+      } else {
+        setState(() {
+          counter--;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +92,7 @@ class _EnterOtpState extends State<EnterOtp> {
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.7,
               child: PinCodeTextField(
-                controller: _otp,
+                controller: otpTextFieldController,
                 length: 4,
                 obscureText: true,
                 animationType: AnimationType.fade,
@@ -119,6 +145,41 @@ class _EnterOtpState extends State<EnterOtp> {
                 )),
               ),
             ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.01,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  counter > 0
+                      ? "Resend OTP in ${counter}s"
+                      : "Didn\'t receive OTP?",
+                  style: TextStyle(color: AppColor.whiteColor, fontSize: 19),
+                ),
+                counter == 0
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                              backgroundColor: AppColor.whiteColor),
+                          onPressed: buttonClicked
+                              ? null
+                              : () async {
+                                  setState(() {
+                                    buttonClicked = true;
+                                  });
+                                  await resendOtp();
+                                  setState(() {
+                                    buttonClicked = false;
+                                  });
+                                },
+                          child: Text('Resend OTP'),
+                        ),
+                      )
+                    : SizedBox()
+              ],
+            )
           ],
         ),
       ),
@@ -129,7 +190,7 @@ class _EnterOtpState extends State<EnterOtp> {
     LoadingDialog.show(context);
     final params = {
       "mobile": widget.mobile,
-      "otp": _otp.text,
+      "otp": otpTextFieldController.text,
     };
     var response = await http.post(
       Uri.parse(Url.validateOtp),
@@ -161,6 +222,36 @@ class _EnterOtpState extends State<EnterOtp> {
           MaterialPageRoute(builder: (context) => Dashboard()));
     } else {
       ToastMsg.toastMsg(result['message']);
+    }
+  }
+
+  Future<void> resendOtp() async {
+    try {
+      var response = await http.post(Uri.parse(Url.resendOtp),
+          // body: params,
+          body: json.encode({
+            "mobile": widget.mobile,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            // "Connection": "keep-alive",
+            // "Accept-Encoding": "gzip, deflate",
+            // "User-Agent": "Fetch Client",
+            "Accept": "*/*",
+            "Cache-Control": "no-cache"
+          });
+      print(response.statusCode);
+      print(response.body);
+      if (response.statusCode == 200) {
+        ToastMsg.toastMsg("OTP has been sent successfully!");
+        setState(() {
+          counter = 30;
+        });
+        startTimer();
+      }
+      print(response.statusCode);
+    } catch (e) {
+      ToastMsg.toastMsg("Something went wrong");
     }
   }
 }

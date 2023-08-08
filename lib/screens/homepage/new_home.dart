@@ -12,7 +12,7 @@ import 'package:codecarrots_unotraders/utils/router_class.dart';
 import 'package:codecarrots_unotraders/screens/Notification/notification_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/drawer/customer_drawer.dart';
 import 'package:codecarrots_unotraders/screens/widgets/drawer/trader_drawer.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +56,6 @@ class _NewHomePageState extends State<NewHomePage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    Hive.close();
   }
 
   @override

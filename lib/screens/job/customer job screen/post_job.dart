@@ -1,6 +1,5 @@
-import 'dart:io';
 import 'package:codecarrots_unotraders/model/current_job_model.dart';
-import 'package:codecarrots_unotraders/screens/job/customer%20job%20screen/customer_seek_quote_result.dart';
+import 'package:codecarrots_unotraders/screens/job/job%20type/customer%20job%20%20type/seek%20quote/customer_seek_quote_result.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/main.dart';
@@ -8,9 +7,10 @@ import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
 import 'package:codecarrots_unotraders/provider/location_provider.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
-import 'package:codecarrots_unotraders/utils/app_constant.dart';
+import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
+import 'package:codecarrots_unotraders/utils/router_class.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -154,6 +154,60 @@ class _PostJobState extends State<PostJob> {
     'published': 'Published',
     'seekQuote': 'Seek Quote'
   };
+
+  Widget _buildButton(BuildContext context, String text, IconData icon,
+      VoidCallback onPressed) {
+    return InkWell(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
+          color: Colors.grey[200],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              icon,
+            ),
+            const SizedBox(width: 8.0),
+            Text(text),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showImagePicker(
+      BuildContext context, ImagePickProvider imagePickProvider) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              SizedBox(height: 16.0),
+              _buildButton(context, 'Capture with Camera', Icons.camera_alt,
+                  () {
+                imagePickProvider.pickImageFromCamera();
+                Navigator.pop(context);
+              }),
+              SizedBox(height: 16.0),
+              _buildButton(context, 'Pick from Gallery', Icons.photo_library,
+                  () {
+                imagePickProvider.pickImage();
+                Navigator.pop(context);
+              }),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final imagePickProvider =
@@ -183,7 +237,7 @@ class _PostJobState extends State<PostJob> {
                                 data: widget.isUpdatejob == null
                                     ? "Post Your job Here"
                                     : "Update Your job Here",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: AppColor.blackColor,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold),
@@ -623,7 +677,11 @@ class _PostJobState extends State<PostJob> {
                                     style: TextStyle(color: Colors.grey[700]),
                                   ),
                                   onPressed: () {
-                                    imagePickProvider.pickImage();
+                                    AppConstant.showImagePicker(
+                                        context, imagePickProvider);
+                                    // _showImagePicker(
+                                    //     context, imagePickProvider);
+                                    //imagePickProvider.pickImage();
                                   },
                                   style: ElevatedButton.styleFrom(
                                       elevation: 0,
@@ -1003,6 +1061,8 @@ class _PostJobState extends State<PostJob> {
                                                           "Job Posted Successfully",
                                                       backgroundColor:
                                                           AppColor.green);
+                                                  Navigator.pushNamed(context,
+                                                      RouterClass.liveJob);
                                                 }).onError((error, stackTrace) {
                                                   AppConstant.toastMsg(
                                                       msg: error.toString(),

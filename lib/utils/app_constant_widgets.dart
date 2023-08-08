@@ -1,3 +1,4 @@
+import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -63,5 +64,58 @@ class AppConstant {
 
   static overlayLoaderHide(BuildContext context) {
     Loader.hide();
+  }
+
+  static Widget _buildButton(BuildContext context, String text, IconData icon,
+      VoidCallback onPressed) {
+    return InkWell(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
+          color: Colors.grey[200],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              icon,
+            ),
+            const SizedBox(width: 8.0),
+            Text(text),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static void showImagePicker(
+      BuildContext context, ImagePickProvider imagePickProvider) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              SizedBox(height: 16.0),
+              _buildButton(context, 'Capture with Camera', Icons.camera_alt,
+                  () {
+                imagePickProvider.pickImageFromCamera();
+                Navigator.pop(context);
+              }),
+              SizedBox(height: 16.0),
+              _buildButton(context, 'Pick from Gallery', Icons.photo_library,
+                  () {
+                imagePickProvider.pickImage();
+                Navigator.pop(context);
+              }),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

@@ -3,10 +3,7 @@ import 'package:codecarrots_unotraders/model/offer%20listing/trader_offer_listin
 import 'package:codecarrots_unotraders/model/post_offer_model.dart';
 import 'package:codecarrots_unotraders/provider/profile_provider.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
-import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/main.dart';
-import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
@@ -14,11 +11,9 @@ import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
 import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../provider/location_provider.dart';
 
 class PostAnOfferDialog extends StatefulWidget {
   final TraderOfferListingModel? traderOffer;
@@ -50,6 +45,7 @@ class _BazaarPopUpState extends State<PostAnOfferDialog> {
   bool isLoading = false;
   DateTime? validFrom;
   DateTime? validTo;
+  List<int> removeImagesId = [];
   DateTime dateTime = DateTime.now();
   final _formKey = GlobalKey<FormState>();
 
@@ -58,6 +54,15 @@ class _BazaarPopUpState extends State<PostAnOfferDialog> {
     imagePickProvider = Provider.of<ImagePickProvider>(context, listen: false);
     profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     imagePickProvider.initialValues();
+    controller();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      initializeValues();
+    });
+
+    super.initState();
+  }
+
+  controller() {
     offerTitleController = TextEditingController(
         text:
             widget.traderOffer == null ? "" : widget.traderOffer!.title ?? "");
@@ -81,7 +86,13 @@ class _BazaarPopUpState extends State<PostAnOfferDialog> {
         text: widget.traderOffer == null
             ? ""
             : widget.traderOffer!.validTo ?? "");
-    super.initState();
+  }
+
+  initializeValues() {
+    if (widget.traderOffer != null) {
+      imagePickProvider
+          .addImageFromNetwork(widget.traderOffer!.traderofferimages);
+    }
   }
 
   Future<DateTime?> pickDate() => showDatePicker(
@@ -141,11 +152,6 @@ class _BazaarPopUpState extends State<PostAnOfferDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
-    final imagePickProvider =
-        Provider.of<ImagePickProvider>(context, listen: false);
-
     return AlertDialog(
         content: Form(
       key: _formKey,
@@ -353,56 +359,130 @@ class _BazaarPopUpState extends State<PostAnOfferDialog> {
 
                 // selected images
 
-                Consumer<ImagePickProvider>(
-                    builder: (context, imageProvider, _) {
-                  return imageProvider.images.isEmpty == true
-                      ? AppConstant.kheight(height: 10)
-                      : Container(
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          height:
-                              imageProvider.images.isEmpty == true ? 0 : 170,
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            color: AppColor.whiteColor,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            shrinkWrap: true,
-                            itemCount: imageProvider.images.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Stack(
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.black)),
-                                      child: Image.file(
-                                        File(imageProvider.images[index].path),
-                                        height: 190,
-                                        width: 150,
-                                        fit: BoxFit.cover,
+                widget.traderOffer != null
+                    ? Consumer<ImagePickProvider>(
+                        builder: (context, imageProvider, _) {
+                        return imageProvider.networkAndFileImages.isEmpty ==
+                                true
+                            ? AppConstant.kheight(height: 10)
+                            : Container(
+                                margin: const EdgeInsets.symmetric(vertical: 8),
+                                height: imageProvider
+                                            .networkAndFileImages.isEmpty ==
+                                        true
+                                    ? 0
+                                    : 170,
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  color: AppColor.whiteColor,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  shrinkWrap: true,
+                                  itemCount:
+                                      imageProvider.networkAndFileImages.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final data = imageProvider
+                                        .networkAndFileImages[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: Colors.black)),
+                                            child: data.isNetwork == false
+                                                ? Image.file(
+                                                    File(data.fileImage!.path),
+                                                    height: 190,
+                                                    width: 150,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : Image.network(
+                                                    data.networkImage ?? "",
+                                                    height: 190,
+                                                    width: 150,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                          ),
+                                          Positioned(
+                                            top: 0,
+                                            right: 1,
+                                            child: IconButton(
+                                                onPressed: () {
+                                                  if (data.isNetwork!) {
+                                                    removeImagesId.add(index);
+                                                  }
+                                                  imageProvider
+                                                      .removeNetworkFileImage(
+                                                          index);
+                                                },
+                                                icon: const Icon(
+                                                    Icons.cancel_outlined)),
+                                          )
+                                        ],
                                       ),
-                                    ),
-                                    Positioned(
-                                      top: 0,
-                                      right: 1,
-                                      child: IconButton(
-                                          onPressed: () {
-                                            imageProvider.remove(index);
-                                          },
-                                          icon: const Icon(
-                                              Icons.cancel_outlined)),
-                                    )
-                                  ],
+                                    );
+                                  },
                                 ),
                               );
-                            },
-                          ),
-                        );
-                }),
+                      })
+                    : Consumer<ImagePickProvider>(
+                        builder: (context, imageProvider, _) {
+                        return imageProvider.images.isEmpty == true
+                            ? AppConstant.kheight(height: 10)
+                            : Container(
+                                margin: const EdgeInsets.symmetric(vertical: 8),
+                                height: imageProvider.images.isEmpty == true
+                                    ? 0
+                                    : 170,
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  color: AppColor.whiteColor,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  shrinkWrap: true,
+                                  itemCount: imageProvider.images.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: Colors.black)),
+                                            child: Image.file(
+                                              File(imageProvider
+                                                  .images[index].path),
+                                              height: 190,
+                                              width: 150,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          Positioned(
+                                            top: 0,
+                                            right: 1,
+                                            child: IconButton(
+                                                onPressed: () {
+                                                  imageProvider.remove(index);
+                                                },
+                                                icon: const Icon(
+                                                    Icons.cancel_outlined)),
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                      }),
 
                 //images
                 SizedBox(
@@ -435,94 +515,189 @@ class _BazaarPopUpState extends State<PostAnOfferDialog> {
                 AppConstant.kheight(height: 10),
                 isLoading == true
                     ? AppConstant.circularProgressIndicator()
-                    : Consumer<ImagePickProvider>(
-                        builder: (context, provider, _) {
-                        return DefaultButton(
-                          height: 50,
-                          text: "Post Offer",
-                          onPress: () async {
-                            final sharedPrefs =
-                                await SharedPreferences.getInstance();
-                            String id = sharedPrefs.getString('id')!;
-                            String userType =
-                                sharedPrefs.getString('userType')!;
-                            if (_formKey.currentState!.validate() &&
-                                validFrom != null &&
-                                validTo != null &&
-                                provider.imageFile.isNotEmpty) {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              PostOfferModel postOfferModel = PostOfferModel(
-                                  offerTitle: offerTitleController.text
-                                      .trim()
-                                      .toString(),
-                                  offerContent: offerContentController.text
-                                      .trim()
-                                      .toString(),
-                                  fullPrice: fullPriceController.text
-                                      .trim()
-                                      .toString(),
-                                  offerPrice: offerPriceController.text
-                                      .trim()
-                                      .toString(),
-                                  offerImages: provider.imageFile,
-                                  validFrom: validFromController.text,
-                                  validTo: validToController.text,
-                                  traderId: int.parse(id));
-                              // ignore: avoid_print
-                              print("valid");
-                              if (widget.traderOffer == null) {
-                                bool res = await profileProvider.postAnOffer(
-                                    offerModel: postOfferModel);
-                                if (res == true) {
-                                  profileProvider.getTraderOffers(
-                                      urlUserType: 'trader', traderId: id);
-                                  clearField();
-                                } else {}
-                              } else {
-                                bool res = await profileProvider.updateOffer(
-                                    offerModel: postOfferModel);
-                                if (res == true) {
-                                  profileProvider.getTraderOffers(
-                                      urlUserType: 'trader', traderId: id);
-                                  clearField();
-                                } else {}
-                              }
-                              // await profileProvider
-                              //     .postAnOffer(offerModel: postOfferModel)
-                              //     .then((value) {
-                              // AppConstant.toastMsg(
-                              //     msg: "Offer posted sucessfully",
-                              //     backgroundColor: AppColor.green);
+                    : widget.traderOffer == null
+                        ? Consumer<ImagePickProvider>(
+                            builder: (context, provider, _) {
+                            return DefaultButton(
+                              height: 50,
+                              text: "Post Offer",
+                              onPress: () async {
+                                final sharedPrefs =
+                                    await SharedPreferences.getInstance();
+                                String id = sharedPrefs.getString('id')!;
 
-                              // clearField();
+                                if (_formKey.currentState!.validate() &&
+                                    validFrom != null &&
+                                    validTo != null &&
+                                    provider.imageFile.isNotEmpty) {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+                                  PostOfferModel postOfferModel =
+                                      PostOfferModel(
+                                          offerTitle: offerTitleController.text
+                                              .trim()
+                                              .toString(),
+                                          offerContent: offerContentController
+                                              .text
+                                              .trim()
+                                              .toString(),
+                                          fullPrice: fullPriceController.text
+                                              .trim()
+                                              .toString(),
+                                          offerPrice: offerPriceController.text
+                                              .trim()
+                                              .toString(),
+                                          offerImages: provider.imageFile,
+                                          validFrom: validFromController.text,
+                                          validTo: validToController.text,
+                                          traderId: int.parse(id));
+                                  // ignore: avoid_print
+                                  print("valid");
+                                  if (widget.traderOffer == null) {
+                                    bool res =
+                                        await profileProvider.postAnOffer(
+                                            offerModel: postOfferModel);
+                                    if (res == true) {
+                                      profileProvider.getTraderOffers(
+                                          urlUserType: 'trader', traderId: id);
+                                      clearField();
+                                    } else {}
+                                  } else {
+                                    List<File> imageFile = [];
+                                    for (var element
+                                        in provider.networkAndFileImages) {
+                                      if (element.isNetwork == false) {
+                                        imageFile.add(element.fileImage!);
+                                      }
+                                    }
+                                    removeImagesId.forEach((element) {
+                                      print("remove id");
+                                      print(element);
+                                    });
+                                    postOfferModel.offerImages = imageFile;
 
-                              //   return;
-                              // }).onError((error, stackTrace) {
-                              //   print("errorr  message ");
-                              //   print(error.toString());
-                              // AppConstant.toastMsg(
-                              //     msg: error.toString(),
-                              //     backgroundColor: AppColor.red);
+                                    bool res =
+                                        await profileProvider.updateOffer(
+                                            removeImages: removeImagesId,
+                                            offerId: widget.traderOffer!.id!,
+                                            offerModel: postOfferModel);
 
-                              //   return;
-                              // });
-                            } else {
-                              AppConstant.toastMsg(
-                                  msg: "Please fill all Fields",
-                                  backgroundColor: AppColor.green);
-                              // ignore: avoid_print
-                              print("in valid");
-                            }
-                            setState(() {
-                              isLoading = false;
-                            });
-                          },
-                          radius: 5,
-                          backgroundColor: Colors.green,
-                        );
-                      }),
+                                    if (res == true) {
+                                      removeImagesId = [];
+                                      profileProvider.getTraderOffers(
+                                          urlUserType: 'trader', traderId: id);
+                                      clearField();
+                                    } else {}
+                                  }
+                                  // await profileProvider
+                                  //     .postAnOffer(offerModel: postOfferModel)
+                                  //     .then((value) {
+                                  // AppConstant.toastMsg(
+                                  //     msg: "Offer posted sucessfully",
+                                  //     backgroundColor: AppColor.green);
+
+                                  // clearField();
+
+                                  //   return;
+                                  // }).onError((error, stackTrace) {
+                                  //   print("errorr  message ");
+                                  //   print(error.toString());
+                                  // AppConstant.toastMsg(
+                                  //     msg: error.toString(),
+                                  //     backgroundColor: AppColor.red);
+
+                                  //   return;
+                                  // });
+                                } else {
+                                  AppConstant.toastMsg(
+                                      msg: "Please fill all Fields",
+                                      backgroundColor: AppColor.green);
+                                  // ignore: avoid_print
+                                  print("in valid");
+                                }
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              },
+                              radius: 5,
+                              backgroundColor: Colors.green,
+                            );
+                          })
+                        : Consumer<ImagePickProvider>(
+                            builder: (context, provider, _) {
+                            return DefaultButton(
+                              height: 50,
+                              text: "Update Offer",
+                              onPress: () async {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                if (_formKey.currentState!.validate() &&
+                                    provider.networkAndFileImages.isNotEmpty) {
+                                  final sharedPrefs =
+                                      await SharedPreferences.getInstance();
+                                  String id = sharedPrefs.getString('id')!;
+                                  PostOfferModel postOfferModel =
+                                      PostOfferModel(
+                                          offerTitle: offerTitleController.text
+                                              .trim()
+                                              .toString(),
+                                          offerContent: offerContentController
+                                              .text
+                                              .trim()
+                                              .toString(),
+                                          fullPrice: fullPriceController.text
+                                              .trim()
+                                              .toString(),
+                                          offerPrice: offerPriceController.text
+                                              .trim()
+                                              .toString(),
+                                          offerImages: provider.imageFile,
+                                          validFrom: validFromController.text,
+                                          validTo: validToController.text,
+                                          traderId: int.parse(id));
+                                  List<File> imageFile = [];
+                                  for (var element
+                                      in provider.networkAndFileImages) {
+                                    if (element.isNetwork == false) {
+                                      imageFile.add(element.fileImage!);
+                                    }
+                                  }
+                                  removeImagesId.forEach((element) {
+                                    print("remove id");
+                                    print(element);
+                                  });
+                                  postOfferModel.offerImages = imageFile;
+
+                                  bool res = await profileProvider.updateOffer(
+                                      removeImages: removeImagesId,
+                                      offerId: widget.traderOffer!.id!,
+                                      offerModel: postOfferModel);
+
+                                  if (res == true) {
+                                    removeImagesId = [];
+                                    profileProvider.getTraderOffers(
+                                        urlUserType: 'trader', traderId: id);
+                                    imagePickProvider.initialValues();
+                                    clearField();
+                                  } else if (res == false) {
+                                    print("failed updates");
+                                  }
+                                } else {
+                                  AppConstant.toastMsg(
+                                      msg: "Please fill all Fields",
+                                      backgroundColor: AppColor.green);
+                                }
+
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              },
+                              radius: 5,
+                              backgroundColor: Colors.green,
+                            );
+                          }),
               ],
             ),
           ),

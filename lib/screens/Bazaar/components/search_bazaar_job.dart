@@ -3,7 +3,7 @@ import 'package:codecarrots_unotraders/screens/Bazaar/components/search_results.
 import 'package:codecarrots_unotraders/screens/job/components/job_search_results.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:location/location.dart';
+
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 
 import 'package:syncfusion_flutter_sliders/sliders.dart';

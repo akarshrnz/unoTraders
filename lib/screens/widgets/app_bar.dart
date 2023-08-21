@@ -3,6 +3,7 @@ import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final String? appBarTitle;
   final IconData? icon;

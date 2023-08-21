@@ -804,48 +804,10 @@ class _TraderProfileEditState extends State<EditTraderProfile> {
                         setState(() {
                           isLoading = true;
                         });
-                        final sharedPrefs =
-                            await SharedPreferences.getInstance();
-                        String id = sharedPrefs.getString('id')!;
-                        String userType = sharedPrefs.getString('userType')!;
-                        if (_formKey.currentState!.validate()) {
-                          TraderUpdateProfile edit = TraderUpdateProfile(
-                              profilePic: imgProvider.imageFile.isNotEmpty
-                                  ? imgProvider.imageFile[0]
-                                  : null,
-                              type: selectedRadioType == 0
-                                  ? "Company"
-                                  : "Individual",
-                              mainCategory: selectedRadioCategory == 0
-                                  ? "Seller"
-                                  : "Service",
-                              availableTimeFrom: timeFrom,
-                              availableTimeTo: timeTwo,
-                              serviceLocationRadius:
-                                  radiusController.text.isEmpty
-                                      ? null
-                                      : radiusController.text.toString(),
-                              address: addressController.text,
-                              countryCode: dialCode,
-                              mobile: mobileController.text,
-                              webUrl: webUrlController.text,
-                              name: nameController.text,
-                              handyman: isHandyMan ? 1 : 0,
-                              isAvailable: isAvailable ? 1 : 0,
-                              appointment: isAcceptAppointments ? 1 : 0,
-                              reference: isReference ? 1 : 0,
-                              traderId: int.parse(id),
-                              userType: userType,
-                              email: widget.profileModel.email);
-                          print(edit.toJson());
-                          TraderProfileModel? res = await updateProvider
-                              .updateTraderProfilePageOne(edit: edit);
-                          if (res != null) {
-                            profileProvider.updateTraderProfile(res);
-                            if (!mounted) return;
-                            Navigator.pop(context);
-                          } else {}
-                        } else {}
+                        await submitUpdates(imgProvider.imageFile.isNotEmpty
+                            ? imgProvider.imageFile[0]
+                            : null);
+
                         setState(() {
                           isLoading = false;
                         });
@@ -856,6 +818,43 @@ class _TraderProfileEditState extends State<EditTraderProfile> {
         ],
       ),
     );
+  }
+
+  Future<void> submitUpdates(File? profilePic) async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    String id = sharedPrefs.getString('id')!;
+    String userType = sharedPrefs.getString('userType')!;
+    if (_formKey.currentState!.validate()) {
+      TraderUpdateProfile edit = TraderUpdateProfile(
+          profilePic: profilePic,
+          type: selectedRadioType == 0 ? "Company" : "Individual",
+          mainCategory: selectedRadioCategory == 0 ? "Seller" : "Service",
+          availableTimeFrom: timeFrom,
+          availableTimeTo: timeTwo,
+          serviceLocationRadius: radiusController.text.isEmpty
+              ? null
+              : radiusController.text.toString(),
+          address: addressController.text,
+          countryCode: dialCode,
+          mobile: mobileController.text,
+          webUrl: webUrlController.text,
+          name: nameController.text,
+          handyman: isHandyMan ? 1 : 0,
+          isAvailable: isAvailable ? 1 : 0,
+          appointment: isAcceptAppointments ? 1 : 0,
+          reference: isReference ? 1 : 0,
+          traderId: int.parse(id),
+          userType: userType,
+          email: widget.profileModel.email);
+      print(edit.toJson());
+      TraderProfileModel? res =
+          await updateProvider.updateTraderProfilePageOne(edit: edit);
+      if (res != null) {
+        profileProvider.updateTraderProfile(res);
+        if (!mounted) return;
+        Navigator.pop(context);
+      } else {}
+    } else {}
   }
 
   Column columnWidget(

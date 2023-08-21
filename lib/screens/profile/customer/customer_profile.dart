@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:codecarrots_unotraders/model/Feeds/trader_feed_model.dart';
-import 'package:codecarrots_unotraders/model/bazaar_model.dart';
 import 'package:codecarrots_unotraders/model/feed_reaction_model.dart';
 import 'package:codecarrots_unotraders/model/offer%20listing/trader_offer_listing.dart';
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
@@ -12,10 +11,8 @@ import 'package:codecarrots_unotraders/screens/Profile/comment%20section/comment
 import 'package:codecarrots_unotraders/screens/Profile/customer/edit_customer_profile.dart';
 import 'package:codecarrots_unotraders/screens/Profile/follow_list.dart';
 import 'package:codecarrots_unotraders/screens/Profile/traders/components/trader_feeds_screen.dart';
-import 'package:codecarrots_unotraders/screens/Profile/traders/components/trader_offer_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
-import 'package:codecarrots_unotraders/utils/circular_progress.dart';
 import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 
 import 'package:flutter/material.dart';
@@ -72,7 +69,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
   callApi() async {
     final sharedPrefs = await SharedPreferences.getInstance();
     String id = sharedPrefs.getString('id')!;
-    String userType = sharedPrefs.getString('userType')!;
+
     profileProvider.getCustomerProfile(userId: id);
     profileProvider.getFeeds(urlUserType: 'customer', traderId: null);
   }
@@ -282,8 +279,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
                                                     .getInstance();
                                             String id =
                                                 sharedPrefs.getString('id')!;
-                                            String userType = sharedPrefs
-                                                .getString('userType')!;
+
                                             Navigator.push(
                                                 context,
                                                 PageTransition(
@@ -370,8 +366,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
                                                     .getInstance();
                                             String id =
                                                 sharedPrefs.getString('id')!;
-                                            String userType = sharedPrefs
-                                                .getString('userType')!;
+
                                             await Navigator.push(
                                                 context,
                                                 PageTransition(
@@ -653,13 +648,13 @@ class _CustomerProfileState extends State<CustomerProfile> {
                                         title.length,
                                         (index) => InkWell(
                                               onTap: () async {
-                                                final sharedPrefs =
-                                                    await SharedPreferences
-                                                        .getInstance();
-                                                String id = sharedPrefs
-                                                    .getString('id')!;
-                                                String userType = sharedPrefs
-                                                    .getString('userType')!;
+                                                // final sharedPrefs =
+                                                //     await SharedPreferences
+                                                //         .getInstance();
+                                                // String id = sharedPrefs
+                                                //     .getString('id')!;
+                                                // String userType = sharedPrefs
+                                                //     .getString('userType')!;
                                                 profileProvider.changeTab(
                                                     index: index);
                                                 if (index == 0) {

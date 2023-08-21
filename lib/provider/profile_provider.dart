@@ -659,7 +659,7 @@ class ProfileProvider with ChangeNotifier {
 
   //traderprofile
   Future<void> getTraderProfile(
-      {String? customerId, String? customerType}) async {
+      {String? customerId, String? customerType,required BuildContext context}) async {
     isLoading = true;
     errorMessage = '';
     notifyListeners();
@@ -670,6 +670,11 @@ class ProfileProvider with ChangeNotifier {
       traderProfile = await ProfileServices.getTraderProfile(
           id: id, customerId: customerId, customerType: customerType);
       // ignore: avoid_print
+      if(traderProfile!=null && traderProfile!.status!=null &&traderProfile!.status=="0" ){
+        AppConstant.toastMsg(msg: "Verify your account before you proceed", backgroundColor: AppColor.red);
+
+      }
+
       print(traderProfile!.name);
     } catch (e) {
       errorMessage = e.toString();
@@ -777,9 +782,10 @@ class ProfileProvider with ChangeNotifier {
   Future<bool> addUpdatePost(
       {required AddPostModel addPost,
       required String endPoints,
-      required int postId}) async {
+      required int postId,required   List<int> removeImagesId }) async {
     try {
       await ProfileServices.updatePost(
+        removeImageId: removeImagesId,
           addPost: addPost, endPoints: endPoints, postId: postId);
       // ignore: avoid_print
       AppConstant.toastMsg(
@@ -815,9 +821,9 @@ class ProfileProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> updateOffer({required PostOfferModel offerModel}) async {
+  Future<bool> updateOffer({required PostOfferModel offerModel,required int offerId,required List<int> removeImages}) async {
     try {
-      bool res = await ProfileServices.updateoffer(postOffer: offerModel);
+      bool res = await ProfileServices.updateoffer(postOffer: offerModel,offerId:offerId,removeImages:removeImages  );
       if (res == true) {
         AppConstant.toastMsg(
             msg: "Offer updated successfully", backgroundColor: AppColor.green);

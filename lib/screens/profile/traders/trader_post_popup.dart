@@ -1,20 +1,16 @@
 import 'dart:io';
+
 import 'package:codecarrots_unotraders/model/Feeds/trader_feed_model.dart';
 import 'package:codecarrots_unotraders/model/add_post.dart';
 import 'package:codecarrots_unotraders/provider/profile_provider.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
-import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/main.dart';
-import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
-import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
 import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../provider/location_provider.dart';
@@ -44,13 +40,17 @@ class _BazaarPopUpState extends State<TraderPostPopUp> {
   late FocusNode tempFocus;
   late TextEditingController postTitleController;
   late TextEditingController descriptionController;
-
+  List<int> removeImagesId = [];
   @override
   void initState() {
     profileProvider = Provider.of<ProfileProvider>(context, listen: false);
 
     imagePickProvider = Provider.of<ImagePickProvider>(context, listen: false);
     initialize();
+    imagePickProvider.initialValues();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      initializeValues();
+    });
 
     super.initState();
   }
@@ -65,12 +65,18 @@ class _BazaarPopUpState extends State<TraderPostPopUp> {
         text: widget.traderPost == null
             ? ""
             : widget.traderPost!.postContent ?? "");
+    // if (widget.traderPost != null) {
+    //   if (widget.traderPost!.postImages != null &&
+    //       widget.traderPost!.postImages!.isNotEmpty) {
+    //     await imagePickProvider
+    //         .networkImageToFile(widget.traderPost!.postImages);
+    //   }
+    // }
+  }
+
+  initializeValues() {
     if (widget.traderPost != null) {
-      if (widget.traderPost!.postImages != null &&
-          widget.traderPost!.postImages!.isNotEmpty) {
-        await imagePickProvider
-            .networkImageToFile(widget.traderPost!.postImages);
-      }
+      imagePickProvider.addImageFromNetwork(widget.traderPost!.postImages);
     }
   }
 
@@ -183,60 +189,128 @@ class _BazaarPopUpState extends State<TraderPostPopUp> {
         ),
         //add photo
 
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: size.width * .02),
-          child:
-              Consumer<ImagePickProvider>(builder: (context, imageProvider, _) {
-            return imageProvider.imageFile.isEmpty == true
-                ? AppConstant.kheight(height: 10)
-                : Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    height: imageProvider.imageFile.isEmpty == true ? 0 : 170,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      color: AppColor.whiteColor,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      // gridDelegate:
-                      //     const SliverGridDelegateWithFixedCrossAxisCount(
-                      //   crossAxisCount: 2,
-                      // ),
-                      itemCount: imageProvider.imageFile.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Stack(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black)),
-                                child: Image.file(
-                                  imageProvider.imageFile[index],
-                                  height: 190,
-                                  width: 150,
-                                  fit: BoxFit.cover,
-                                ),
+        widget.traderPost != null
+            ? Consumer<ImagePickProvider>(builder: (context, imageProvider, _) {
+                return imageProvider.networkAndFileImages.isEmpty == true
+                    ? AppConstant.kheight(height: 10)
+                    : Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        height:
+                            imageProvider.networkAndFileImages.isEmpty == true
+                                ? 0
+                                : 170,
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                          color: AppColor.whiteColor,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: imageProvider.networkAndFileImages.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final data =
+                                imageProvider.networkAndFileImages[index];
+                            return Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        border:
+                                            Border.all(color: Colors.black)),
+                                    child: data.isNetwork == false
+                                        ? Image.file(
+                                            File(data.fileImage!.path),
+                                            height: 190,
+                                            width: 150,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.network(
+                                            data.networkImage ?? "",
+                                            height: 190,
+                                            width: 150,
+                                            fit: BoxFit.cover,
+                                          ),
+                                  ),
+                                  Positioned(
+                                    top: 0,
+                                    right: 1,
+                                    child: IconButton(
+                                        onPressed: () {
+                                          if (data.isNetwork!) {
+                                            removeImagesId.add(index);
+                                          }
+                                          imageProvider
+                                              .removeNetworkFileImage(index);
+                                        },
+                                        icon:
+                                            const Icon(Icons.cancel_outlined)),
+                                  )
+                                ],
                               ),
-                              Positioned(
-                                top: 0,
-                                right: 1,
-                                child: IconButton(
-                                    onPressed: () {
-                                      imageProvider.removeImage(index);
-                                    },
-                                    icon: const Icon(Icons.cancel_outlined)),
-                              )
-                            ],
+                            );
+                          },
+                        ),
+                      );
+              })
+            : Padding(
+                padding: EdgeInsets.symmetric(horizontal: size.width * .02),
+                child: Consumer<ImagePickProvider>(
+                    builder: (context, imageProvider, _) {
+                  return imageProvider.imageFile.isEmpty == true
+                      ? AppConstant.kheight(height: 10)
+                      : Container(
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          height:
+                              imageProvider.imageFile.isEmpty == true ? 0 : 170,
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            color: AppColor.whiteColor,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            shrinkWrap: true,
+                            // gridDelegate:
+                            //     const SliverGridDelegateWithFixedCrossAxisCount(
+                            //   crossAxisCount: 2,
+                            // ),
+                            itemCount: imageProvider.imageFile.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.black)),
+                                      child: Image.file(
+                                        imageProvider.imageFile[index],
+                                        height: 190,
+                                        width: 150,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 0,
+                                      right: 1,
+                                      child: IconButton(
+                                          onPressed: () {
+                                            imageProvider.removeImage(index);
+                                          },
+                                          icon: const Icon(
+                                              Icons.cancel_outlined)),
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         );
-                      },
-                    ),
-                  );
-          }),
-        ),
+                }),
+              ),
 
         Padding(
           padding: EdgeInsets.symmetric(horizontal: size.width * .02),
@@ -272,67 +346,145 @@ class _BazaarPopUpState extends State<TraderPostPopUp> {
         //post button
         isLoading == true
             ? AppConstant.circularProgressIndicator()
-            : Consumer<ImagePickProvider>(builder: (context, provider, _) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: size.width * .02),
-                  child: DefaultButton(
-                      text: "Post",
-                      onPress: () async {
-                        final sharedPrefs =
-                            await SharedPreferences.getInstance();
-                        String id = sharedPrefs.getString('id')!;
-                        String userType = sharedPrefs.getString('userType')!;
-                        print("post");
+            : widget.traderPost == null
+                ? Consumer<ImagePickProvider>(builder: (context, provider, _) {
+                    return Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: size.width * .02),
+                      child: DefaultButton(
+                          text: "Post",
+                          onPress: () async {
+                            final sharedPrefs =
+                                await SharedPreferences.getInstance();
+                            String id = sharedPrefs.getString('id')!;
 
-                        if (_formKey.currentState!.validate() &&
-                            provider.imageFile.isNotEmpty) {
-                          setState(() {
-                            isLoading = true;
-                          });
-                          print("post 556");
+                            print("post");
 
-                          AddPostModel postModel = AddPostModel(
-                              postTitle:
-                                  postTitleController.text.trim().toString(),
-                              postContent:
-                                  descriptionController.text.trim().toString(),
-                              postImages: provider.imageFile,
-                              traderId: int.parse(id));
+                            if (_formKey.currentState!.validate() &&
+                                provider.imageFile.isNotEmpty) {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              print("post 556");
 
-                          bool? res;
-                          if (widget.traderPost == null) {
-                            print("null");
-                            res = await profileProvider.addPost(
-                                addPost: postModel, endPoints: "add-post");
-                          } else {
-                            print("not null");
-                            int postId = widget.traderPost!.id!;
-                            print("not null $postId");
-                            res = await profileProvider.addUpdatePost(
-                                postId: postId,
-                                addPost: postModel,
-                                endPoints: "update-post");
-                          }
+                              AddPostModel postModel = AddPostModel(
+                                  postTitle: postTitleController.text
+                                      .trim()
+                                      .toString(),
+                                  postContent: descriptionController.text
+                                      .trim()
+                                      .toString(),
+                                  postImages: provider.imageFile,
+                                  traderId: int.parse(id));
 
-                          if (res == true) {
-                            clearField();
-                            // profileProvider.getTraderFeeds(
-                            //     userType: 'trader', userId: widget.userid);
-                            profileProvider.getTraderFeeds(
-                                urlUserType: 'trader', traderId: widget.userid);
-                          }
-                        } else {
-                          AppConstant.toastMsg(
-                              msg: "Please fill all the Fields",
-                              backgroundColor: AppColor.red);
-                        }
-                        setState(() {
-                          isLoading = false;
-                        });
-                      },
-                      radius: size.width * .01),
-                );
-              }),
+                              bool? res;
+                              if (widget.traderPost == null) {
+                                print("null");
+                                res = await profileProvider.addPost(
+                                    addPost: postModel, endPoints: "add-post");
+                              } else {
+                                // print("not null");
+                                // int postId = widget.traderPost!.id!;
+                                // print("not null $postId");
+                                // res = await profileProvider.addUpdatePost(
+                                //     postId: postId,
+                                //     addPost: postModel,
+                                //     endPoints: "update-post");
+                              }
+
+                              if (res == true) {
+                                clearField();
+                                // profileProvider.getTraderFeeds(
+                                //     userType: 'trader', userId: widget.userid);
+                                profileProvider.getTraderFeeds(
+                                    urlUserType: 'trader',
+                                    traderId: widget.userid);
+                              }
+                            } else {
+                              AppConstant.toastMsg(
+                                  msg: "Please fill all the Fields",
+                                  backgroundColor: AppColor.red);
+                            }
+                            setState(() {
+                              isLoading = false;
+                            });
+                          },
+                          radius: size.width * .01),
+                    );
+                  })
+                : Consumer<ImagePickProvider>(builder: (context, provider, _) {
+                    return Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: size.width * .02),
+                      child: DefaultButton(
+                          text: "Update Post",
+                          onPress: () async {
+                            final sharedPrefs =
+                                await SharedPreferences.getInstance();
+                            String id = sharedPrefs.getString('id')!;
+
+                            print("post");
+
+                            if (_formKey.currentState!.validate() &&
+                                provider.networkAndFileImages.isNotEmpty) {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              print("post 556");
+
+                              AddPostModel postModel = AddPostModel(
+                                  postTitle: postTitleController.text
+                                      .trim()
+                                      .toString(),
+                                  postContent: descriptionController.text
+                                      .trim()
+                                      .toString(),
+                                  postImages: provider.imageFile,
+                                  traderId: int.parse(id));
+
+                              print("not null");
+                              int postId = widget.traderPost!.id!;
+                              print("not null $postId");
+                              List<File> imageFile = [];
+                              for (var element
+                                  in provider.networkAndFileImages) {
+                                if (element.isNetwork == false) {
+                                  imageFile.add(element.fileImage!);
+                                }
+                              }
+                              removeImagesId.forEach((element) {
+                                print("remove id");
+                                print(element);
+                              });
+                              postModel.postImages = imageFile;
+                              bool res = await profileProvider.addUpdatePost(
+                                  removeImagesId: removeImagesId,
+                                  postId: postId,
+                                  addPost: postModel,
+                                  endPoints: "update-post");
+
+                              if (res == true) {
+                                removeImagesId = [];
+                                clearField();
+                                imagePickProvider.initialValues();
+                                // profileProvider.getTraderFeeds(
+                                //     userType: 'trader', userId: widget.userid);
+                                profileProvider.getTraderFeeds(
+                                    urlUserType: 'trader',
+                                    traderId: widget.userid);
+                              }
+                            } else {
+                              AppConstant.toastMsg(
+                                  msg: "Please fill all the Fields",
+                                  backgroundColor: AppColor.red);
+                            }
+                            setState(() {
+                              isLoading = false;
+                            });
+                          },
+                          radius: size.width * .01),
+                    );
+                  }),
       ]),
     ));
   }

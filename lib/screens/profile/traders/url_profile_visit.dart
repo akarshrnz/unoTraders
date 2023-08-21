@@ -7,21 +7,16 @@ import 'package:codecarrots_unotraders/screens/Profile/traders/components/trader
 import 'package:codecarrots_unotraders/screens/Profile/traders/components/trader_offer_screen.dart';
 import 'package:codecarrots_unotraders/screens/Profile/traders/profile/qr_code_popup.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
-import 'package:codecarrots_unotraders/services/profile_services.dart';
 import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
-import 'package:codecarrots_unotraders/utils/img_fade.dart';
-import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-import 'package:read_more_text/read_more_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../utils/color.dart';

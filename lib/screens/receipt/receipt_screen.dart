@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:codecarrots_unotraders/provider/profile_provider.dart';
 import 'package:codecarrots_unotraders/screens/receipt/image_view.dart';
 import 'package:codecarrots_unotraders/screens/receipt/receipt_popup.dart';
@@ -12,7 +10,6 @@ import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';

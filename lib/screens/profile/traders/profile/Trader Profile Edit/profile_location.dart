@@ -215,48 +215,9 @@ class _ProfileLocationState extends State<ProfileLocation> {
                         setState(() {
                           isLoading = true;
                         });
-                        print("satrt>>>>>>>>>");
-                        if (_formKey.currentState!.validate()) {
-                          print("satrt>>>>>>>>>");
-                          final sharedPrefs =
-                              await SharedPreferences.getInstance();
-                          String id = sharedPrefs.getString('id')!;
-                          String userType = sharedPrefs.getString('userType')!;
-                          print(locProvider.latitude);
-                          print(locProvider.longitude);
-                          print(locationController.text.toString());
-                          TraderUpdateProfile edit = TraderUpdateProfile(
-                              traderId: int.parse(id),
-                              landLatitude: locProvider.latitude,
-                              landLongitude: locProvider.longitude,
-                              locLatitude: locProvider.latitude,
-                              locLongitude: locProvider.longitude,
-                              location: locationController.text.toString(),
-                              landmark: landMarkController.text.toString(),
-                              landmarkDesc: landMarkControllerTwo.text);
+                        await submitUpdates(
+                            locProvider.latitude, locProvider.longitude);
 
-                          print(edit.toJson());
-                          bool res = await updateProvider
-                              .updateTraderProfileLocationPage(edit: edit);
-                          if (res == true) {
-                            widget.profileModel.landLatitude =
-                                locProvider.latitude;
-                            widget.profileModel.landLongitude =
-                                locProvider.longitude;
-                            widget.profileModel.locLatitude =
-                                locProvider.latitude;
-                            widget.profileModel.locLongitude =
-                                locProvider.longitude;
-                            widget.profileModel.location =
-                                locationController.text.toString();
-                            widget.profileModel.landmark =
-                                landMarkController.text.toString();
-                            widget.profileModel.landmarkData =
-                                landMarkControllerTwo.text;
-                            profileProvider
-                                .updateTraderProfile(widget.profileModel);
-                          }
-                        } else {}
                         setState(() {
                           isLoading = false;
                         });
@@ -267,6 +228,42 @@ class _ProfileLocationState extends State<ProfileLocation> {
         ],
       ),
     );
+  }
+
+  Future<void> submitUpdates(String latitude, String longitude) async {
+    print("satrt>>>>>>>>>");
+    if (_formKey.currentState!.validate()) {
+      print("satrt>>>>>>>>>");
+      final sharedPrefs = await SharedPreferences.getInstance();
+      String id = sharedPrefs.getString('id')!;
+
+      print(latitude);
+      print(longitude);
+      print(locationController.text.toString());
+      TraderUpdateProfile edit = TraderUpdateProfile(
+          traderId: int.parse(id),
+          landLatitude: latitude,
+          landLongitude: longitude,
+          locLatitude: latitude,
+          locLongitude: longitude,
+          location: locationController.text.toString(),
+          landmark: landMarkController.text.toString(),
+          landmarkDesc: landMarkControllerTwo.text);
+
+      print(edit.toJson());
+      bool res =
+          await updateProvider.updateTraderProfileLocationPage(edit: edit);
+      if (res == true) {
+        widget.profileModel.landLatitude = latitude;
+        widget.profileModel.landLongitude = longitude;
+        widget.profileModel.locLatitude = latitude;
+        widget.profileModel.locLongitude = longitude;
+        widget.profileModel.location = locationController.text.toString();
+        widget.profileModel.landmark = landMarkController.text.toString();
+        widget.profileModel.landmarkData = landMarkControllerTwo.text;
+        profileProvider.updateTraderProfile(widget.profileModel);
+      }
+    } else {}
   }
 
   Column columnWidget(

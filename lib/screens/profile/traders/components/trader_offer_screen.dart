@@ -44,7 +44,7 @@ class TraderOfferScreen extends StatelessWidget {
                     ? const SizedBox()
                     : InkWell(
                         onTap: () async {
-                          String? res = await showDialog(
+                          await showDialog(
                             context: context,
                             builder: (context) => const PostAnOfferDialog(),
                           );
@@ -120,7 +120,7 @@ class TraderOfferScreen extends StatelessWidget {
                                         size: size.width * 0.04,
                                       ),
                                       onPressed: () async {
-                                        String? res = await showDialog(
+                                        await showDialog(
                                           context: context,
                                           builder: (context) =>
                                               PostAnOfferDialog(

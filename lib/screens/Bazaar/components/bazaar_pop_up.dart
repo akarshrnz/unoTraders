@@ -3,7 +3,6 @@ import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/main.dart';
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
-import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
 import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
@@ -146,7 +145,6 @@ class _BazaarPopUpState extends State<BazaarPopUp> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final bazaarProvider = Provider.of<BazaarProvider>(context, listen: false);
 
     return AlertDialog(

@@ -245,10 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void login() async {
     LoadingDialog.show(context);
-    final params = {
-      'email': _email.text,
-      'password': _password.text,
-    };
+
     // final params = {
     //   "email": "akarshkk777@gmail.com",
     //   "password": "Akarsh@12345"

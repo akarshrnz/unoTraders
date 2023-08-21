@@ -1,3 +1,4 @@
+import 'package:codecarrots_unotraders/model/updateTraderPostImages/network_file_image_convert.dart';
 import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -11,6 +12,8 @@ import 'dart:math';
 import 'package:permission_handler/permission_handler.dart';
 
 class ImagePickProvider with ChangeNotifier {
+  List<NetworkAndFileImages> networkAndFileImages = [];
+  List<NetworkAndFileImages> copyNetworkAndFileImages = [];
   final imagePicker = ImagePicker();
   List<XFile> images = [];
   List<File> imageFile = [];
@@ -27,6 +30,7 @@ class ImagePickProvider with ChangeNotifier {
         if (pickImage != null) {
           images.add(pickImage);
           imageFile.add(File(pickImage.path));
+          addImageFromFile(File(pickImage.path));
           notifyListeners();
           // ignore: avoid_print
           print(images.length.toString());
@@ -44,6 +48,7 @@ class ImagePickProvider with ChangeNotifier {
         if (pickImage != null) {
           images.add(pickImage);
           imageFile.add(File(pickImage.path));
+          addImageFromFile(File(pickImage.path));
           notifyListeners();
           // ignore: avoid_print
           print(images.length.toString());
@@ -76,6 +81,7 @@ class ImagePickProvider with ChangeNotifier {
       if (pickImage != null) {
         images.add(pickImage);
         imageFile.add(File(pickImage.path));
+        addImageFromFile(File(pickImage.path));
         notifyListeners();
         // ignore: avoid_print
         print(images.length.toString());
@@ -118,6 +124,7 @@ class ImagePickProvider with ChangeNotifier {
   initialValues() {
     images = [];
     imageFile = [];
+    networkAndFileImages = [];
   }
 
   pickProfileImage() async {
@@ -160,6 +167,31 @@ class ImagePickProvider with ChangeNotifier {
 // temporary directory and image bytes from response is written to // that file.
       }
     }
+    notifyListeners();
+  }
+
+  addImageFromNetwork(List<String>? networkImages) {
+    if (networkImages != null) {
+      for (var element in networkImages) {
+        NetworkAndFileImages images =
+            NetworkAndFileImages(isNetwork: true, networkImage: element);
+        networkAndFileImages.add(images);
+        copyNetworkAndFileImages.add(images);
+      }
+    }
+    notifyListeners();
+  }
+
+  addImageFromFile(File file) {
+    NetworkAndFileImages images =
+        NetworkAndFileImages(isNetwork: false, fileImage: file);
+    networkAndFileImages.add(images);
+    copyNetworkAndFileImages.add(images);
+    notifyListeners();
+  }
+
+  removeNetworkFileImage(int index) {
+    networkAndFileImages.removeAt(index);
     notifyListeners();
   }
 }

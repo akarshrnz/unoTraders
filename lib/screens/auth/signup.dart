@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:codecarrots_unotraders/model/auth%20Model/register_model.dart';
 import 'package:codecarrots_unotraders/screens/auth/enter_otp.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
-import 'package:codecarrots_unotraders/services/api_sevices.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/toast.dart';
 import 'package:codecarrots_unotraders/screens/widgets/dialog/loader_dialog.dart';

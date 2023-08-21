@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:codecarrots_unotraders/provider/trader_category_provider.dart';
 import 'package:codecarrots_unotraders/provider/trader_update_profile_provider.dart';
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
@@ -174,8 +173,7 @@ class _CompletedWorkState extends State<CompletedWork> {
                                         fileImage: File(pickImage.path));
                                   }
                                 } else if (status.isDenied) {
-                                  PermissionStatus status =
-                                      await Permission.photos.request();
+                                  await Permission.photos.request();
                                 } else if (status.isPermanentlyDenied) {
                                   openSettings();
                                 }
@@ -194,8 +192,7 @@ class _CompletedWorkState extends State<CompletedWork> {
                                     print(" null");
                                   }
                                 } else if (status.isDenied) {
-                                  PermissionStatus status =
-                                      await Permission.photos.request();
+                                  await Permission.photos.request();
                                 } else if (status.isPermanentlyDenied) {
                                   openSettings();
                                 }
@@ -224,18 +221,8 @@ class _CompletedWorkState extends State<CompletedWork> {
                                 setState(() {
                                   isLoading = true;
                                 });
+                                await submitUpdates();
 
-                                bool res = await provider
-                                    .updateTraderProfileCompletedPage(
-                                        removedImages: removedImages,
-                                        selectedImage: imageFile);
-                                if (res == true) {
-                                  if (!mounted) return;
-                                  Navigator.pop(context);
-                                } else {
-                                  if (!mounted) return;
-                                  Navigator.pop(context);
-                                }
                                 setState(() {
                                   isLoading = false;
                                 });
@@ -246,5 +233,17 @@ class _CompletedWorkState extends State<CompletedWork> {
                   );
       }),
     );
+  }
+
+  Future<void> submitUpdates() async {
+    bool res = await provider.updateTraderProfileCompletedPage(
+        removedImages: removedImages, selectedImage: imageFile);
+    if (res == true) {
+      if (!mounted) return;
+      Navigator.pop(context);
+    } else {
+      if (!mounted) return;
+      Navigator.pop(context);
+    }
   }
 }

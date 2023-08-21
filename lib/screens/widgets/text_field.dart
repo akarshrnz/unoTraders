@@ -4,9 +4,10 @@ import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+// ignore: must_be_immutable
 class TextFieldWidget extends StatelessWidget {
-  String? hintText;
-  TextEditingController? controller;
+  final String? hintText;
+  final TextEditingController? controller;
   String? Function(String?)? validate;
   Function(String)? onChanged;
   Function(String)? onFieldSubmitted;

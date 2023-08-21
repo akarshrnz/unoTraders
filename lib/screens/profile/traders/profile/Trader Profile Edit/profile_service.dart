@@ -484,210 +484,25 @@ class _ProfileServiceState extends State<ProfileService> {
                       setState(() {
                         isLoading = true;
                       });
-                      print("satrt>>>>>>>>>");
+                      await submitUpdates();
 
-                      bool res =
-                          await provider.updateTraderProfileServicePage();
-                      if (res == true) {
-                        if (!mounted) return;
-                        Navigator.pop(context);
-                      } else {}
                       setState(() {
                         isLoading = false;
                       });
                     },
                     radius: size.width * .04),
             AppConstant.kheight(height: size.width * .03)
-
-            // SizedBox(
-            //   width: size.width,
-            //   child: Stack(
-            //     children: [
-            //       Container(
-            //         width: size.width,
-            //         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            //         decoration: BoxDecoration(
-            //           border: Border.all(color: Colors.grey),
-            //           borderRadius: BorderRadius.circular(8),
-            //         ),
-            //         child: DropdownButtonHideUnderline(
-            //           child: DropdownButton<String>(
-            //             isDense: true,
-            //             value: selectedItems.isNotEmpty
-            //                 ? selectedItems.join(', ')
-            //                 : null,
-            //             onChanged: (val) {},
-            //             items: allItems.map((String item) {
-            //               return DropdownMenuItem<String>(
-            //                 alignment: AlignmentDirectional.bottomEnd,
-            //                 value: item,
-            //                 child: Row(
-            //                   children: <Widget>[
-            //                     Checkbox(
-            //                       value: selectedItems.contains(item),
-            //                       onChanged: (value) {
-            //                         toggleItem(item);
-            //                       },
-            //                     ),
-            //                     SizedBox(width: 8),
-            //                     Text(item),
-            //                   ],
-            //                 ),
-            //               );
-            //             }).toList(),
-            //           ),
-            //         ),
-            //       ),
-            //       Positioned(
-            //         top: 10,
-            //         left: 10,
-            //         right: 50,
-            //         bottom: 10,
-            //         child: Container(
-            //           alignment: Alignment.center,
-            //           width: size.width,
-            //           // height: 50,
-            //           color: Colors.red,
-            //           child: SingleChildScrollView(
-            //             scrollDirection: Axis.horizontal,
-            //             child: Row(
-            //               children: [
-            //                 Text(
-            //                   "no data",
-            //                   style: TextStyle(color: Colors.white),
-            //                 ),
-            //                 Text(
-            //                   "no data",
-            //                   style: TextStyle(color: Colors.white),
-            //                 ),
-            //                 Text(
-            //                   "no data",
-            //                   style: TextStyle(color: Colors.white),
-            //                 ),
-            //                 Text(
-            //                   "no data",
-            //                   style: TextStyle(color: Colors.white),
-            //                 ),
-            //                 Container(
-            //                   color: Colors.yellow,
-            //                   width: 900,
-            //                 )
-            //               ],
-            //             ),
-            //           ),
-            //         ),
-            //       )
-            //     ],
-            //   ),
-            // ),
-
-            // ignore: prefer_const_constructors, unnecessary_null_comparison
-            // MultiSelectDropDown(
-            //         controller: categoryController,
-            //         showClearIcon: true,
-            //         onOptionSelected: (options) {
-            //           selectedCategoryOptions = [];
-            //           selectedSubCategoryOptions = [];
-            //           serviceOptions = [];
-            //           subCategoryController.clearAllSelection();
-            //           selectedCategoryOptions = options;
-            //           // print(selectedCategoryOptions.length);
-            //           // debugPrint(options.toString());
-            //           provider.getSubCategoryFromCategory(options);
-            //         },
-            //         hint: "Select Category",
-            //         hintColor: AppColor.textColor,
-            //         hintStyle: TextStyle(color: AppColor.textColor),
-            //         options: List<ValueItem>.generate(
-            //             categoryProvider.categoryList.length,
-            //             (index) => ValueItem(
-            //                 label: categoryProvider.categoryList[index].category
-            //                     .toString(),
-            //                 value: categoryProvider.categoryList[index].id
-            //                     .toString())).toList(),
-
-            //         // const <ValueItem>[
-            //         //   ValueItem(label: 'Option 1', value: '1'),
-            //         //   ValueItem(label: 'Option 2', value: '2'),
-            //         //   ValueItem(label: 'Option 3', value: '3'),
-            //         //   ValueItem(label: 'Option 4', value: '4'),
-            //         //   ValueItem(label: 'Option 5', value: '5'),
-            //         //   ValueItem(label: 'Option 6', value: '6'),
-            //         // ],
-            //         selectionType: SelectionType.multi,
-            //         chipConfig: const ChipConfig(wrapType: WrapType.wrap),
-            //         dropdownHeight: 300,
-            //         optionTextStyle: const TextStyle(fontSize: 16),
-            //         selectedOptionIcon: const Icon(Icons.check_circle),
-            //       ),
-            // AppConstant.kheight(height: 20),
-            // // ignore: unnecessary_null_comparison
-            // MultiSelectDropDown(
-            //   controller: subCategoryController,
-            //   showClearIcon: true,
-            //   onOptionSelected: (options) {
-            //     // print("sub cat");
-            //     // print(options.length);
-            //     // selectedSubCategoryOptions = [];
-            //     // selectedCategoryOptions = options;
-            //     // serviceOptions = [];
-            //     // serviceController.clearAllSelection();
-            //     // List<int> subCatId = [];
-            //     // if (options.isNotEmpty) {
-            //     //   for (var element in options) {
-            //     //     if (element.value != null && element.value!.isNotEmpty) {
-            //     //       subCatId.add(int.parse(element.value!));
-            //     //     }
-            //     //   }
-            //     // }
-            //     // print("length of subcatId ${subCatId.length}");
-            //     // if (subCatId.isNotEmpty) {
-            //     //   provider.getServicesFromSubCategory(subCategoryId: subCatId);
-            //     // }
-            //   },
-            //   hint: "Select sub category",
-            //   hintColor: AppColor.textColor,
-            //   hintStyle: TextStyle(color: AppColor.textColor),
-            //   options: List<ValueItem>.generate(
-            //       categoryProvider.subCategoryList.length,
-            //       (index) => ValueItem(
-            //           label: categoryProvider.subCategoryList[index].category
-            //               .toString(),
-            //           value: categoryProvider.subCategoryList[index].id
-            //               .toString())).toList(),
-            //   selectionType: SelectionType.multi,
-            //   chipConfig: const ChipConfig(wrapType: WrapType.wrap),
-            //   dropdownHeight: 300,
-            //   optionTextStyle: const TextStyle(fontSize: 16),
-            //   selectedOptionIcon: const Icon(Icons.check_circle),
-            // ),
-            // AppConstant.kheight(height: 20),
-            // MultiSelectDropDown(
-            //   controller: serviceController,
-            //   showClearIcon: true,
-            //   onOptionSelected: (options) {
-            //     serviceOptions = [];
-            //     serviceOptions = options;
-            //   },
-            //   hint: "Select services",
-            //   hintColor: AppColor.textColor,
-            //   hintStyle: TextStyle(color: AppColor.textColor),
-            //   options: List<ValueItem>.generate(
-            //       categoryProvider.subCategoryList.length,
-            //       (index) => ValueItem(
-            //           label: categoryProvider.traderServicesList[index].category
-            //               .toString(),
-            //           value: categoryProvider.traderServicesList[index].id
-            //               .toString())).toList(),
-            //   selectionType: SelectionType.multi,
-            //   chipConfig: const ChipConfig(wrapType: WrapType.wrap),
-            //   dropdownHeight: 300,
-            //   optionTextStyle: const TextStyle(fontSize: 16),
-            //   selectedOptionIcon: const Icon(Icons.check_circle),
-            // )
           ],
         );
       }),
     );
+  }
+
+  Future<void> submitUpdates() async {
+    bool res = await provider.updateTraderProfileServicePage();
+    if (res == true) {
+      if (!mounted) return;
+      Navigator.pop(context);
+    } else {}
   }
 }

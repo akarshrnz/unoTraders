@@ -227,6 +227,7 @@ class ProfileServices {
   //trader profile
   static Future<TraderProfileModel> getTraderProfile(
       {required String id, String? customerId, String? customerType}) async {
+           print('get trader profile');
     //here id is trader id
     //whaen trader visit his profile customerId and customerType is null
     print('${Url.traderProfile}');
@@ -235,15 +236,18 @@ class ProfileServices {
       "user_id": customerId == null ? customerId : int.parse(customerId),
       "user_type": customerType
     };
-    print(postBody);
+    print(jsonEncode(postBody));
     try {
       var response = await http.post(Uri.parse('${Url.traderProfile}'),
           headers: Header.header, body: jsonEncode(postBody));
       Map body = jsonDecode(response.body);
-      if (body["status"] == 200) {
+      print('get trader profile response ');
+      print(response.statusCode);
+       print(body);
+      if (response.statusCode == 200) {
         print("profile sucess");
 
-        return TraderProfileModel.fromJson(body["data"]);
+        return TraderProfileModel.fromJson(body["data"]??[]);
       } else {
         throw body["message"] ?? "Something went Wrong";
       }
@@ -260,6 +264,7 @@ class ProfileServices {
     } on FormatException {
       throw Failure('Bad response format');
     } catch (e) {
+        print('profile >>>>>>>>>>>>>error ');
       print(e.toString());
       throw Failure(e.toString());
     }
@@ -403,6 +408,7 @@ class ProfileServices {
 
   static Future<void> updatePost(
       {required AddPostModel addPost,
+      required List<int> removeImageId,
       required String endPoints,
       required int postId}) async {
     //endpoints
@@ -417,7 +423,8 @@ class ProfileServices {
       "traderId": addPost.traderId,
       "postTitle": addPost.postTitle,
       "postContent": addPost.postContent,
-      "postImages[]": []
+      "postImages[]": [],
+      "removeImg": removeImageId
     });
     for (var file in addPost.postImages!) {
       formData.files.addAll([
@@ -479,11 +486,15 @@ class ProfileServices {
     // print(resp.data["status"]);
   }
 
-  static Future<bool> updateoffer({required PostOfferModel postOffer}) async {
+  static Future<bool> updateoffer(
+      {required PostOfferModel postOffer,
+      required int offerId,
+      required List<int> removeImages}) async {
     var dio = Dio();
 
-    print("add offer");
+    print("update offer");
     var formData = FormData.fromMap({
+      "offer_id": offerId,
       "traderId": postOffer.traderId,
       "offerTitle": postOffer.offerTitle,
       "offerContent": postOffer.offerContent,
@@ -491,25 +502,32 @@ class ProfileServices {
       "offerPrice": postOffer.offerPrice,
       "validFrom": postOffer.validFrom,
       "validTo": postOffer.validTo,
-      "offerImages[]": []
+      "offer_images[]": [],
+      "removeImg": removeImages
     });
     for (var file in postOffer.offerImages!) {
       formData.files.addAll([
-        MapEntry("offerImages[]", await MultipartFile.fromFile(file.path)),
+        MapEntry("offer_images[]", await MultipartFile.fromFile(file.path)),
       ]);
     }
+    print(formData.fields);
     Response resp;
     try {
       resp = await dio.post(
-          'https://demo.unotraders.com/api/v1/trader/add-offer',
+          'https://demo.unotraders.com/api/v1/trader/update-offer',
           data: formData,
           options: Options(headers: Header.header));
+      print(resp.statusCode);
+
       if (resp.statusCode == 200) {
         return true;
       } else {
         return false;
       }
     } catch (e) {
+      print("error>>>>>>>>>>>");
+      print(e.toString());
+
       throw "Something Went Wrong";
     }
     // print("sataus");

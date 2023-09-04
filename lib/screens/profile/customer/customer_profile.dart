@@ -225,16 +225,31 @@ class _CustomerProfileState extends State<CustomerProfile> {
                                               children: [
                                                 Column(
                                                   crossAxisAlignment:
-                                                      CrossAxisAlignment.end,
+                                                      CrossAxisAlignment.center,
                                                   children: [
-                                                    TextWidget(
-                                                      data: provider
-                                                          .customerProfile!
-                                                          .name!,
-                                                      style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold),
+                                                    // TextWidget(
+                                                    //   data: provider
+                                                    //       .customerProfile!
+                                                    //       .name!,
+                                                    //   style: const TextStyle(
+                                                    //       fontWeight:
+                                                    //           FontWeight.bold),
+                                                    // ),
+                                                    const Icon(
+                                                      Icons.badge,
+                                                      color: AppColor
+                                                          .secondaryColor,
                                                     ),
+                                                    Consumer<
+                                                            CurrentUserProvider>(
+                                                        builder: (context,
+                                                            CurrentUserProvider
+                                                                currentUserProvider,
+                                                            _) {
+                                                      return TextWidget(
+                                                          data:
+                                                              '${currentUserProvider.currentUserType}',style: TextStyle(fontWeight: FontWeight.bold));
+                                                    }),
                                                     TextWidget(
                                                         data:
                                                             'ID: ${provider.customerProfile!.username}'),
@@ -1060,7 +1075,8 @@ class _CustomerProfileState extends State<CustomerProfile> {
                                                                 ? Padding(
                                                                     padding:
                                                                         const EdgeInsets
-                                                                            .all(5),
+                                                                            .all(
+                                                                            5),
                                                                     child: SvgPicture
                                                                         .asset(
                                                                       currentReaction(

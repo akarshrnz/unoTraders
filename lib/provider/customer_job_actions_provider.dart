@@ -1,10 +1,5 @@
-import 'package:codecarrots_unotraders/model/customer_quote_action_model.dart';
 import 'package:codecarrots_unotraders/model/trader_quote_request_model.dart';
-import 'package:codecarrots_unotraders/services/api_sevices.dart';
-import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/services/job_services.dart';
-import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/material.dart';
 
 class CustomerJobActionProvider with ChangeNotifier {

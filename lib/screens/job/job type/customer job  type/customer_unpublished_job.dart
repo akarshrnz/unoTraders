@@ -9,7 +9,6 @@ import 'package:codecarrots_unotraders/utils/png.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-import 'package:searchbar_animation/searchbar_animation.dart';
 
 class UnPublishedJob extends StatefulWidget {
   const UnPublishedJob({Key? key}) : super(key: key);

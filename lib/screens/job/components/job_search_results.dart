@@ -1,13 +1,9 @@
-import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
-import 'package:codecarrots_unotraders/screens/Bazaar/components/bazaar_items.dart';
 import 'package:codecarrots_unotraders/screens/job/job%20type/trader%20job%20type/trader_all_job_card.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
 import 'package:codecarrots_unotraders/utils/circular_progress.dart';
-import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:flutter/material.dart';
 
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class JobSearchResults extends StatelessWidget {

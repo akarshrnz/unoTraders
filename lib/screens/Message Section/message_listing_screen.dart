@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:codecarrots_unotraders/provider/message_provider.dart';
 import 'package:codecarrots_unotraders/screens/Message%20Section/chat_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';

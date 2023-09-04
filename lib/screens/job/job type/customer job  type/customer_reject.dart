@@ -8,7 +8,6 @@ import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/png.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:searchbar_animation/searchbar_animation.dart';
 
 class CustomerReject extends StatefulWidget {
   const CustomerReject({Key? key}) : super(key: key);

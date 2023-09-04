@@ -174,6 +174,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       bool res = await provider.resetPassword(reset: reset);
       if (res == true) {
         clearAllFields();
+        if(!mounted)return;
+        Navigator.pop(context);
       }
     } else {
       // ignore: avoid_print

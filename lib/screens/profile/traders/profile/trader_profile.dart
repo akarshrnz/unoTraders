@@ -41,7 +41,7 @@ class _TraderProfileState extends State<TraderProfile> {
   late FocusNode descriptionFocus;
   late TextEditingController postTitleController;
   late TextEditingController descriptionController;
-final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading = false;
   @override
   void initState() {
@@ -60,7 +60,7 @@ final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
     final sharedPrefs = await SharedPreferences.getInstance();
     String id = sharedPrefs.getString('id')!;
 
-    profileProvider.getTraderProfile(context:context );
+    profileProvider.getTraderProfile(context: context);
     print("call trader profile");
     profileProvider.getFeeds(urlUserType: 'trader', traderId: id);
   }
@@ -96,7 +96,7 @@ final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-           key: scaffoldKey,
+      key: scaffoldKey,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         bottomOpacity: 0.0,
@@ -105,7 +105,7 @@ final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
         centerTitle: true,
         title: TextWidget(
           data: 'My Profile',
-          style: TextStyle(color: AppColor.blackColor),
+          style: const TextStyle(color: AppColor.blackColor),
         ),
       ),
       body: Consumer<ProfileProvider>(
@@ -219,6 +219,12 @@ final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
                               Icons.badge,
                               color: AppColor.secondaryColor,
                             ),
+                            Consumer<CurrentUserProvider>(builder: (context,
+                                CurrentUserProvider currentUserProvider, _) {
+                              return TextWidget(
+                                  data:
+                                      '${currentUserProvider.currentUserType}',style: TextStyle(fontWeight: FontWeight.bold),);
+                            }),
                             TextWidget(data: 'ID: ${profileModel.username}'),
                           ],
                         ),

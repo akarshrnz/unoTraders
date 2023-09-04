@@ -38,10 +38,11 @@ class CurrentUserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  UpdateProfilePicName(
-      {required String profilePic, required String name}) async {
-    //   if (userType != null && userId != null) {
-    //     if (userType!.toLowerCase() == 'customer') {}
-    //   } else {}
+  updateProfilePic(String profilePic) async {
+    if (profilePic.isNotEmpty) {
+      sharedPreferance!.setString('profilePic', profilePic);
+      currentUserProfilePic = profilePic;
+      notifyListeners();
+    }
   }
 }

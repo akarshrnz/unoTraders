@@ -1,6 +1,4 @@
 import 'package:codecarrots_unotraders/model/updateTraderPostImages/network_file_image_convert.dart';
-import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
-import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';

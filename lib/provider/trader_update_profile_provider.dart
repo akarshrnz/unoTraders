@@ -388,6 +388,8 @@ class TraderUpdateProfileProvider with ChangeNotifier {
     if (traderEditProfileExistingData!.data!.providerservices != null &&
         traderEditProfileExistingData!.data!.providerservices!.isNotEmpty) {
       traderEditProfileExistingData!.data!.providerservices!.forEach((element) {
+        print("key values below");
+                            print("key is ${element.serviceId} value is ${element.name}");
         serviceOptions.putIfAbsent(element.serviceId!, () => element.name!);
       });
     }

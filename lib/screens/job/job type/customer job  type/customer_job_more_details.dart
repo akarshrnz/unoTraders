@@ -1,9 +1,7 @@
-import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
 import 'package:codecarrots_unotraders/model/reply_job_more_details_model.dart';
 import 'package:codecarrots_unotraders/provider/customer_job_actions_provider.dart';
 import 'package:codecarrots_unotraders/provider/trader_job_info_provider.dart';
 import 'package:codecarrots_unotraders/screens/Message%20Section/chat_screen.dart';
-import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';

@@ -1,13 +1,11 @@
 import 'package:codecarrots_unotraders/model/notification%20model/notification_model.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
-import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/services/message_services.dart';
 import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:intl/intl.dart';
 
 class NotificationScreen extends StatefulWidget {

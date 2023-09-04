@@ -1,11 +1,7 @@
-import 'package:codecarrots_unotraders/model/add_wishlist_model.dart';
-import 'package:codecarrots_unotraders/model/wishlist_model.dart';
 import 'package:codecarrots_unotraders/provider/message_provider.dart';
-import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_detail.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/components/bazaar_items.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/components/search_bazaar_job.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
-import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/utils/circular_progress.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
@@ -13,16 +9,10 @@ import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
 import 'package:codecarrots_unotraders/screens/Bazaar/components/bazaar_pop_up.dart';
 import 'package:codecarrots_unotraders/screens/widgets/app_bar.dart';
 
-import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
-import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:flutter/material.dart';
-import '../../../provider/location_provider.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:provider/provider.dart';
-import 'package:location/location.dart';
 
-import 'package:intl/intl.dart';
 
 class BazaarScreen extends StatefulWidget {
   const BazaarScreen({super.key});

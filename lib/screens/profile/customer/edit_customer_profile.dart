@@ -168,7 +168,8 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                     AppConstant.kWidth(width: size.width * .03),
                     InkWell(
                       onTap: () {
-                        imageProvider.pickProfileImage();
+                       // imageProvider.pickProfileImage();
+                       AppConstant.showImagePicker(context, imageProvider);
                       },
                       child: Container(
                         alignment: Alignment.center,
@@ -266,6 +267,7 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
                   widgetOne: TextWidget(data: "Address"),
                   widgetTwo: TextFieldWidget(
                       focusNode: addressFocus,
+                      hintText: "Address",
                       controller: addressController,
                       textInputAction: TextInputAction.next,
                       maxLines: 6,

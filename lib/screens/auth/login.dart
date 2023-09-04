@@ -1,12 +1,9 @@
 import 'dart:convert';
 
-import 'dart:convert';
 
 import 'package:codecarrots_unotraders/main.dart';
-import 'package:codecarrots_unotraders/model/login_model.dart';
 import 'package:codecarrots_unotraders/screens/auth/forgot_password.dart';
 import 'package:codecarrots_unotraders/screens/auth/signup.dart';
-import 'package:codecarrots_unotraders/screens/dashboard/dashboard.dart';
 import 'package:codecarrots_unotraders/screens/Location/location_permission_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/dialog/loader_dialog.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';

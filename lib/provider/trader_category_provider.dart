@@ -1,15 +1,8 @@
-import 'dart:io';
 
-import 'package:codecarrots_unotraders/model/home_category.dart';
 
-import 'package:codecarrots_unotraders/model/profile/trader_edit_profile_existing.dart';
 import 'package:codecarrots_unotraders/model/provider_profile_model.dart';
-import 'package:codecarrots_unotraders/model/trader_services.dart';
 
-import 'package:codecarrots_unotraders/services/api_sevices.dart';
 import 'package:codecarrots_unotraders/services/profile_services.dart';
-import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
-import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:flutter/material.dart';
 
 class TraderCategoryProvider with ChangeNotifier {

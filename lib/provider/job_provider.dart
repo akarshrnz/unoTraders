@@ -12,16 +12,11 @@ import 'package:codecarrots_unotraders/model/request_job_quote_model.dart';
 import 'package:codecarrots_unotraders/model/trader_subcategory.dart';
 import 'package:codecarrots_unotraders/model/traders_category_model.dart';
 import 'package:codecarrots_unotraders/model/update_job_model.dart';
-import 'package:codecarrots_unotraders/model/wishlist_model.dart';
-import 'package:codecarrots_unotraders/screens/job/job%20type/customer%20job%20%20type/review/customer_review.dart';
 import 'package:codecarrots_unotraders/services/api_sevices.dart';
-import 'package:codecarrots_unotraders/services/helper/url.dart';
 import 'package:codecarrots_unotraders/services/job_services.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:page_transition/page_transition.dart';
 
 class JobProvider with ChangeNotifier {
   List<TradersCategoryModel> categoryList = [];

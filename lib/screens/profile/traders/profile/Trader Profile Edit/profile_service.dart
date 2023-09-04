@@ -384,7 +384,9 @@ class _ProfileServiceState extends State<ProfileService> {
                 )),
             categoryProvider.showServiceCategoryDropDown == true
                 ? SizedBox()
-                : Container(
+                :categoryProvider.serviceOptions.keys.toList().isEmpty
+                    ? SizedBox()
+                    : Container(
                     margin: EdgeInsets.only(
                       top: 12,
                     ),
@@ -455,14 +457,14 @@ class _ProfileServiceState extends State<ProfileService> {
                                   .traderServicesList[index].service!,
                               categoryProvider.traderServicesList[index].id!);
                           serviceId.putIfAbsent(
-                              categoryProvider.subCategoryList[index].id!,
+                              categoryProvider.traderServicesList[index].id!,
                               () => categoryProvider
                                   .traderServicesList[index].service!);
-                          print("last sub cat");
+                   
                           serviceId.forEach((key, value) {
-                            print("key values");
-                            print(key);
-                            print(value);
+                            print("key values below");
+                            print("key is $key value is $value");
+                            
                           });
                         },
                         child: Container(
@@ -475,7 +477,8 @@ class _ProfileServiceState extends State<ProfileService> {
                               .toString()),
                         )))
                 : SizedBox(),
-            AppConstant.kheight(height: size.width * .03),
+            //AppConstant.kheight(height: size.width * .03),
+            AppConstant.kheight(height: 20),
             isLoading
                 ? Center(child: AppConstant.circularProgressIndicator())
                 : DefaultButton(

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:codecarrots_unotraders/model/profile/trader_update_profile.dart';
 import 'package:codecarrots_unotraders/model/trader_profile_model.dart';
+import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
 import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/provider/location_provider.dart';
 import 'package:codecarrots_unotraders/provider/profile_provider.dart';
@@ -32,6 +33,7 @@ class EditTraderProfile extends StatefulWidget {
 class _TraderProfileEditState extends State<EditTraderProfile> {
   final _formKey = GlobalKey<FormState>();
   late ProfileProvider profileProvider;
+  late CurrentUserProvider currentUserProcider;
   late TraderUpdateProfileProvider updateProvider;
   late LocationProvider locationProvider;
   late ImagePickProvider imageProvider;
@@ -75,6 +77,8 @@ class _TraderProfileEditState extends State<EditTraderProfile> {
   void initState() {
     // TODO: implement initState
     super.initState();
+         currentUserProcider =
+              Provider.of<CurrentUserProvider>(context, listen: false);
     updateProvider =
         Provider.of<TraderUpdateProfileProvider>(context, listen: false);
     locationProvider = Provider.of<LocationProvider>(context, listen: false);
@@ -247,6 +251,7 @@ class _TraderProfileEditState extends State<EditTraderProfile> {
                             radius: size.width * 0.11,
                             backgroundColor: AppColor.whiteColor,
                             child: CircleAvatar(
+                              backgroundColor: AppColor.whiteColor,
                               radius: size.width * 0.1,
                               backgroundImage:
                                   FileImage(File(imgProvider.images[0].path)),
@@ -261,6 +266,7 @@ class _TraderProfileEditState extends State<EditTraderProfile> {
                                 radius: size.width * 0.11,
                                 backgroundColor: AppColor.whiteColor,
                                 child: CircleAvatar(
+                                  backgroundColor: AppColor.whiteColor,
                                   radius: size.width * 0.1,
                                   backgroundImage: NetworkImage(
                                       widget.profileModel.profilePic!),
@@ -285,7 +291,9 @@ class _TraderProfileEditState extends State<EditTraderProfile> {
               AppConstant.kWidth(width: size.width * .03),
               InkWell(
                   onTap: () {
-                    imageProvider.pickProfileImage();
+                    // imageProvider.pickProfileImage();
+
+                    AppConstant.showImagePicker(context, imageProvider);
                   },
                   child: Container(
                     height: 30,
@@ -851,6 +859,10 @@ class _TraderProfileEditState extends State<EditTraderProfile> {
           await updateProvider.updateTraderProfilePageOne(edit: edit);
       if (res != null) {
         profileProvider.updateTraderProfile(res);
+        if (res.profilePic != null && res.profilePic!.isNotEmpty) {
+      
+          currentUserProcider.updateProfilePic(res.profilePic!);
+        }
         if (!mounted) return;
         Navigator.pop(context);
       } else {}

@@ -1,4 +1,5 @@
 import 'package:codecarrots_unotraders/model/feed_reaction_model.dart';
+import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
 import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
 import 'package:codecarrots_unotraders/provider/profile_provider.dart';
 import 'package:codecarrots_unotraders/screens/Profile/comment%20section/comment_screen.dart';
@@ -179,16 +180,24 @@ class _TraderFeedScreenState extends State<TraderFeedScreen> {
                             children: [
                               Row(
                                 children: [
-                                  CircleAvatar(
-                                    backgroundColor: AppColor.green,
-                                    radius: 27,
-                                    child: CircleAvatar(
-                                      backgroundColor: AppColor.whiteColor,
-                                      radius: 23,
-                                      backgroundImage: NetworkImage(
-                                          traderPost.profilePic ?? ""),
-                                    ),
-                                  ),
+                                  Consumer<CurrentUserProvider>(builder:
+                                      (context,
+                                          CurrentUserProvider
+                                              currentUserProvider,
+                                          _) {
+                                    return CircleAvatar(
+                                      backgroundColor: AppColor.green,
+                                      radius: 27,
+                                      child: CircleAvatar(
+                                        backgroundColor: AppColor.whiteColor,
+                                        radius: 23,
+                                        backgroundImage: NetworkImage(
+                                            currentUserProvider
+                                                    .currentUserProfilePic ??
+                                                ""),
+                                      ),
+                                    );
+                                  }),
                                   AppConstant.kWidth(width: 7),
                                   Expanded(
                                     child: Row(

@@ -1,21 +1,11 @@
-import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
-import 'package:codecarrots_unotraders/model/get_accept_reject_model.dart';
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
 import 'package:codecarrots_unotraders/provider/trader_job_info_provider.dart';
-import 'package:codecarrots_unotraders/screens/job/job%20type/components/job_card.dart';
 import 'package:codecarrots_unotraders/screens/job/job%20type/trader%20job%20type/trader_job_card.dart';
-import 'package:codecarrots_unotraders/screens/job/job_detail.dart';
-import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/services/helper/url.dart';
-import 'package:codecarrots_unotraders/services/job_services.dart';
-import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
-import 'package:codecarrots_unotraders/utils/img_fade.dart';
 import 'package:flutter/material.dart';
 
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:searchbar_animation/searchbar_animation.dart';
 
 import '../../../../utils/color.dart';
 import '../../../../utils/png.dart';

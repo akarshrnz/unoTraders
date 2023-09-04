@@ -1,9 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
 import 'package:codecarrots_unotraders/model/get_accept_reject_model.dart';
-import 'package:codecarrots_unotraders/screens/job/job%20type/customer%20job%20%20type/customer_job_more_details.dart';
 import 'package:codecarrots_unotraders/screens/job/job%20type/trader%20job%20type/trader_more_details.dart';
-import 'package:codecarrots_unotraders/screens/job/job_detail.dart';
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';

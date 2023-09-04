@@ -1,21 +1,13 @@
-import 'dart:io';
 import 'package:codecarrots_unotraders/model/appointments/appointmenst_model.dart';
 import 'package:codecarrots_unotraders/provider/current_user_provider.dart';
 import 'package:codecarrots_unotraders/services/profile_services.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
-import 'package:codecarrots_unotraders/main.dart';
-import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
-import 'package:codecarrots_unotraders/provider/image_pick_provider.dart';
-import 'package:codecarrots_unotraders/screens/Bazaar/bazaar_screen.dart';
 import 'package:codecarrots_unotraders/screens/widgets/default_button.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_field.dart';
 import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../provider/location_provider.dart';
 
 class BookAppointmentPopUp extends StatefulWidget {
   final int traderid;

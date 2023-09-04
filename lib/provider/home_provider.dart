@@ -1,10 +1,7 @@
 import 'package:codecarrots_unotraders/model/Trader%20Search/trader_search.dart';
-import 'package:codecarrots_unotraders/model/all_sub_category_model.dart';
 import 'package:codecarrots_unotraders/model/banner_model.dart';
 import 'package:codecarrots_unotraders/model/home_category.dart';
 import 'package:codecarrots_unotraders/model/provider_profile_model.dart';
-import 'package:codecarrots_unotraders/model/trader_subcategory.dart';
-import 'package:codecarrots_unotraders/model/traders_category_model.dart';
 import 'package:codecarrots_unotraders/services/api_sevices.dart';
 import 'package:flutter/material.dart';
 

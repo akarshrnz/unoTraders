@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:codecarrots_unotraders/model/Feeds/trader_feed_model.dart';
 import 'package:codecarrots_unotraders/model/add_post.dart';
@@ -19,7 +18,6 @@ import 'package:codecarrots_unotraders/model/trader_profile_model.dart';
 import 'package:codecarrots_unotraders/model/update_profile.dart';
 import 'package:codecarrots_unotraders/model/view_customer_review_model.dart';
 import 'package:codecarrots_unotraders/provider/bazaar_provider.dart';
-import 'package:codecarrots_unotraders/services/api_sevices.dart';
 import 'package:codecarrots_unotraders/services/helper/failure.dart';
 import 'package:codecarrots_unotraders/services/profile_services.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';

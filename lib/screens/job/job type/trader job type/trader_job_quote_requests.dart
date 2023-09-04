@@ -1,5 +1,4 @@
 import 'package:codecarrots_unotraders/provider/job_provider.dart';
-import 'package:codecarrots_unotraders/screens/Bazaar/components/search_bazaar_job.dart';
 
 import 'package:codecarrots_unotraders/screens/job/job%20type/trader%20job%20type/trader_all_job_card.dart';
 import 'package:codecarrots_unotraders/screens/widgets/text_widget.dart';

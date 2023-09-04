@@ -1,5 +1,3 @@
-import 'package:codecarrots_unotraders/model/fetch_job_model.dart';
-import 'package:codecarrots_unotraders/model/get_accept_reject_model.dart';
 import 'package:codecarrots_unotraders/model/job_more_details_model.dart';
 import 'package:codecarrots_unotraders/model/reply_job_more_details_model.dart';
 import 'package:codecarrots_unotraders/provider/trader_job_info_provider.dart';

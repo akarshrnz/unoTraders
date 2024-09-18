@@ -173,7 +173,7 @@ class _NewHomePageState extends State<NewHomePage> {
                       height: size.height,
                       child: Center(
                           child: TextWidget(
-                        data: "Something Went Wrong",
+                        data:provider.errorMessage,
                       )),
                     )
                   : Padding(

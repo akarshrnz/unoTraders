@@ -126,7 +126,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        useInheritedMediaQuery: false,
+  
         routes: {
           "login": (context) => LoginScreen(),
           SelectUserLocationScreen.routeName: (context) =>

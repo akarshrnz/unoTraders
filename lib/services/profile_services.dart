@@ -107,7 +107,7 @@ class ProfileServices {
     } on TimeoutException {
       throw Failure('Request timed out');
     } on SocketException {
-      throw Failure('No Internet connection');
+      throw Failure('Please check your network connection');
     } on HttpException {
       throw Failure("404 The requested resource could not be found");
     } on FormatException {
@@ -252,7 +252,7 @@ class ProfileServices {
         throw body["message"] ?? "Something went Wrong";
       }
     } on http.ClientException {
-      throw Failure('Failed to establish connection');
+      throw Failure('Please check your network connection');
     } on RedirectException {
       throw Failure('Failed to redirect');
     } on TimeoutException {

@@ -114,7 +114,7 @@ class _TraderProfileState extends State<TraderProfile> {
             ? Center(child: AppConstant.circularProgressIndicator())
             : provider.errorMessage.isNotEmpty
                 ? Center(
-                    child: TextWidget(data: "Something Went Wrong"),
+                    child: TextWidget(data: provider.errorMessage),
                   )
                 : SingleChildScrollView(
                     child: provider.traderProfile == null

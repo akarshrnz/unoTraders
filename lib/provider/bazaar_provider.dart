@@ -11,8 +11,10 @@ import 'package:codecarrots_unotraders/model/bazaar_categories.dart';
 import 'package:codecarrots_unotraders/model/bazaar_model.dart';
 
 import 'package:codecarrots_unotraders/services/api_sevices.dart';
+import 'package:codecarrots_unotraders/services/helper/failure.dart';
 import 'package:codecarrots_unotraders/utils/color.dart';
 import 'package:codecarrots_unotraders/utils/app_constant_widgets.dart';
+import 'package:codecarrots_unotraders/utils/connection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -43,6 +45,8 @@ class BazaarProvider with ChangeNotifier {
   bool detailLoading = false;
   String bazaarDetailError = "";
   BazaarDetailGetModel? bazaarDetailsGetModel;
+  bool wishListLoading = false;
+  String wishListError = "";
 
   void changeCategory({
     required String categoryName,
@@ -261,21 +265,35 @@ class BazaarProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  checkConnection() async {
+    try {
+      bool res = await ConnectionChecker.connectionChecker();
+      if (res == true) {
+      } else {}
+    } catch (e) {
+      throw Failure("Please check your network connection");
+    }
+  }
+
   //wishlist
   Future<List<WishListModel>> fetchWishlist() async {
     wishList = [];
+    wishListError = "";
+    wishListLoading = true;
+    notifyListeners();
 
     try {
+     // await checkConnection();
       wishList = await ApiServices.getWishlist();
-      // ignore: avoid_print
-      print("wishList");
-      // ignore: avoid_print
-      print(wishList.length.toString());
 
       return wishList;
     } catch (e) {
+      print("error");
       print(e.toString());
-      rethrow;
+      wishListError = e.toString();
+      wishListLoading = false;
+      notifyListeners();
+      throw Failure(e.toString());
     }
   }
 

@@ -73,7 +73,7 @@ class HomeProvider with ChangeNotifier {
     } catch (e) {
       print("############################################");
       print(e.toString());
-      errorMessage = "Something Went Wrong";
+      errorMessage = e.toString();
     }
     homeLoading = false;
     notifyListeners();

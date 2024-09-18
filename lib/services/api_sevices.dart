@@ -38,20 +38,26 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiServices {
   static Future<List<BannerModel>> getBanner() async {
-    var response = await http.get(
-      Uri.parse(Url.banners),
-      headers: Header.header,
-    );
-    Map data = jsonDecode(response.body);
-    if (data["status"] == 200) {
-      print(response.body);
-      List tempList = [];
-      for (var v in data["data"]) {
-        tempList.add(v);
+    try {
+      var response = await http.get(
+        Uri.parse(Url.banners),
+        headers: Header.header,
+      );
+      Map data = jsonDecode(response.body);
+      if (data["status"] == 200) {
+        print(response.body);
+        List tempList = [];
+        for (var v in data["data"]) {
+          tempList.add(v);
+        }
+        return BannerModel.bannerfromSnapshot(tempList);
+      } else {
+        throw Failure('Failed to load');
       }
-      return BannerModel.bannerfromSnapshot(tempList);
-    } else {
-      throw Exception('Failed to load');
+    } on SocketException catch (_) {
+      throw Failure("Please check your network connection");
+    } catch (e) {
+      throw Failure('Something went wrong');
     }
   }
 
@@ -788,10 +794,6 @@ class ApiServices {
     final sharedPrefs = await SharedPreferences.getInstance();
     String id = sharedPrefs.getString('id')!;
 
-    print(id);
-
-    print("inside Bazaar");
-    print('${Url.wishList}$id');
     var response = await http.get(
       Uri.parse('${Url.wishList}$id'),
       headers: Header.header,
@@ -809,8 +811,10 @@ class ApiServices {
       } else {
         return WishListModel.snapshot([]);
       }
+    } on SocketException catch (_) {
+      throw Failure("Please check your network connection");
     } catch (e) {
-      rethrow;
+      throw Failure(e.toString());
     }
   }
 
